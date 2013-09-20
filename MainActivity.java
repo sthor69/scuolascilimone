@@ -1,9 +1,5 @@
 package com.storassa.android.scuolasci;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -13,8 +9,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -36,24 +35,25 @@ public class MainActivity extends Activity {
    MeteoItem[] meteoItems;
    int currentMeteoIconResource = 0;
    private boolean timerElapsed = false;
-   private AlertDialog dialog;
    boolean dataEnabled = false, dataAvailable = false;
    String result = "";
+   TextView minSnowText, maxSnowText, lastSnowText;
+   private BroadcastReceiver networkChangeReceiver;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
 
       dataEnabled = false;
       dataAvailable = false;
-      double minSnow, maxSnow;
-      String lastSnow;
 
-      super.onCreate(savedInstanceState);
+      addNetworkChangeReceiver();
+
       setContentView(R.layout.activity_main);
 
-      TextView minSnowText = (TextView) findViewById(R.id.min_snow_text);
-      TextView maxSnowText = (TextView) findViewById(R.id.max_snow_text);
-      TextView lastSnowText = (TextView) findViewById(R.id.last_snow_text);
+      minSnowText = (TextView) findViewById(R.id.min_snow_text);
+      maxSnowText = (TextView) findViewById(R.id.max_snow_text);
+      lastSnowText = (TextView) findViewById(R.id.last_snow_text);
 
       // if this is the first creation, the user is not logged
       // otherwise get the saved state
@@ -66,66 +66,14 @@ public class MainActivity extends Activity {
       // else show the username/password and login password
       switchLoginFragment();
 
-      // get the meteo information, if data are available
-      getMeteoFragment();
+      checkDataAvailable();
+      if (dataAvailable) {
+         // get the meteo information, if data are available
+         getMeteoFragment();
 
-      // get the Weather2 web page
-      ExecutorService exec = Executors.newCachedThreadPool();
-      exec.execute(new Runnable() {
-
-         @Override
-         public void run() {
-            try {
-               HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
-               result = helper.openGenericConnection(WEATHER2_API);
-            } catch (Exception e) {
-               e.printStackTrace();
-            }
-         }
-      });
-
-      // wait for the http response or exit after WAITING_TIME
-      Timer timer = new Timer();
-      timer.schedule(new TimerTask() {
-
-         @Override
-         public void run() {
-            timerElapsed = true;
-
-         }
-      }, WAITING_TIME);
-
-      while (result == "" && !timerElapsed)
-         ;
-      timer.cancel();
-
-      if (timerElapsed) {
-         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-         builder.setMessage(R.string.http_issue).setTitle(
-               R.string.http_issue_dialog_title);
-         builder.setPositiveButton(R.string.ok,
-               new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                     System.exit(0);
-                  }
-               });
-
-         AlertDialog dialog = builder.create();
-         dialog.show();
-
-      } else
-         timerElapsed = false;
-
-      // parse the result to get snow information
-      ParseWeatherHelper whetherHelper = new ParseWeatherHelper(result);
-      minSnow = whetherHelper.getMinSnow();
-      maxSnow = whetherHelper.getMaxSnow();
-      lastSnow = whetherHelper.getLastSnow();
-
-      // set the textviews for the snow info
-      minSnowText.setText("Min snow: " + String.valueOf(minSnow));
-      maxSnowText.setText("Max snow: " + String.valueOf(maxSnow));
-      lastSnowText.setText("Last snow: " + lastSnow);
+         // if data are available get the snow report
+         getSnowReport();
+      }
 
    }
 
@@ -141,6 +89,26 @@ public class MainActivity extends Activity {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.activity_main, menu);
       return true;
+   }
+
+   @Override
+   protected void onPause() {
+      super.onPause();
+      try {
+         unregisterReceiver(networkChangeReceiver);
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   protected void onDestroy() {
+      super.onDestroy();
+      try {
+         unregisterReceiver(networkChangeReceiver);
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
    }
 
    public void switchLoginFragment() {
@@ -162,22 +130,134 @@ public class MainActivity extends Activity {
    protected void getMeteoFragment() {
 
       // check that data is enabled on the device
-      checkDataAvailable();
+      // checkDataAvailable();
 
       // if device is connected to Internet update the meteo
       if (dataAvailable) {
 
-         // manage the meteo fragment
-         fm = getFragmentManager();
-         FragmentTransaction ft = fm.beginTransaction();
-         ft.replace(R.id.meteo_list_placeholder, new MeteoFragment())
-               .commitAllowingStateLoss();
+         ExecutorService exec = Executors.newCachedThreadPool();
+         exec.execute(new Runnable() {
+
+            @Override
+            public void run() {
+               try {
+                  fm = getFragmentManager();
+                  FragmentTransaction ft = fm.beginTransaction();
+                  ft.replace(R.id.meteo_list_placeholder, new MeteoFragment())
+                        .commitAllowingStateLoss();
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+      }
+   }
+
+   public void getSnowReport() {
+
+      // check that data is enabled on the device
+      // checkDataAvailable();
+
+      // if device is connected to Internet update the meteo
+      if (dataAvailable) {
+
+         double minSnow, maxSnow;
+         String lastSnow;
+
+         // get the Weather2 web page
+         ExecutorService exec = Executors.newCachedThreadPool();
+         exec.execute(new Runnable() {
+
+            @Override
+            public void run() {
+               try {
+                  HttpConnectionHelper helper = HttpConnectionHelper
+                        .getHelper();
+                  result = helper.openGenericConnection(WEATHER2_API);
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+
+         // TODO move to a brodcast receiver on 1 minute tick
+         // wait for the http response or exit after WAITING_TIME
+         Timer timer = new Timer();
+         timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+               timerElapsed = true;
+
+            }
+         }, WAITING_TIME);
+
+         while (result == "" && !timerElapsed)
+            ;
+         timer.cancel();
+
+         if (timerElapsed) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.http_issue).setTitle(
+                  R.string.http_issue_dialog_title);
+            builder.setPositiveButton(R.string.ok,
+                  new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int id) {
+                        System.exit(0);
+                     }
+                  });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+         } else
+            timerElapsed = false;
+
+         // parse the result to get snow information
+         ParseWeatherHelper whetherHelper = new ParseWeatherHelper(result);
+         minSnow = whetherHelper.getMinSnow();
+         maxSnow = whetherHelper.getMaxSnow();
+         lastSnow = whetherHelper.getLastSnow();
+
+         // set the textviews for the snow info
+         minSnowText.setText("Min snow: " + String.valueOf(minSnow));
+         maxSnowText.setText("Max snow: " + String.valueOf(maxSnow));
+         lastSnowText.setText("Last snow: " + lastSnow);
       }
    }
 
    /*
     * ------------ PRIVATE METHODS ------------
     */
+
+   private void addNetworkChangeReceiver() {
+      IntentFilter filter = new IntentFilter();
+      filter.addAction("com.storassa.android.scuolasci.NETWORK_CHANGE");
+
+      networkChangeReceiver = new BroadcastReceiver() {
+         @Override
+         public void onReceive(Context context, Intent intent) {
+
+            // check data connection
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
+            // if data connection is now available, get info from Internet
+            if (netInfo != null)
+               if (netInfo.isConnected()) {
+
+                  // get the meteo information, if data are available
+                  getMeteoFragment();
+
+                  // if data are available get the snow report
+                  getSnowReport();
+               }
+         }
+      };
+
+      registerReceiver(networkChangeReceiver, filter);
+
+   }
 
    private void checkDataAvailable() {
 

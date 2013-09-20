@@ -37,7 +37,8 @@ public class DataDisabledDialog extends DialogFragment {
                public void onClick(DialogInterface dialog, int id) {
                   try {
                      enableData();
-                     parentActivity.getMeteoFragment();
+//                     parentActivity.getMeteoFragment();
+//                     parentActivity.getSnowReport();
                   } catch (Exception e) {
                      throw new RuntimeException(e.toString());
                   }
@@ -69,7 +70,7 @@ public class DataDisabledDialog extends DialogFragment {
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
-      checkDataAvailable();
+//      checkDataAvailable();
 
    }
 
