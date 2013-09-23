@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="title_activity_meteo">MeteoActivity</string>
+    <string name="menu_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+</resources>
