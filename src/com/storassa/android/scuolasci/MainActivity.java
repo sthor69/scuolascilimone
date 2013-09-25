@@ -255,6 +255,8 @@ public class MainActivity extends Activity {
             // if data connection is now available, get info from Internet
             if (netInfo != null)
                if (netInfo.isConnected()) {
+                  
+                  dataAvailable = true;
 
                   // get the meteo information, if data are available
                   getMeteoFragment();
