@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
    protected void onPause() {
       super.onPause();
       try {
-         unregisterReceiver(networkChangeReceiver);
+//         unregisterReceiver(networkChangeReceiver);
       } catch (IllegalArgumentException e) {
          e.printStackTrace();
       }
@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
       }
    }
 
-   public void getSnowReport() {
+   protected void getSnowReport() {
 
       // check that data is enabled on the device
       // checkDataAvailable();

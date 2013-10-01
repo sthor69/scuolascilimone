@@ -143,9 +143,12 @@ public class MeteoFragment extends Fragment {
                   public void onItemClick(AdapterView<?> parent, View view,
                         int position, long id) {
                      // only the first two days can be expanded in hourly forecast
-                     if (id < 3)
-                        startActivity(new Intent(getActivity(),
-                              MeteoActivity.class));
+                     if (id < 2) {
+                        Intent myIntent = new Intent(getActivity(),
+                              MeteoActivity.class);
+                        myIntent.putExtra("day", id);
+                        getActivity().startActivity(myIntent);
+                     }
                      else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setMessage(R.string.meteo_list_restriction).setTitle(
@@ -208,6 +211,6 @@ public class MeteoFragment extends Fragment {
    // TODO put the website for snow reports
 
    private static final int MAX_FORECAST_DAYS = 7;
-   private static final int WAITING_TIME = 5000;
+   private static final int WAITING_TIME = 10000;
 
 }
