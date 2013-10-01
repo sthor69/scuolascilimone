@@ -283,6 +283,7 @@ public class MainActivity extends Activity {
       // dialog
       // TODO replace with a new defined DialogFragment DataUnavailableDialog
       else if (!netInfo.isConnected()) {
+         // TODO move to a static helper
          AlertDialog.Builder builder = new AlertDialog.Builder(this);
          builder.setMessage(R.string.http_issue).setTitle(
                R.string.http_issue_dialog_title);

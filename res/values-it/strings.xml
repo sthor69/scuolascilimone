@@ -48,5 +48,7 @@
     <string name="http_issue">Ci sono problemi con il collegamento Internet</string>
     <string name="http_issue_dialog_title">Connessione HTTP</string>
     <string name="ok">OK</string>
+    <string name="meteo_list_restriction">Le previsioni orarie sono disponibili solo per le prime 48h</string>
+    <string name="warning">Attenzione!</string>
 
 </resources>

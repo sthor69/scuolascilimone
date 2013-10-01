@@ -11,8 +11,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,11 +60,33 @@ public class MeteoFragment extends Fragment {
 
          @Override
          public void run() {
-            ForecastIO fio = new ForecastIO(METEO_API_FIO_KEY);
-            fio.setUnits(ForecastIO.UNITS_SI);
-            fio.setExcludeURL("hourly,minutely");
-            fio.getForecast(LIMONE_LATITUDE, LIMONE_LONGITUDE);
-            daily = new FIODaily(fio);
+            try {
+               String forecastIoKey = getResources().getString(
+                     R.string.forecastio_api_key);
+               String limoneLatitude = getResources().getString(
+                     R.string.limone_latitude);
+               String limoneLongitude = getResources().getString(
+                     R.string.limone_longitude);
+
+               ForecastIO fio = new ForecastIO(forecastIoKey);
+               fio.setUnits(ForecastIO.UNITS_SI);
+               fio.setExcludeURL("hourly,minutely");
+               fio.getForecast(limoneLatitude, limoneLongitude);
+               daily = new FIODaily(fio);
+            } catch (Exception e) {
+               e.printStackTrace();
+               AlertDialog.Builder builder = new AlertDialog.Builder(
+                     getActivity());
+               builder.setMessage(R.string.http_issue).setTitle(
+                     R.string.http_issue_dialog_title);
+               builder.setPositiveButton(R.string.ok,
+                     new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                           getActivity().finish();
+                        }
+                     });
+
+            }
          }
       });
 
@@ -87,42 +109,61 @@ public class MeteoFragment extends Fragment {
          AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
          builder.setMessage(R.string.http_issue).setTitle(
                R.string.http_issue_dialog_title);
-         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                System.exit(0);
-            }
-        });
- 
+         builder.setPositiveButton(R.string.ok,
+               new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                     System.exit(0);
+                  }
+               });
+
          AlertDialog dialog = builder.create();
          dialog.show();
 
-      } else
+      } else {
          timerElapsed = false;
-      
-      String[] meteoIconString = new String[MAX_FORECAST_DAYS];
-      for (int i = 0; i < MAX_FORECAST_DAYS; i++)
-         meteoIconString[i] = daily.getDay(i).icon().replace('\"', ' ').trim();
 
-      for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
-         dataPoint[i] = daily.getDay(i);
-         meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
+         String[] meteoIconString = new String[MAX_FORECAST_DAYS];
+         for (int i = 0; i < MAX_FORECAST_DAYS; i++)
+            meteoIconString[i] = daily.getDay(i).icon().replace('\"', ' ')
+                  .trim();
+
+         for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
+            dataPoint[i] = daily.getDay(i);
+            meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
+         }
+
+         int resId = R.layout.meteo_list;
+         adapter = new MeteoArrayAdapter(parentActivity, resId, meteoItems);
+         meteoListView.setAdapter(adapter);
+
+         meteoListView
+               .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                  @Override
+                  public void onItemClick(AdapterView<?> parent, View view,
+                        int position, long id) {
+                     // only the first two days can be expanded in hourly forecast
+                     if (id < 3)
+                        startActivity(new Intent(getActivity(),
+                              MeteoActivity.class));
+                     else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage(R.string.meteo_list_restriction).setTitle(
+                              R.string.warning);
+                        
+                        builder.setPositiveButton(R.string.ok,
+                              new DialogInterface.OnClickListener() {
+                                 public void onClick(DialogInterface dialog, int id) {
+                                    ;
+                                 }
+                              });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                     }
+                  }
+               });
       }
-
-      int resId = R.layout.meteo_list;
-      adapter = new MeteoArrayAdapter(parentActivity, resId, meteoItems);
-      meteoListView.setAdapter(adapter);
-
-      meteoListView
-            .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-               @Override
-               public void onItemClick(AdapterView<?> arg0, View arg1,
-                     int arg2, long arg3) {
-                  // TODO Launch the detailed meteo activity
-
-               }
-            });
-
       return result;
    }
 
@@ -130,9 +171,9 @@ public class MeteoFragment extends Fragment {
    public void onSaveInstanceState(Bundle savedInstanceState) {
       super.onSaveInstanceState(savedInstanceState);
 
-//      savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
-//      savedInstanceState.putParcelableArray("meteo_items",
-//            (Parcelable[]) (meteoItems.toArray()));
+      // savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
+      // savedInstanceState.putParcelableArray("meteo_items",
+      // (Parcelable[]) (meteoItems.toArray()));
    }
 
    private MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
@@ -160,9 +201,10 @@ public class MeteoFragment extends Fragment {
 
    }
 
-   private static final String LIMONE_LATITUDE = "44.2013202";
-   private static final String LIMONE_LONGITUDE = "7.576090300000033";
-   private static final String METEO_API_FIO_KEY = "66d2edf03dbf0185e0cb48f1a23a29ed";
+   // private static final String LIMONE_LATITUDE = "44.2013202";
+   // private static final String LIMONE_LONGITUDE = "7.576090300000033";
+   // private static final String METEO_API_FIO_KEY =
+   // "66d2edf03dbf0185e0cb48f1a23a29ed";
    // TODO put the website for snow reports
 
    private static final int MAX_FORECAST_DAYS = 7;
