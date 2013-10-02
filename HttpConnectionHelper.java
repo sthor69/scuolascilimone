@@ -1,5 +1,6 @@
 package com.storassa.android.scuolasci;
 
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -33,7 +34,7 @@ public class HttpConnectionHelper {
         return helper;
     }
 
-    public void openConnection(String username, String password) {
+    public String openConnection(String username, String password) {
         try {
             String urlParameters = "task=signin&accion=signin&textBoxUsername=";
             urlParameters += username;
@@ -61,10 +62,13 @@ public class HttpConnectionHelper {
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
-            connection.getInputStream();
+            BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+            
+            java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
+            return s.hasNext() ? s.next() : "";
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            return "ERROR:\n" + e.getStackTrace();
         }
     }
 

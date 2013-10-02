@@ -9,7 +9,7 @@ public class NetworkReceiver extends BroadcastReceiver {
    @Override
    public void onReceive(Context context, Intent intent) {
       context.sendBroadcast(new Intent(
-            "com.storassa.android.scuolasci>NETWORK_CHANGE"));
+            "com.storassa.android.scuolasci.NETWORK_CHANGE"));
 
    }
 
