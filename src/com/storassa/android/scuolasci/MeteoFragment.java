@@ -25,192 +25,177 @@ import dme.forecastiolib.ForecastIO;
 
 public class MeteoFragment extends Fragment {
 
-   private FIODataPoint[] dataPoint;
-   private ArrayList<MeteoItem> meteoItems;
-   private ArrayAdapter<MeteoItem> adapter;
-   private Activity parentActivity;
-   FIODaily daily;
-   private boolean timerElapsed = false;
+	private FIODataPoint[] dataPoint;
+	private ArrayList<MeteoItem> meteoItems;
+	private ArrayAdapter<MeteoItem> adapter;
+	private Activity parentActivity;
+	FIODaily daily;
+	private int counter = 0;
 
-   @Override
-   public void onAttach(Activity activity) {
-      super.onAttach(activity);
-      parentActivity = activity;
-   }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		parentActivity = activity;
+	}
 
-   @Override
-   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-         Bundle savedInstanceState) {
-      // Inflate the layout for this fragment
-      View result = inflater.inflate(R.layout.meteo_fragment, container, false);
-      final ListView meteoListView = (ListView) result
-            .findViewById(R.id.meteo_list);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		View result = inflater.inflate(R.layout.meteo_fragment, container,
+				false);
+		final ListView meteoListView = (ListView) result
+				.findViewById(R.id.meteo_list);
+		meteoListView
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-      dataPoint = new FIODataPoint[MAX_FORECAST_DAYS];
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// only the first two days can be expanded in hourly
+						// forecast
+						if (id < 2) {
+							Intent myIntent = new Intent(getActivity(),
+									MainActivity.class);
+							myIntent.putExtra("day", id);
+							getActivity().startActivity(myIntent);
+						} else {
+							AlertDialog.Builder builder = new AlertDialog.Builder(
+									getActivity());
+							builder.setMessage(R.string.meteo_list_restriction)
+									.setTitle(R.string.warning);
 
-      if (savedInstanceState != null)
-         meteoItems = (ArrayList<MeteoItem>) Arrays
-               .asList((MeteoItem[]) savedInstanceState
-                     .getParcelableArray("meteo_items"));
-      else
-         meteoItems = new ArrayList<MeteoItem>();
+							builder.setPositiveButton(R.string.ok,
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog, int id) {
+											;
+										}
+									});
 
-      ExecutorService exec = Executors.newCachedThreadPool();
-      exec.execute(new Runnable() {
+							AlertDialog dialog = builder.create();
+							dialog.show();
+						}
+					}
+				});
 
-         @Override
-         public void run() {
-            try {
-               String forecastIoKey = getResources().getString(
-                     R.string.forecastio_api_key);
-               String limoneLatitude = getResources().getString(
-                     R.string.limone_latitude);
-               String limoneLongitude = getResources().getString(
-                     R.string.limone_longitude);
+		// retrieve the saved meteo items, if available
+		if (savedInstanceState != null)
+			meteoItems = (ArrayList<MeteoItem>) Arrays
+					.asList((MeteoItem[]) savedInstanceState
+							.getParcelableArray("meteo_items"));
+		else
+			meteoItems = new ArrayList<MeteoItem>();
 
-               ForecastIO fio = new ForecastIO(forecastIoKey);
-               fio.setUnits(ForecastIO.UNITS_SI);
-               fio.setExcludeURL("hourly,minutely");
-               fio.getForecast(limoneLatitude, limoneLongitude);
-               daily = new FIODaily(fio);
-            } catch (Exception e) {
-               e.printStackTrace();
-               AlertDialog.Builder builder = new AlertDialog.Builder(
-                     getActivity());
-               builder.setMessage(R.string.http_issue).setTitle(
-                     R.string.http_issue_dialog_title);
-               builder.setPositiveButton(R.string.ok,
-                     new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                           getActivity().finish();
-                        }
-                     });
+		// get the meteo information in a different thread
+		dataPoint = new FIODataPoint[MAX_FORECAST_DAYS];
+		ExecutorService exec = Executors.newCachedThreadPool();
+		exec.execute(new Runnable() {
 
-            }
-         }
-      });
+			@Override
+			public void run() {
+				try {
+					String forecastIoKey = getResources().getString(
+							R.string.forecastio_api_key);
+					String limoneLatitude = getResources().getString(
+							R.string.limone_latitude);
+					String limoneLongitude = getResources().getString(
+							R.string.limone_longitude);
 
-      // wait for the http response or exit after 5s
-      Timer timer = new Timer();
-      timer.schedule(new TimerTask() {
+					ForecastIO fio = new ForecastIO(forecastIoKey);
+					fio.setUnits(ForecastIO.UNITS_SI);
+					fio.setExcludeURL("hourly,minutely");
+					fio.getForecast(limoneLatitude, limoneLongitude);
+					daily = new FIODaily(fio);
+				} catch (Exception e) {
+					// if there are problems print the stack and warn the user
+					e.printStackTrace();
+					CommonHelper.exitMessage(R.string.http_issue, R.string.http_issue_dialog_title, parentActivity);
+				}
+			}
+		});
 
-         @Override
-         public void run() {
-            timerElapsed = true;
+		// wait for the http response or exit after 10s
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
 
-         }
-      }, WAITING_TIME);
+			@Override
+			public void run() {
+				if (daily != null) {
+					String[] meteoIconString = new String[MAX_FORECAST_DAYS];
+					for (int i = 0; i < MAX_FORECAST_DAYS; i++)
+						meteoIconString[i] = daily.getDay(i).icon().replace('\"', ' ')
+								.trim();
 
-      while (daily == null && !timerElapsed)
-         ;
-      timer.cancel();
+					for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
+						dataPoint[i] = daily.getDay(i);
+						meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
+					}
 
-      if (timerElapsed) {
-         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-         builder.setMessage(R.string.http_issue).setTitle(
-               R.string.http_issue_dialog_title);
-         builder.setPositiveButton(R.string.ok,
-               new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                     System.exit(0);
-                  }
-               });
+					int resId = R.layout.meteo_list;
+					adapter = new MeteoArrayAdapter(parentActivity, resId, meteoItems);
+					meteoListView.setAdapter(adapter);
+				}
+				else if (counter < WAITING_TICKS){
+					counter++;
+				}
+				else {
+					CommonHelper.exitMessage(R.string.http_issue, R.string.http_issue_dialog_title, parentActivity);
+				}
 
-         AlertDialog dialog = builder.create();
-         dialog.show();
+			}
+		}, 0, REPETITION_TIME);
 
-      } else {
-         timerElapsed = false;
+		// if the counter expired delete the timer
+		if (counter >= WAITING_TICKS)
+			timer.cancel();
 
-         String[] meteoIconString = new String[MAX_FORECAST_DAYS];
-         for (int i = 0; i < MAX_FORECAST_DAYS; i++)
-            meteoIconString[i] = daily.getDay(i).icon().replace('\"', ' ')
-                  .trim();
+		return result;
+	}
 
-         for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
-            dataPoint[i] = daily.getDay(i);
-            meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
-         }
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 
-         int resId = R.layout.meteo_list;
-         adapter = new MeteoArrayAdapter(parentActivity, resId, meteoItems);
-         meteoListView.setAdapter(adapter);
+		// savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
+		// savedInstanceState.putParcelableArray("meteo_items",
+		// (Parcelable[]) (meteoItems.toArray()));
+	}
 
-         meteoListView
-               .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	private MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
+		String icon = _dataPoint.icon().replace('\"', ' ').trim();
+		MeteoItem result = new MeteoItem(getIconResourceIdFromString(icon),
+				_dataPoint.temperatureMin(), _dataPoint.temperatureMax(),
+				_dataPoint.humidity(), _dataPoint.precipProbability(), -1, -1,
+				-1);
 
-                  @Override
-                  public void onItemClick(AdapterView<?> parent, View view,
-                        int position, long id) {
-                     // only the first two days can be expanded in hourly forecast
-                     if (id < 2) {
-                        Intent myIntent = new Intent(getActivity(),
-                              MeteoActivity.class);
-                        myIntent.putExtra("day", id);
-                        getActivity().startActivity(myIntent);
-                     }
-                     else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage(R.string.meteo_list_restriction).setTitle(
-                              R.string.warning);
-                        
-                        builder.setPositiveButton(R.string.ok,
-                              new DialogInterface.OnClickListener() {
-                                 public void onClick(DialogInterface dialog, int id) {
-                                    ;
-                                 }
-                              });
+		return result;
+	}
 
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                     }
-                  }
-               });
-      }
-      return result;
-   }
+	private int getIconResourceIdFromString(String iconString) {
+		if (iconString.equals("rain"))
+			return R.drawable.rain_icon;
+		else if (iconString.equals("clear-day"))
+			return R.drawable.sun_icon;
+		else if (iconString.equals("cloudy"))
+			return R.drawable.cloud_icon;
+		else if (iconString.equals("snow"))
+			return R.drawable.snow_icon;
+		else if (iconString.equals("partly-cloudy-day"))
+			return R.drawable.sun_cloud_mix_icon;
 
-   @Override
-   public void onSaveInstanceState(Bundle savedInstanceState) {
-      super.onSaveInstanceState(savedInstanceState);
+		return R.drawable.sun_icon;
 
-      // savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
-      // savedInstanceState.putParcelableArray("meteo_items",
-      // (Parcelable[]) (meteoItems.toArray()));
-   }
+	}
 
-   private MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
-      String icon = _dataPoint.icon().replace('\"', ' ').trim();
-      MeteoItem result = new MeteoItem(getIconResourceIdFromString(icon),
-            _dataPoint.temperatureMin(), _dataPoint.temperatureMax(),
-            _dataPoint.humidity(), _dataPoint.precipProbability(), -1, -1, -1);
+	// private static final String LIMONE_LATITUDE = "44.2013202";
+	// private static final String LIMONE_LONGITUDE = "7.576090300000033";
+	// private static final String METEO_API_FIO_KEY =
+	// "66d2edf03dbf0185e0cb48f1a23a29ed";
+	// TODO put the website for snow reports
 
-      return result;
-   }
-
-   private int getIconResourceIdFromString(String iconString) {
-      if (iconString.equals("rain"))
-         return R.drawable.rain_icon;
-      else if (iconString.equals("clear-day"))
-         return R.drawable.sun_icon;
-      else if (iconString.equals("cloudy"))
-         return R.drawable.cloud_icon;
-      else if (iconString.equals("snow"))
-         return R.drawable.snow_icon;
-      else if (iconString.equals("partly-cloudy-day"))
-         return R.drawable.sun_cloud_mix_icon;
-
-      return R.drawable.sun_icon;
-
-   }
-
-   // private static final String LIMONE_LATITUDE = "44.2013202";
-   // private static final String LIMONE_LONGITUDE = "7.576090300000033";
-   // private static final String METEO_API_FIO_KEY =
-   // "66d2edf03dbf0185e0cb48f1a23a29ed";
-   // TODO put the website for snow reports
-
-   private static final int MAX_FORECAST_DAYS = 7;
-   private static final int WAITING_TIME = 10000;
+	private static final int MAX_FORECAST_DAYS = 7;
+	private static final int REPETITION_TIME = 1000;
+	private static final int WAITING_TICKS = 10;
 
 }
