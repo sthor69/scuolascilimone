@@ -85,44 +85,27 @@ public class MeteoActivity extends Activity {
 
          @Override
          public void run() {
-            timerElapsed = true;
+            if (counter != -1 && hourly != null) {
+	        String[] meteoIconString = new String[MAX_HOURS];
 
-         }
-      }, WAITING_TIME);
-
-      while (hourly == null && !timerElapsed)
-         ;
-      timer.cancel();
-
-      if (timerElapsed) {
-         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-         builder.setMessage(R.string.http_issue).setTitle(
-               R.string.http_issue_dialog_title);
-         builder.setPositiveButton(R.string.ok,
-               new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                     System.exit(0);
-                  }
-               });
-
-         AlertDialog dialog = builder.create();
-         dialog.show();
-         
-         timerElapsed = false;
-
-      } else {
-
-         String[] meteoIconString = new String[MAX_HOURS];
-         for (int i = 0; i < MAX_HOURS; i++)
-            meteoIconString[i] = hourly.getHour(i).icon().replace('\"', ' ')
+            	for (int i = 0; i < MAX_HOURS; i++)
+            	meteoIconString[i] = hourly.getHour(i).icon().replace('\"', ' ')
                   .trim();
          
-         for (int i = 0; i < MAX_HOURS; i++) {
-            dataPoint[i] = hourly.getHour(i);
-            meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
+            	for (int i = 0; i < MAX_HOURS; i++) {
+            		dataPoint[i] = hourly.getHour(i);
+            		meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(dataPoint[i]));
+		}
+	    }
+	    else if (counter < WAITING_TICKS) {
+		counter++;
+		}
+	    else {
+		CommonHelper.exitMessage(R.string.http_issue, R.string.http_issue_dialog_title, parentActivity);		
+	        }
          }
+      }, 0, REPETITION_TIME);
 
-         // TODO update using a new hour_meteo_list layout
          int resId = R.layout.meteo_list;
          adapter = new MeteoArrayAdapter(this, resId, meteoItems);
          ListView meteoListView = (ListView) findViewById(R.id.hour_meteo_list);
@@ -131,34 +114,7 @@ public class MeteoActivity extends Activity {
 
    }
 
-   // TODO refactor using a helper class
-
-   private MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
-      String icon = _dataPoint.icon().replace('\"', ' ').trim();
-      MeteoItem result = new MeteoItem(getIconResourceIdFromString(icon),
-            _dataPoint.temperatureMin(), _dataPoint.temperatureMax(),
-            _dataPoint.humidity(), _dataPoint.precipProbability(), -1, -1, -1);
-
-      return result;
-   }
-
-   // TODO move to a static helper
-   private int getIconResourceIdFromString(String iconString) {
-      if (iconString.equals("rain"))
-         return R.drawable.rain_icon;
-      else if (iconString.equals("clear-day"))
-         return R.drawable.sun_icon;
-      else if (iconString.equals("cloudy"))
-         return R.drawable.cloud_icon;
-      else if (iconString.equals("snow"))
-         return R.drawable.snow_icon;
-      else if (iconString.equals("partly-cloudy-day"))
-         return R.drawable.sun_cloud_mix_icon;
-
-      return R.drawable.sun_icon;
-
-   }
-
-   private static final int WAITING_TIME = 10000;
+   private final static int REPETITION_TIME = 1000;
    private final static int MAX_HOURS = 48;
+   private final static int WAITING_TICKS = 10;
 }

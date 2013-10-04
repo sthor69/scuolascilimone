@@ -19,4 +19,31 @@ public class CommonHelper {
 		AlertDialog dialog = builder.create();
 		dialog.show();
 	}
+
+      public static MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
+      String icon = _dataPoint.icon().replace('\"', ' ').trim();
+      MeteoItem result = new MeteoItem(getIconResourceIdFromString(icon),
+            _dataPoint.temperatureMin(), _dataPoint.temperatureMax(),
+            _dataPoint.humidity(), _dataPoint.precipProbability(), -1, -1, -1);
+
+      return result;
+   	}
+
+      public static int getIconResourceIdFromString(String iconString) {
+      if (iconString.equals("rain"))
+         return R.drawable.rain_icon;
+      else if (iconString.equals("clear-day"))
+         return R.drawable.sun_icon;
+      else if (iconString.equals("cloudy"))
+         return R.drawable.cloud_icon;
+      else if (iconString.equals("snow"))
+         return R.drawable.snow_icon;
+      else if (iconString.equals("partly-cloudy-day"))
+         return R.drawable.sun_cloud_mix_icon;
+
+      return R.drawable.sun_icon;
+
+   }
+
+
 }
