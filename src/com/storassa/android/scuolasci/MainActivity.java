@@ -211,11 +211,16 @@ public class MainActivity extends Activity {
 						lastSnow = whetherHelper.getLastSnow();
 
 						// set the textviews for the snow info
-						minSnowText.setText("Min snow: "
-								+ String.valueOf(minSnow));
-						maxSnowText.setText("Max snow: "
-								+ String.valueOf(maxSnow));
-						lastSnowText.setText("Last snow: " + lastSnow);
+						runOnUiThread(new Runnable() {
+							public void run() {
+								minSnowText.setText("Min snow: "
+										+ String.valueOf(minSnow));
+								maxSnowText.setText("Max snow: "
+										+ String.valueOf(maxSnow));
+								lastSnowText.setText("Last snow: " + lastSnow);
+							}
+						});
+						
 					} else if (counter < WAITING_TICKS)
 						counter++;
 					else {

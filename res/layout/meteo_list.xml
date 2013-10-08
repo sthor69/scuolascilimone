@@ -112,6 +112,13 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:gravity="center_horizontal"/>
+        
+        <TextView android:id="@+id/meteo_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic"
+            android:gravity="center_horizontal"
+            android:text=""/>
     </LinearLayout>
 
 </LinearLayout>

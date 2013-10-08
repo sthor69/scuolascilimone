@@ -56,8 +56,8 @@ public class MeteoFragment extends Fragment {
 						// forecast
 						if (id < 2) {
 							Intent myIntent = new Intent(getActivity(),
-									MainActivity.class);
-							myIntent.putExtra("day", id);
+									MeteoActivity.class);
+							myIntent.putExtra("Day", (int)id);
 							getActivity().startActivity(myIntent);
 						} else {
 							AlertDialog.Builder builder = new AlertDialog.Builder(
@@ -110,7 +110,8 @@ public class MeteoFragment extends Fragment {
 				} catch (Exception e) {
 					// if there are problems print the stack and warn the user
 					e.printStackTrace();
-					CommonHelper.exitMessage(R.string.http_issue, R.string.http_issue_dialog_title, parentActivity);
+					CommonHelper.exitMessage(R.string.http_issue,
+							R.string.http_issue_dialog_title, parentActivity);
 				}
 			}
 		});
@@ -124,31 +125,34 @@ public class MeteoFragment extends Fragment {
 				if (daily != null) {
 					String[] meteoIconString = new String[MAX_FORECAST_DAYS];
 					for (int i = 0; i < MAX_FORECAST_DAYS; i++)
-						meteoIconString[i] = daily.getDay(i).icon().replace('\"', ' ')
-								.trim();
+						meteoIconString[i] = daily.getDay(i).icon()
+								.replace('\"', ' ').trim();
 
 					for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
 						dataPoint[i] = daily.getDay(i);
-						meteoItems.add(getMeteoItemFromDataPoint(dataPoint[i]));
+						meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(dataPoint[i], true));
 					}
 
 					int resId = R.layout.meteo_list;
-					adapter = new MeteoArrayAdapter(parentActivity, resId, meteoItems);
-					meteoListView.setAdapter(adapter);
-				}
-				else if (counter < WAITING_TICKS){
+					adapter = new MeteoArrayAdapter(parentActivity, resId,
+							meteoItems, true, 0);
+					parentActivity.runOnUiThread(new Runnable() {
+						public void run() {
+							meteoListView.setAdapter(adapter);
+						}
+					});
+					this.cancel();
+
+				} else if (counter < WAITING_TICKS) {
 					counter++;
-				}
-				else {
-					CommonHelper.exitMessage(R.string.http_issue, R.string.http_issue_dialog_title, parentActivity);
+					
+				} else {
+					CommonHelper.exitMessage(R.string.http_issue,
+							R.string.http_issue_dialog_title, parentActivity);
 				}
 
 			}
 		}, 0, REPETITION_TIME);
-
-		// if the counter expired delete the timer
-		if (counter >= WAITING_TICKS)
-			timer.cancel();
 
 		return result;
 	}
@@ -160,32 +164,6 @@ public class MeteoFragment extends Fragment {
 		// savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
 		// savedInstanceState.putParcelableArray("meteo_items",
 		// (Parcelable[]) (meteoItems.toArray()));
-	}
-
-	private MeteoItem getMeteoItemFromDataPoint(FIODataPoint _dataPoint) {
-		String icon = _dataPoint.icon().replace('\"', ' ').trim();
-		MeteoItem result = new MeteoItem(getIconResourceIdFromString(icon),
-				_dataPoint.temperatureMin(), _dataPoint.temperatureMax(),
-				_dataPoint.humidity(), _dataPoint.precipProbability(), -1, -1,
-				-1);
-
-		return result;
-	}
-
-	private int getIconResourceIdFromString(String iconString) {
-		if (iconString.equals("rain"))
-			return R.drawable.rain_icon;
-		else if (iconString.equals("clear-day"))
-			return R.drawable.sun_icon;
-		else if (iconString.equals("cloudy"))
-			return R.drawable.cloud_icon;
-		else if (iconString.equals("snow"))
-			return R.drawable.snow_icon;
-		else if (iconString.equals("partly-cloudy-day"))
-			return R.drawable.sun_cloud_mix_icon;
-
-		return R.drawable.sun_icon;
-
 	}
 
 	// private static final String LIMONE_LATITUDE = "44.2013202";
