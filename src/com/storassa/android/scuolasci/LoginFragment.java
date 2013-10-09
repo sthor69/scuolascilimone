@@ -48,12 +48,12 @@ public class LoginFragment extends Fragment {
             String username = String.valueOf(usernameView.getText());
             String urlParameters = "task=signin&accion=signin&textBoxUsername=";
             urlParameters += username;
-            
+
             // set the password
             String password = String.valueOf(passwordView.getText());
             urlParameters += "&textBoxPassword=";
             urlParameters += password;
-            
+
             // set the URL
             final String params = urlParameters;
             final URL url;
@@ -105,11 +105,14 @@ public class LoginFragment extends Fragment {
                }
             });
 
+            // Launche the timer that each REPETITION_TIME check the response
+            // code
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
 
                @Override
                public void run() {
+                  // if the response code is 303, the password is correct
                   if (responseCode == 303) {
                      parentActivity.runOnUiThread(new Runnable() {
 
@@ -125,20 +128,22 @@ public class LoginFragment extends Fragment {
                                     public void onClick(DialogInterface dialog,
                                           int id) {
                                        parentActivity.finish();
-                                    }
-                                 });
+                                    } // onClick
+                                 }); // OnClickListener()
 
                            AlertDialog dialog = builder.create();
                            dialog.show();
-                        }
-                     });
+                        } // public void run()
+                     }); // runOnUiThread
 
-                     // TODO
                      this.cancel();
-                  
+
+                     // wait WAITING_TICKS * REPETITION_TIME mseconds to receive
+                     // 303
                   } else if (counter < WAITING_TICKS) {
                      counter++;
 
+                     // if the response code is 200, the password is incorrect
                   } else if (responseCode == 200) {
                      parentActivity.runOnUiThread(new Runnable() {
 
@@ -154,16 +159,16 @@ public class LoginFragment extends Fragment {
                                     public void onClick(DialogInterface dialog,
                                           int id) {
                                        parentActivity.finish();
-                                    }
-                                 });
+                                    } // onClick
+                                 }); // OnClickListener
 
                            AlertDialog dialog = builder.create();
                            dialog.show();
-                        }
-                     });
+                        } // run
+                     }); // runOnUiThread
 
-                     // TODO
-                     this.cancel();} else {
+                     this.cancel();
+                  } else {
                      parentActivity.runOnUiThread(new Runnable() {
 
                         @Override
@@ -171,21 +176,20 @@ public class LoginFragment extends Fragment {
                            CommonHelper.exitMessage(R.string.http_issue,
                                  R.string.http_issue_dialog_title,
                                  parentActivity);
-
-                        }
-                     });
-
-                  }
-               }
-            }, 0, REPETITION_TIME);
-         }
-      });
+                        } // run
+                     }); // Runnable
+                  } // else
+               } // run in TimerTask (new Runnable) definition
+            }, 0, REPETITION_TIME); // TimerTask
+         } // onClick in setOnClickListener(new View.OnClickListener())
+           // definition
+      }); // setOnClickListener definition
 
       return result;
    }
 
    private final static int REPETITION_TIME = 1000;
    private final static int WAITING_TICKS = 10;
-   private final static String SIGNING_URL = "http://www.scuolascilimone.com/it/area-riservata/access/signin"; 
-//   private final static String SIGNING_URL = "155.132.54.41";
+   private final static String SIGNING_URL = "http://www.scuolascilimone.com/it/area-riservata/access/signin";
+   // private final static String SIGNING_URL = "155.132.54.41";
 }
