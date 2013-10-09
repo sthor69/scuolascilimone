@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,21 +38,58 @@ public class MainActivity extends Activity {
 	private int counter = 0;
 	boolean dataEnabled = false, dataAvailable = false;
 	String result = "";
-	TextView minSnowText, maxSnowText, lastSnowText;
 	private BroadcastReceiver networkChangeReceiver;
+
+	Button bookBtn, newsBtn, contactBtn;
+
+	// snow parameters and views
 	double minSnow, maxSnow;
 	String lastSnow;
+	TextView minSnowText, maxSnowText, lastSnowText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		setContentView(R.layout.activity_main);
+
 		dataEnabled = false;
 		dataAvailable = false;
 
-		addNetworkChangeReceiver();
+		// book button
+		bookBtn = (Button) findViewById(R.id.lesson_button);
+		bookBtn.setOnClickListener(new View.OnClickListener() {
 
-		setContentView(R.layout.activity_main);
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		// news button
+		newsBtn = (Button) findViewById(R.id.news_button);
+		newsBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		// contact button
+		contactBtn = (Button) findViewById(R.id.home_button);
+		contactBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		addNetworkChangeReceiver();
 
 		minSnowText = (TextView) findViewById(R.id.min_snow_text);
 		maxSnowText = (TextView) findViewById(R.id.max_snow_text);
@@ -128,6 +166,12 @@ public class MainActivity extends Activity {
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		if (logged) {
+			try {
+				HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+				helper.openConnection("larapic", "gualano");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			ft.replace(R.id.login_place, new LoggedFragment()).commit();
 		} else {
 			ft.replace(R.id.login_place, new LoginFragment()).commit();
@@ -138,7 +182,7 @@ public class MainActivity extends Activity {
 	public void setDataAvailable() {
 		dataAvailable = true;
 	}
-	
+
 	public void setLoginStatus(boolean status) {
 		logged = status;
 	}
@@ -220,7 +264,7 @@ public class MainActivity extends Activity {
 								lastSnowText.setText("Last snow: " + lastSnow);
 							}
 						});
-						
+
 					} else if (counter < WAITING_TICKS)
 						counter++;
 					else {
