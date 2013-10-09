@@ -8,6 +8,8 @@ import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -20,6 +22,7 @@ public class HttpConnectionHelper {
     static HttpConnectionHelper helper;
     HttpURLConnection connection;
     CookieManager cookieManager;
+    String result;
 
     private HttpConnectionHelper() throws MalformedURLException {
         cookieManager = new CookieManager();
@@ -35,41 +38,55 @@ public class HttpConnectionHelper {
     }
 
     public String openConnection(String username, String password) {
-        try {
             String urlParameters = "task=signin&accion=signin&textBoxUsername=";
             urlParameters += username;
             urlParameters += "&textBoxPassword=";
             urlParameters += password;
+            final String params = urlParameters;
+            final URL url;
+            try {
+				url = new URL(
+				        "http://www.scuolascilimone.com/it/area-riservata/access/signin");
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+				throw new RuntimeException(e1);
+			}
 
-            URL url = new URL(
-                    "http://www.scuolascilimone.com/it/area-riservata/access/signin");
+            ExecutorService exec = Executors.newCachedThreadPool();
+    		exec.execute(new Runnable() {
 
-            HttpURLConnection connection = (HttpURLConnection) url
-                    .openConnection();
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestProperty("Content-Length",
-                    "" + Integer.toString(urlParameters.getBytes().length));
-            connection.setUseCaches(false);
+				@Override
+				public void run() {
+			        try {
+		            HttpURLConnection connection = (HttpURLConnection) url
+		                    .openConnection();
+		            connection.setDoOutput(true);
+		            connection.setDoInput(true);
+		            connection.setInstanceFollowRedirects(false);
+		            connection.setRequestMethod("POST");
+		            connection.setRequestProperty("Content-Type",
+		                    "application/x-www-form-urlencoded");
+		            connection.setRequestProperty("charset", "utf-8");
+		            connection.setRequestProperty("Content-Length",
+		                    "" + Integer.toString(params.getBytes().length));
+		            connection.setUseCaches(false);
 
-            DataOutputStream wr = new DataOutputStream(
-                    connection.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
-            BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-            
-            java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            return "ERROR:\n" + e.getStackTrace();
-        }
+		            DataOutputStream wr = new DataOutputStream(
+		                    connection.getOutputStream());
+		            wr.writeBytes(params);
+		            wr.flush();
+		            wr.close();
+		            BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+		            
+		            java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
+		            result = s.hasNext() ? s.next() : "";
+			        } catch (IOException e) {
+			            e.printStackTrace();
+			            throw new RuntimeException(e);
+			        }
+					
+				}});
+            return result;
     }
 
     public String openGenericConnection(String localUrl) throws ClientProtocolException, IOException {
