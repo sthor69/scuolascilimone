@@ -11,7 +11,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,111 +23,169 @@ import android.widget.TextView;
 
 public class LoginFragment extends Fragment {
 
-	String response;
-	int counter = 0;
+   String responseString = "";
+   int responseCode;
+   int counter = 0;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		View result = inflater.inflate(R.layout.login_fragment, container,
-				false);
+   @Override
+   public View onCreateView(LayoutInflater inflater, ViewGroup container,
+         Bundle savedInstanceState) {
+      // Inflate the layout for this fragment
+      View result = inflater.inflate(R.layout.login_fragment, container, false);
 
-		TextView usernameView = (TextView) result
-				.findViewById(R.id.username_text);
-		final String username = String.valueOf(usernameView.getText());
-		TextView passwordView = (TextView) result
-				.findViewById(R.id.username_text);
-		final String password = String.valueOf(passwordView.getText());
+      final TextView usernameView = (TextView) result
+            .findViewById(R.id.username_text);
+      final TextView passwordView = (TextView) result
+            .findViewById(R.id.password_text);
 
-		final MainActivity parentActivity = (MainActivity) getActivity();
-		Button loginBtn = (Button) result.findViewById(R.id.login_button);
-		loginBtn.setOnClickListener(new View.OnClickListener() {
+      final MainActivity parentActivity = (MainActivity) getActivity();
+      Button loginBtn = (Button) result.findViewById(R.id.login_button);
+      loginBtn.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				String urlParameters = "task=signin&accion=signin&textBoxUsername=";
-				urlParameters += username;
-				urlParameters += "&textBoxPassword=";
-				urlParameters += password;
-				final String params = urlParameters;
-				final URL url;
+         @Override
+         public void onClick(View v) {
+            // set the username
+            String username = String.valueOf(usernameView.getText());
+            String urlParameters = "task=signin&accion=signin&textBoxUsername=";
+            urlParameters += username;
+            
+            // set the password
+            String password = String.valueOf(passwordView.getText());
+            urlParameters += "&textBoxPassword=";
+            urlParameters += password;
+            
+            // set the URL
+            final String params = urlParameters;
+            final URL url;
 
-				try {
-					url = new URL(
-							"http://www.scuolascilimone.com/it/area-riservata/access/signin");
-				} catch (MalformedURLException e1) {
-					e1.printStackTrace();
-					throw new RuntimeException(e1);
-				}
+            try {
+               url = new URL(SIGNING_URL);
+            } catch (MalformedURLException e1) {
+               e1.printStackTrace();
+               throw new RuntimeException(e1);
+            }
 
-				ExecutorService exec = Executors.newCachedThreadPool();
-				exec.execute(new Runnable() {
+            // launch the thread to POST the server
+            ExecutorService exec = Executors.newCachedThreadPool();
+            exec.execute(new Runnable() {
 
-					@Override
-					public void run() {
-						try {
-							HttpURLConnection connection = (HttpURLConnection) url
-									.openConnection();
-							connection.setDoOutput(true);
-							connection.setDoInput(true);
-							connection.setInstanceFollowRedirects(false);
-							connection.setRequestMethod("POST");
-							connection.setRequestProperty("Content-Type",
-									"application/x-www-form-urlencoded");
-							connection.setRequestProperty("charset", "utf-8");
-							connection.setRequestProperty(
-									"Content-Length",
-									""
-											+ Integer.toString(params
-													.getBytes().length));
-							connection.setUseCaches(false);
+               @Override
+               public void run() {
+                  try {
+                     HttpURLConnection connection = (HttpURLConnection) url
+                           .openConnection();
+                     connection.setDoOutput(true);
+                     connection.setDoInput(true);
+                     connection.setInstanceFollowRedirects(false);
+                     connection.setRequestMethod("POST");
+                     connection.setRequestProperty("Content-Type",
+                           "application/x-www-form-urlencoded");
+                     connection.setRequestProperty("charset", "utf-8");
+                     connection.setRequestProperty("Content-Length", ""
+                           + Integer.toString(params.getBytes().length));
+                     connection.setUseCaches(false);
 
-							DataOutputStream wr = new DataOutputStream(
-									connection.getOutputStream());
-							wr.writeBytes(params);
-							wr.flush();
-							wr.close();
-							BufferedInputStream in = new BufferedInputStream(
-									connection.getInputStream());
+                     DataOutputStream wr = new DataOutputStream(connection
+                           .getOutputStream());
+                     wr.writeBytes(params);
+                     wr.flush();
+                     wr.close();
+                     BufferedInputStream in = new BufferedInputStream(
+                           connection.getInputStream());
+                     responseCode = connection.getResponseCode();
 
-							java.util.Scanner s = new java.util.Scanner(in)
-									.useDelimiter("\\A");
-							response = s.hasNext() ? s.next() : "";
-						} catch (IOException e) {
-							e.printStackTrace();
-							throw new RuntimeException(e);
-						}
+                     java.util.Scanner s = new java.util.Scanner(in)
+                           .useDelimiter("\\A");
+                     responseString = s.hasNext() ? s.next() : "";
+                  } catch (IOException e) {
+                     e.printStackTrace();
+                     throw new RuntimeException(e);
+                  }
 
-					}
-				});
-			}
-		});
+               }
+            });
 
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
 
-			@Override
-			public void run() {
-				if (response != null){
-					System.out.println(response);
+               @Override
+               public void run() {
+                  if (responseCode == 303) {
+                     parentActivity.runOnUiThread(new Runnable() {
 
-					//TODO 
-					this.cancel();
-				} else if (counter < WAITING_TICKS) {
-					counter++;
-					
-				} else {
-					CommonHelper.exitMessage(R.string.http_issue,
-							R.string.http_issue_dialog_title, parentActivity);
-				} 
-			}
-		}, 0, REPETITION_TIME);
+                        @Override
+                        public void run() {
+                           AlertDialog.Builder builder = new AlertDialog.Builder(
+                                 parentActivity);
 
-		return result;
-	}
+                           builder.setMessage("Password correct").setTitle(
+                                 String.valueOf("INFO"));
+                           builder.setPositiveButton(R.string.ok,
+                                 new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                          int id) {
+                                       parentActivity.finish();
+                                    }
+                                 });
 
-	private final static int REPETITION_TIME = 1000;
-	private final static int WAITING_TICKS = 10;
+                           AlertDialog dialog = builder.create();
+                           dialog.show();
+                        }
+                     });
 
+                     // TODO
+                     this.cancel();
+                  
+                  } else if (counter < WAITING_TICKS) {
+                     counter++;
+
+                  } else if (responseCode == 200) {
+                     parentActivity.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                           AlertDialog.Builder builder = new AlertDialog.Builder(
+                                 parentActivity);
+
+                           builder.setMessage("Wrong password").setTitle(
+                                 String.valueOf("INFO"));
+                           builder.setPositiveButton(R.string.ok,
+                                 new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                          int id) {
+                                       parentActivity.finish();
+                                    }
+                                 });
+
+                           AlertDialog dialog = builder.create();
+                           dialog.show();
+                        }
+                     });
+
+                     // TODO
+                     this.cancel();} else {
+                     parentActivity.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                           CommonHelper.exitMessage(R.string.http_issue,
+                                 R.string.http_issue_dialog_title,
+                                 parentActivity);
+
+                        }
+                     });
+
+                  }
+               }
+            }, 0, REPETITION_TIME);
+         }
+      });
+
+      return result;
+   }
+
+   private final static int REPETITION_TIME = 1000;
+   private final static int WAITING_TICKS = 10;
+   private final static String SIGNING_URL = "http://www.scuolascilimone.com/it/area-riservata/access/signin"; 
+//   private final static String SIGNING_URL = "155.132.54.41";
 }
