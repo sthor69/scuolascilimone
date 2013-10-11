@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -42,6 +43,9 @@ public class MainActivity extends Activity {
 
 	Button bookBtn, newsBtn, contactBtn;
 
+	// get storage info
+	SharedPreferences settings;
+
 	// snow parameters and views
 	double minSnow, maxSnow;
 	String lastSnow;
@@ -52,6 +56,11 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
+
+		settings = getPreferences(0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("remembered", true).putString("username", "larapic")
+				.putString("password", "gualano").commit();
 
 		dataEnabled = false;
 		dataAvailable = false;

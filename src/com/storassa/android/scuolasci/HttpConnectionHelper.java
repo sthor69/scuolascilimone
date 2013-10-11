@@ -81,7 +81,13 @@ public class HttpConnectionHelper {
 
 					java.util.Scanner s = new java.util.Scanner(in)
 							.useDelimiter("\\A");
-					result = s.hasNext() ? s.next() : "";
+
+					StringBuilder builder = new StringBuilder();
+					while (s.hasNext())
+						builder.append(s.next());
+					
+					result =  builder.toString();
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);
@@ -113,7 +119,7 @@ public class HttpConnectionHelper {
 			httpClient.getConnectionManager().shutdown();
 		}
 	}
-	
+
 	public HttpClient getGenericClient() {
 		return httpClient;
 	}
