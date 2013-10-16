@@ -165,11 +165,6 @@ public class LoginFragment extends Fragment {
          // 303
 
       } else if (counter < WAITING_TICKS) {
-         try {
-         code = connection.getResponseCode();
-         } catch (IOException e) {
-         
-         }
          counter++;
 
          // if the response code is 200, the password is incorrect
@@ -207,7 +202,7 @@ public class LoginFragment extends Fragment {
          connection = (HttpURLConnection) url.openConnection();
          connection.setDoOutput(true);
          connection.setDoInput(true);
-         connection.setInstanceFollowRedirects(false);
+         connection.setInstanceFollowRedirects(true);
          connection.setRequestMethod("POST");
          connection.setRequestProperty("Content-Type",
                "application/x-www-form-urlencoded");
@@ -223,8 +218,8 @@ public class LoginFragment extends Fragment {
          wr.close();
          BufferedInputStream in = new BufferedInputStream(connection
                .getInputStream());
-         in = new BufferedInputStream(connection.getInputStream());
 
+         responseCode = connection.getResponseCode();
          java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
          responseString = s.hasNext() ? s.next() : "";
 
