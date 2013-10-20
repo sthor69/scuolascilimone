@@ -26,7 +26,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements HttpResultCallable{
 
    FragmentManager fm;
    boolean logged = false;
@@ -182,7 +182,7 @@ public class MainActivity extends Activity {
       if (logged) {
          try {
             HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
-            helper.openConnection("larapic", "gualano");
+            helper.openConnection(this, "larapic", "gualano");
          } catch (Exception e) {
             e.printStackTrace();
          }
@@ -360,5 +360,11 @@ public class MainActivity extends Activity {
    private static final String WEATHER2_API = "http://www.myweather2.com/developer/weather.ashx?uac=Tax7vNwxqd&uref=bc13f25a-d9dc-4f89-9405-aa03b447a3c9";
    private static final int REPETITION_TIME = 1000;
    private static final int WAITING_TICKS = 10;
+
+@Override
+public void resultAvailable(String[] result) {
+	// TODO Auto-generated method stub
+	
+}
 
 }

@@ -22,6 +22,22 @@ public class CommonHelper {
 		dialog.show();
 	}
 
+	public static void exitMessage(String title, int messageId,
+			final Activity activity) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		builder.setMessage(R.string.http_issue).setTitle(
+				title);
+		builder.setPositiveButton(R.string.ok,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						activity.finish();
+					}
+				});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+
 	/**
 	 * This helper returns a MeteoItem object from a DataPoint object
 	 * 

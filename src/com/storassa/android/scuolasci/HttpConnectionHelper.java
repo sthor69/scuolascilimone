@@ -23,8 +23,8 @@ public class HttpConnectionHelper {
 	HttpURLConnection connection;
 	HttpClient httpClient;
 	CookieManager cookieManager;
-	String result;
-
+	String[] result;
+	
 	private HttpConnectionHelper() {
 		cookieManager = new CookieManager();
 		CookieHandler.setDefault(cookieManager);
@@ -37,11 +37,13 @@ public class HttpConnectionHelper {
 		return helper;
 	}
 
-	public String openConnection(String username, String password) {
+	public void openConnection(final HttpResultCallable callable, String username, String password) {
+
+		result = new String[2];
 		String urlParameters = "task=signin&accion=signin&textBoxUsername=";
 		urlParameters += username;
 		urlParameters += "&textBoxPassword=";
-		urlParameters += password;
+		urlParameters += password + "&buttonSubmit=";
 		final String params = urlParameters;
 		final URL url;
 		try {
@@ -76,7 +78,33 @@ public class HttpConnectionHelper {
 					wr.writeBytes(params);
 					wr.flush();
 					wr.close();
+					connection.connect();
 					BufferedInputStream in = new BufferedInputStream(connection
+							.getInputStream());
+					int responseCode = connection.getResponseCode();
+					
+					while (responseCode == 303) {
+						
+						String urlString = connection.getHeaderField("Location");
+						URL redirectedUrl = new URL(urlString);
+						connection = (HttpURLConnection) redirectedUrl
+								.openConnection();
+						connection.setDoOutput(true);
+						connection.setDoInput(true);
+						connection.setInstanceFollowRedirects(false);
+						connection.setRequestMethod("GET");
+						connection.setRequestProperty("Content-Type",
+								"application/x-www-form-urlencoded");
+						connection.setRequestProperty("charset", "utf-8");
+						connection.setUseCaches(false);
+
+						connection.connect();
+						responseCode = connection.getResponseCode();
+					}
+					
+					final int finalResponseCode = responseCode;
+
+					in = new BufferedInputStream(connection
 							.getInputStream());
 
 					java.util.Scanner s = new java.util.Scanner(in)
@@ -85,19 +113,20 @@ public class HttpConnectionHelper {
 					StringBuilder builder = new StringBuilder();
 					while (s.hasNext())
 						builder.append(s.next());
+
+					result[0] = Integer.toString(finalResponseCode);
+					result[1] = builder.toString();
 					
-					result =  builder.toString();
-					
+					callable.resultAvailable(result);
+
 				} catch (IOException e) {
-					e.printStackTrace();
 					throw new RuntimeException(e);
 				} finally {
-					connection.disconnect();
+//					connection.disconnect();
 				}
 
 			}
 		});
-		return result;
 	}
 
 	public String openGenericConnection(String localUrl)
