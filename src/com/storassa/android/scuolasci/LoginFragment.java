@@ -1,16 +1,8 @@
 package com.storassa.android.scuolasci;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +44,8 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+	   
+	   
 		// Inflate the layout for this fragment
 		result = inflater.inflate(R.layout.login_fragment, container, false);
 

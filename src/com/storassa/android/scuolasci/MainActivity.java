@@ -8,12 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -30,19 +28,12 @@ public class MainActivity extends Activity implements HttpResultCallable{
 
    FragmentManager fm;
    boolean logged = false;
-   TextView introText;
-   String cachedIntroText = "";
-   ImageView meteoImage;
-   TextView meteoDateView;
-   String meteoDate;
-   Button btnMeteoPrevDate, btnMeteoSuccDate;
-   MeteoItem[] meteoItems;
-   int currentMeteoIconResource = 0;
    private int counter = 0;
    boolean dataEnabled = false, dataAvailable = false;
    String result = "";
    private BroadcastReceiver networkChangeReceiver;
 
+   // buttons
    Button bookBtn, newsBtn, contactBtn;
 
    // get storage info
@@ -58,6 +49,13 @@ public class MainActivity extends Activity implements HttpResultCallable{
       super.onCreate(savedInstanceState);
 
       setContentView(R.layout.activity_main);
+      
+      // define a new default uncaught Exception handler, in order to point to the one
+      //connected to GitHub
+      if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof DefaultExceptionHandler)) {
+         Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(
+               Thread.getDefaultUncaughtExceptionHandler()));
+      }
 
       CookieManager cookieManager = new CookieManager();
       CookieHandler.setDefault(cookieManager);
@@ -201,7 +199,12 @@ public class MainActivity extends Activity implements HttpResultCallable{
       logged = status;
    }
 
-   protected void getMeteoFragment() {
+
+   /*
+    * ------------ PRIVATE METHODS ------------
+    */
+
+   private void getMeteoFragment() {
 
       // check that data is enabled on the device
       // checkDataAvailable();
@@ -227,7 +230,7 @@ public class MainActivity extends Activity implements HttpResultCallable{
       }
    }
 
-   protected void getSnowReport() {
+   private void getSnowReport() {
 
       // reset the counter for the waiting period of http request
       counter = 0;
@@ -293,10 +296,6 @@ public class MainActivity extends Activity implements HttpResultCallable{
             timer.cancel();
       }
    }
-
-   /*
-    * ------------ PRIVATE METHODS ------------
-    */
 
    private void addNetworkChangeReceiver() {
       IntentFilter filter = new IntentFilter();
