@@ -32,6 +32,7 @@ public class MainActivity extends Activity implements HttpResultCallable{
    boolean dataEnabled = false, dataAvailable = false;
    String result = "";
    private BroadcastReceiver networkChangeReceiver;
+   String username, password;
 
    // buttons
    Button bookBtn, newsBtn, contactBtn;
@@ -57,19 +58,32 @@ public class MainActivity extends Activity implements HttpResultCallable{
                Thread.getDefaultUncaughtExceptionHandler()));
       }
 
+      // define the cookie manager to perform http requests
       CookieManager cookieManager = new CookieManager();
       CookieHandler.setDefault(cookieManager);
 
+      // temporary debug: retrieve username and password
       settings = getPreferences(0);
+      if (settings.getBoolean("remembered", false) == true) {
+         username = settings.getString("username", "");
+         password = settings.getString("password", "");
+      }
       SharedPreferences.Editor editor = settings.edit();
       editor.putBoolean("remembered", true).putString("username", "larapic")
             .putString("password", "gualano").commit();
 
+      // initialize variables
       dataEnabled = false;
       dataAvailable = false;
-
-      // book button
+      minSnowText = (TextView) findViewById(R.id.min_snow_text);
+      maxSnowText = (TextView) findViewById(R.id.max_snow_text);
+      lastSnowText = (TextView) findViewById(R.id.last_snow_text);
       bookBtn = (Button) findViewById(R.id.lesson_button);
+      newsBtn = (Button) findViewById(R.id.news_button);
+      contactBtn = (Button) findViewById(R.id.home_button);
+
+
+      // book button click
       bookBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -79,8 +93,7 @@ public class MainActivity extends Activity implements HttpResultCallable{
          }
       });
 
-      // news button
-      newsBtn = (Button) findViewById(R.id.news_button);
+      // news button click
       newsBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -90,8 +103,7 @@ public class MainActivity extends Activity implements HttpResultCallable{
          }
       });
 
-      // contact button
-      contactBtn = (Button) findViewById(R.id.home_button);
+      // contact button click
       contactBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -101,18 +113,16 @@ public class MainActivity extends Activity implements HttpResultCallable{
          }
       });
 
+      // add the receiver for data availability
       addNetworkChangeReceiver();
-
-      minSnowText = (TextView) findViewById(R.id.min_snow_text);
-      maxSnowText = (TextView) findViewById(R.id.max_snow_text);
-      lastSnowText = (TextView) findViewById(R.id.last_snow_text);
-
+      
       // if this is the first creation, the user is not logged
       // otherwise get the saved state
       if (savedInstanceState == null)
          logged = false;
       else
          logged = savedInstanceState.getBoolean("logged");
+
 
       // if the user is logged in show the logout button,
       // else show the username/password and login password

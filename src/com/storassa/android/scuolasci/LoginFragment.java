@@ -11,262 +11,254 @@ import java.util.concurrent.Executors;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 public class LoginFragment extends Fragment implements HttpResultCallable {
 
-	String responseString = "";
-	int responseCode;
-	int counter = 0;
-	String username, password;
+   String responseString = "";
+   int responseCode;
+   int counter = 0;
+   String username, password;
 
-	String urlParameters;
-	HttpURLConnection connection;
-	CookieManager cookieManager;
+   String urlParameters;
+   HttpURLConnection connection;
+   CookieManager cookieManager;
 
-	// get storage info
-	SharedPreferences settings;
+   // get storage info
+   SharedPreferences settings;
 
-	// login info already get
-	boolean loginInfoAvailable = false;
+   // login info already get
+   boolean loginInfoAvailable = false;
 
-	// views and activities
-	TextView usernameView;
-	TextView passwordView;
-	Button loginBtn;
-	MainActivity parentActivity;
-	View result;
+   // views and activities
+   TextView usernameView;
+   TextView passwordView;
+   CheckBox rememberMe;
+   CheckBox showPassword;
+   Button loginBtn;
+   MainActivity parentActivity;
+   View result;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-	   
-	   
-		// Inflate the layout for this fragment
-		result = inflater.inflate(R.layout.login_fragment, container, false);
+   @Override
+   public View onCreateView(LayoutInflater inflater, ViewGroup container,
+         Bundle savedInstanceState) {
 
-		settings = getActivity().getPreferences(0);
-		cookieManager = new CookieManager();
-		CookieHandler.setDefault(cookieManager);
+      // Inflate the layout for this fragment
+      result = inflater.inflate(R.layout.login_fragment, container, false);
 
-		// get the usarname and password views
-		usernameView = (TextView) result.findViewById(R.id.username_text);
-		passwordView = (TextView) result.findViewById(R.id.password_text);
+      settings = getActivity().getPreferences(0);
+      cookieManager = new CookieManager();
+      CookieHandler.setDefault(cookieManager);
 
-		// get the parent activity that fired this fragment
-		parentActivity = (MainActivity) getActivity();
+      // get the usarname and password views
+      usernameView = (TextView) result.findViewById(R.id.username_text);
+      passwordView = (TextView) result.findViewById(R.id.password_text);
+      rememberMe = (CheckBox) result.findViewById(R.id.rememberMe);
+      showPassword = (CheckBox) result.findViewById(R.id.show_password);
 
-		// get the login button view and set its OnClickListener
-		loginBtn = (Button) result.findViewById(R.id.login_button);
-		loginBtn.setOnClickListener(new View.OnClickListener() {
+      // get the parent activity that fired this fragment
+      parentActivity = (MainActivity) getActivity();
 
-			@Override
-			public void onClick(View v) {
+      showPassword.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+         
+         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+             // checkbox status is changed from uncheck to checked.
+             if (!isChecked) {
+                     // show password
+                 passwordView.setTransformationMethod(PasswordTransformationMethod.getInstance());
+             } else {
+                     // hide password
+                passwordView.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+             }
+         }
+     });
 
-				// set the URL params initial string
-				urlParameters = "task=signin&accion=signin";
+      // get the login button view and set its OnClickListener
+      loginBtn = (Button) result.findViewById(R.id.login_button);
+      loginBtn.setOnClickListener(new View.OnClickListener() {
 
-				// set the username
-				username = getUsername();
-				urlParameters += "&textBoxUsername=" + username;
+         @Override
+         public void onClick(View v) {
 
-				// set the password
-				password = getPassword();
-				urlParameters += "&textBoxPassword=" + password;
+            // set the URL params initial string
+            urlParameters = "task=signin&accion=signin";
 
-				urlParameters += "&buttonSubmit=";
+            // set the username
+            username = getUsername();
+            urlParameters += "&textBoxUsername=" + username;
 
-				// launch the thread to POST the server
-				ExecutorService exec = Executors.newCachedThreadPool();
-				exec.execute(new Runnable() {
+            // set the password
+            password = getPassword();
+            urlParameters += "&textBoxPassword=" + password;
 
-					@Override
-					public void run() {
-						sendLoginPost();
+            urlParameters += "&buttonSubmit=";
 
-					}
-				});
+            // launch the thread to POST the server
+            ExecutorService exec = Executors.newCachedThreadPool();
+            exec.execute(new Runnable() {
 
-				// Launch the timer that each REPETITION_TIME check the
-				// response
-				// code
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
+               @Override
+               public void run() {
+                  sendLoginPost();
 
-					@Override
-					public void run() {
+               }
+            });
 
-						checkCode(responseCode);
-						if (loginInfoAvailable)
-							this.cancel();
+            // Launch the timer that each REPETITION_TIME check the
+            // response
+            // code
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
 
-					} // run in TimerTask (new Runnable) definition
+               @Override
+               public void run() {
 
-				}, 0, REPETITION_TIME); // TimerTask
+                  checkCode(responseCode);
+                  if (loginInfoAvailable)
+                     this.cancel();
 
-			} // onClick in setOnClickListener(new View.OnClickListener())
-				// definition
+               } // run in TimerTask (new Runnable) definition
 
-		}); // setOnClickListener definition
+            }, 0, REPETITION_TIME); // TimerTask
 
-		return result;
-	}
+         } // onClick in setOnClickListener(new View.OnClickListener())
+           // definition
 
-	public static void main(String[] args) {
+      }); // setOnClickListener definition
 
-	}
+      return result;
+   }
 
-	private String getUsername() {
-		String result = "";
+   public static void main(String[] args) {
 
-		if (settings.getBoolean("remembered", true)) {
-			result = settings.getString("username", "");
-		} else {
-			result = String.valueOf(usernameView.getText());
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putBoolean("remembered", true).putString("username", result)
-					.commit();
-		}
+   }
 
-		return result;
-	}
+   private String getUsername() {
+      String result = "";
 
-	private String getPassword() {
-		String result = "";
+      if (settings.getBoolean("remembered", true)) {
+         result = settings.getString("username", "");
+      } else {
+         result = String.valueOf(usernameView.getText());
+         SharedPreferences.Editor editor = settings.edit();
+         editor.putBoolean("remembered", true).putString("username", result)
+               .commit();
+      }
 
-		if (settings.getBoolean("remembered", true)) {
-			result = settings.getString("password", "");
-		} else {
-			result = String.valueOf(passwordView.getText());
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putBoolean("remembered", true).putString("password", result)
-					.commit();
-		}
+      return result;
+   }
 
-		return result;
-	}
+   private String getPassword() {
+      String result = "";
 
-	private void checkCode(int code) {
-		// if the response code is 200, and there is no message
-		// that the password is incorrect
-		if (code == 200
-				&& responseString.indexOf("User or password incorrect") == -1) {
-			String[] availableButtons = getAvailBtn(responseString);
+      if (settings.getBoolean("remembered", true)) {
+         result = settings.getString("password", "");
+      } else {
+         result = String.valueOf(passwordView.getText());
+         SharedPreferences.Editor editor = settings.edit();
+         editor.putBoolean("remembered", true).putString("password", result)
+               .commit();
+      }
 
-			// set availability to true to cancel the timer
-			loginInfoAvailable = true;
+      return result;
+   }
 
-			// wait WAITING_TICKS * REPETITION_TIME mseconds to receive
-			// 303
+   private void checkCode(int code) {
+      // if the response code is 200, and there is no message
+      // that the password is incorrect
+      if (code == 200
+            && responseString.indexOf("User or password incorrect") == -1) {
+         String[] availableButtons = getAvailBtn(responseString);
 
-		} else if (counter < WAITING_TICKS) {
-			counter++;
+         // set availability to true to cancel the timer
+         loginInfoAvailable = true;
 
-			// if the response code is 200, the password is incorrect
-		} else {
+         // register username and password, if requested
+         settings = parentActivity.getPreferences(0);
+         if (rememberMe.isChecked()) {
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean("remembered", true)
+               .putString("username", usernameView.getText().toString())
+               .putString("password", passwordView.getText().toString())
+               .commit();
+         }
 
-			// set availability to true to cancel the timer
-			loginInfoAvailable = true;
+         // wait WAITING_TICKS * REPETITION_TIME mseconds to receive
+         // 303
 
-			parentActivity.runOnUiThread(new Runnable() {
+      } else if (counter < WAITING_TICKS) {
+         counter++;
 
-				@Override
-				public void run() {
-					CommonHelper.exitMessage("Login",
-							R.string.http_issue_dialog_title, parentActivity);
-				} // run
-			}); // Runnable
-		} // else
+         // if the response code is 200, the password is incorrect
+      } else {
 
-	}
+         // set availability to true to cancel the timer
+         loginInfoAvailable = true;
 
-	@Override
-	public void resultAvailable(String[] result) {
+         parentActivity.runOnUiThread(new Runnable() {
 
-		responseCode = Integer.parseInt(result[0]);
-		responseString = result[1];
-		System.out.print(responseCode);
-		System.out.println(":" + responseString);
-	}
+            @Override
+            public void run() {
+               CommonHelper.exitMessage("Login",
+                     R.string.http_issue_dialog_title, parentActivity);
+            } // run
+         }); // Runnable
+      } // else
 
-	private void sendLoginPost() {
+   }
 
-		HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
-		helper.openConnection(this, username, password);
+   @Override
+   public void resultAvailable(String[] result) {
 
-		// // set the URL
-		// final String params = urlParameters;
-		// final URL url;
-		//
-		// try {
-		// url = new URL(SIGNING_URL);
-		// } catch (MalformedURLException e1) {
-		// e1.printStackTrace();
-		// throw new RuntimeException(e1);
-		// }
-		//
-		// try {
-		// connection = (HttpURLConnection) url.openConnection();
-		// connection.setDoOutput(true);
-		// connection.setDoInput(true);
-		// connection.setInstanceFollowRedirects(true);
-		// connection.setRequestMethod("POST");
-		// connection.setRequestProperty("Content-Type",
-		// "application/x-www-form-urlencoded");
-		// connection.setRequestProperty("charset", "utf-8");
-		// connection.setRequestProperty("Content-Length", ""
-		// + Integer.toString(params.getBytes().length));
-		// connection.setUseCaches(false);
-		//
-		// DataOutputStream wr = new DataOutputStream(connection
-		// .getOutputStream());
-		// wr.writeBytes(params);
-		// wr.flush();
-		// wr.close();
-		// BufferedInputStream in = new BufferedInputStream(connection
-		// .getInputStream());
-		//
-		// responseCode = connection.getResponseCode();
-		// java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
-		// responseString = s.hasNext() ? s.next() : "";
-		//
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// throw new RuntimeException(e);
-		// }
-	}
+      responseCode = Integer.parseInt(result[0]);
+      responseString = result[1];
+      System.out.print(responseCode);
+      System.out.println(":" + responseString);
+   }
 
-	private String[] getAvailBtn(String response) {
-		String temp = response;
-		// TODO set the correct maximum index
-		String[] result = new String[10];
-		int index = 0, start, end;
-		boolean endOfString = false;
+   private void sendLoginPost() {
 
-		while (!endOfString) {
-			start = temp.indexOf("txt18");
-			temp = temp.substring(start + 1);
+      HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+      helper.openConnection(this, username, password);
 
-			end = temp.indexOf("<");
-			result[index++] = temp.substring(6, end);
+   }
 
-			if (temp.indexOf("p>") < temp.indexOf("txt18")
-					|| (temp.indexOf("txt18") == -1)) {
-				endOfString = true;
-			}
-		}
+   private String[] getAvailBtn(String response) {
+      String temp = response;
+      // TODO set the correct maximum index
+      String[] result = new String[10];
+      int index = 0, start, end;
+      boolean endOfString = false;
 
-		return result;
-	}
+      while (!endOfString) {
+         start = temp.indexOf("txt18");
+         temp = temp.substring(start + 1);
 
-	private final static String CHARSET = "ISO-8859-1";
-	private final static int REPETITION_TIME = 1000;
-	private final static int WAITING_TICKS = 40;
-	private final static String SIGNING_URL = "http://www.scuolascilimone.com/it/area-riservata/access/signin";
-	// private final static String SIGNING_URL = "155.132.54.41";
+         end = temp.indexOf("<");
+         result[index++] = temp.substring(6, end);
+
+         if (temp.indexOf("p>") < temp.indexOf("txt18")
+               || (temp.indexOf("txt18") == -1)) {
+            endOfString = true;
+         }
+      }
+
+      return result;
+   }
+
+   private final static String CHARSET = "ISO-8859-1";
+   private final static int REPETITION_TIME = 1000;
+   private final static int WAITING_TICKS = 40;
+   private final static String SIGNING_URL = "http://www.scuolascilimone.com/it/area-riservata/access/signin";
+   // private final static String SIGNING_URL = "155.132.54.41";
 
 }

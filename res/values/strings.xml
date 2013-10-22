@@ -7,5 +7,6 @@
     <string name="limone_latitude">44.2013202</string>
     <string name="limone_longitude">7.576090300000033</string>
     <string name="remember_me">Ricordami</string>
+    <string name="view_password">Mostra password</string>
 
 </resources>
