@@ -19,138 +19,167 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpConnectionHelper {
-	static HttpConnectionHelper helper;
-	HttpURLConnection connection;
-	HttpClient httpClient;
-	CookieManager cookieManager;
-	String[] result;
-	
-	private HttpConnectionHelper() {
-		cookieManager = new CookieManager();
-		CookieHandler.setDefault(cookieManager);
-	}
+   static HttpConnectionHelper helper;
+   HttpURLConnection connection;
+   HttpClient httpClient;
+   CookieManager cookieManager;
+   String[] result;
+   boolean infoAvailable;
 
-	public static HttpConnectionHelper getHelper() {
-		if (helper == null)
-			helper = new HttpConnectionHelper();
+   private HttpConnectionHelper() {
+      cookieManager = new CookieManager();
+      CookieHandler.setDefault(cookieManager);
+   }
 
-		return helper;
-	}
+   public static HttpConnectionHelper getHelper() {
+      if (helper == null)
+         helper = new HttpConnectionHelper();
 
-	public void openConnection(final HttpResultCallable callable, String username, String password) {
+      return helper;
+   }
 
-		result = new String[2];
-		String urlParameters = "task=signin&accion=signin&textBoxUsername=";
-		urlParameters += username;
-		urlParameters += "&textBoxPassword=";
-		urlParameters += password + "&buttonSubmit=";
-		final String params = urlParameters;
-		final URL url;
-		try {
-			url = new URL(
-					"http://www.scuolascilimone.com/it/area-riservata/access/signin");
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-			throw new RuntimeException(e1);
-		}
+   public void openConnection(final HttpResultCallable callable,
+         String username, String password) {
 
-		ExecutorService exec = Executors.newCachedThreadPool();
-		exec.execute(new Runnable() {
+      result = new String[2];
+      String urlParameters = "task=signin&accion=signin&textBoxUsername=";
+      urlParameters += username;
+      urlParameters += "&textBoxPassword=";
+      urlParameters += password + "&buttonSubmit=";
+      final String params = urlParameters;
+      final URL url;
+      try {
+         url = new URL(
+               "http://www.scuolascilimone.com/it/area-riservata/access/signin");
+      } catch (MalformedURLException e1) {
+         e1.printStackTrace();
+         throw new RuntimeException(e1);
+      }
 
-			@Override
-			public void run() {
-				try {
-					HttpURLConnection connection = (HttpURLConnection) url
-							.openConnection();
-					connection.setDoOutput(true);
-					connection.setDoInput(true);
-					connection.setInstanceFollowRedirects(false);
-					connection.setRequestMethod("POST");
-					connection.setRequestProperty("Content-Type",
-							"application/x-www-form-urlencoded");
-					connection.setRequestProperty("charset", "utf-8");
-					connection.setRequestProperty("Content-Length", ""
-							+ Integer.toString(params.getBytes().length));
-					connection.setUseCaches(false);
+      ExecutorService exec = Executors.newCachedThreadPool();
+      exec.execute(new Runnable() {
 
-					DataOutputStream wr = new DataOutputStream(connection
-							.getOutputStream());
-					wr.writeBytes(params);
-					wr.flush();
-					wr.close();
-					connection.connect();
-					BufferedInputStream in = new BufferedInputStream(connection
-							.getInputStream());
-					int responseCode = connection.getResponseCode();
-					
-					while (responseCode == 303) {
-						
-						String urlString = connection.getHeaderField("Location");
-						URL redirectedUrl = new URL(urlString);
-						connection = (HttpURLConnection) redirectedUrl
-								.openConnection();
-						connection.setDoOutput(true);
-						connection.setDoInput(true);
-						connection.setInstanceFollowRedirects(false);
-						connection.setRequestMethod("GET");
-						connection.setRequestProperty("Content-Type",
-								"application/x-www-form-urlencoded");
-						connection.setRequestProperty("charset", "utf-8");
-						connection.setUseCaches(false);
+         @Override
+         public void run() {
+            try {
+               HttpURLConnection connection = (HttpURLConnection) url
+                     .openConnection();
+               connection.setDoOutput(true);
+               connection.setDoInput(true);
+               connection.setInstanceFollowRedirects(false);
+               connection.setRequestMethod("POST");
+               connection.setRequestProperty("Content-Type",
+                     "application/x-www-form-urlencoded");
+               connection.setRequestProperty("charset", "utf-8");
+               connection.setRequestProperty("Content-Length", ""
+                     + Integer.toString(params.getBytes().length));
+               connection.setUseCaches(false);
 
-						connection.connect();
-						responseCode = connection.getResponseCode();
-					}
-					
-					final int finalResponseCode = responseCode;
+               DataOutputStream wr = new DataOutputStream(connection
+                     .getOutputStream());
+               wr.writeBytes(params);
+               wr.flush();
+               wr.close();
+               connection.connect();
+               BufferedInputStream in = new BufferedInputStream(connection
+                     .getInputStream());
+               int responseCode = connection.getResponseCode();
 
-					in = new BufferedInputStream(connection
-							.getInputStream());
+               while (responseCode == 303) {
 
-					java.util.Scanner s = new java.util.Scanner(in)
-							.useDelimiter("\\A");
+                  String urlString = connection.getHeaderField("Location");
+                  URL redirectedUrl = new URL(urlString);
+                  connection = (HttpURLConnection) redirectedUrl
+                        .openConnection();
+                  connection.setDoOutput(true);
+                  connection.setDoInput(true);
+                  connection.setInstanceFollowRedirects(false);
+                  connection.setRequestMethod("GET");
+                  connection.setRequestProperty("Content-Type",
+                        "application/x-www-form-urlencoded");
+                  connection.setRequestProperty("charset", "utf-8");
+                  connection.setUseCaches(false);
 
-					StringBuilder builder = new StringBuilder();
-					while (s.hasNext())
-						builder.append(s.next());
+                  connection.connect();
+                  responseCode = connection.getResponseCode();
+               }
 
-					result[0] = Integer.toString(finalResponseCode);
-					result[1] = builder.toString();
-					
-					callable.resultAvailable(result);
+               final int finalResponseCode = responseCode;
 
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				} finally {
-//					connection.disconnect();
-				}
+               in = new BufferedInputStream(connection.getInputStream());
 
-			}
-		});
-	}
+               java.util.Scanner s = new java.util.Scanner(in)
+                     .useDelimiter("\\A");
 
-	public String openGenericConnection(String localUrl)
-			throws ClientProtocolException, IOException {
-		httpClient = new DefaultHttpClient();
-		try {
-			HttpGet httpget = new HttpGet(localUrl);
+               StringBuilder builder = new StringBuilder();
+               while (s.hasNext())
+                  builder.append(s.next());
 
-			// Create a response handler
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String responseBody = httpClient.execute(httpget, responseHandler);
+               result[0] = Integer.toString(finalResponseCode);
+               result[1] = builder.toString();
 
-			return responseBody;
+               callable.resultAvailable(result);
+               infoAvailable = true;
 
-		} finally {
-			// When HttpClient instance is no longer needed,
-			// shut down the connection manager to ensure
-			// immediate deallocation of all system resources
-			httpClient.getConnectionManager().shutdown();
-		}
-	}
+            } catch (IOException e) {
+               throw new RuntimeException(e);
+            } finally {
+               // connection.disconnect();
+            }
 
-	public HttpClient getGenericClient() {
-		return httpClient;
-	}
+         }
+      });
+   }
+
+   public String openGenericConnection(String localUrl)
+         throws ClientProtocolException, IOException {
+      httpClient = new DefaultHttpClient();
+      try {
+         HttpGet httpget = new HttpGet(localUrl);
+
+         // Create a response handler
+         ResponseHandler<String> responseHandler = new BasicResponseHandler();
+         String responseBody = httpClient.execute(httpget, responseHandler);
+
+         return responseBody;
+
+      } finally {
+         // When HttpClient instance is no longer needed,
+         // shut down the connection manager to ensure
+         // immediate deallocation of all system resources
+         httpClient.getConnectionManager().shutdown();
+      }
+   }
+
+   public HttpClient getGenericClient() {
+      return httpClient;
+   }
+   
+   public boolean infoAvailable() {
+      return infoAvailable;
+   }
+
+   private String[] getAvailBtn(String response) {
+      String temp = response;
+      // TODO set the correct maximum index
+      String[] result = new String[10];
+      int index = 0, start, end;
+      boolean endOfString = false;
+
+      while (!endOfString) {
+         start = temp.indexOf("txt18");
+         temp = temp.substring(start + 1);
+
+         end = temp.indexOf("<");
+         result[index++] = temp.substring(6, end);
+
+         if (temp.indexOf("p>") < temp.indexOf("txt18")
+               || (temp.indexOf("txt18") == -1)) {
+            endOfString = true;
+         }
+      }
+
+      return result;
+   }
 
 }

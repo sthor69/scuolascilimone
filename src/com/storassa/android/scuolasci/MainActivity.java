@@ -196,7 +196,7 @@ public class MainActivity extends Activity implements HttpResultCallable{
          }
          ft.replace(R.id.login_place, new LoggedFragment()).commit();
       } else {
-         ft.replace(R.id.login_place, new LoginFragment()).commit();
+         ft.replace(R.id.login_place, new MainButtonFragment()).commit();
       }
       logged = !logged;
    }

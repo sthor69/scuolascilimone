@@ -2,7 +2,6 @@ package com.storassa.android.scuolasci;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.HttpURLConnection;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -30,8 +29,8 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
    String username, password;
 
    String urlParameters;
-   HttpURLConnection connection;
    CookieManager cookieManager;
+   HttpConnectionHelper helper;
 
    // get storage info
    SharedPreferences settings;
@@ -116,15 +115,27 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
             // Launch the timer that each REPETITION_TIME check the
             // response
             // code
+            counter = 0;
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
 
                @Override
                public void run() {
 
-                  checkCode(responseCode);
-                  if (loginInfoAvailable)
+                  if (counter < WAITING_TICKS && !helper.infoAvailable())
+                     counter++;
+                  else if (counter == WAITING_TICKS)
                      this.cancel();
+                  else {
+                     parentActivity.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                           CommonHelper.exitMessage("Login",
+                                 R.string.http_issue_dialog_title, parentActivity);
+                        } // run
+                     }); // Runnable
+                  } // else
 
                } // run in TimerTask (new Runnable) definition
 
@@ -172,49 +183,48 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
       return result;
    }
 
-   private void checkCode(int code) {
-      // if the response code is 200, and there is no message
-      // that the password is incorrect
-      if (code == 200
-            && responseString.indexOf("User or password incorrect") == -1) {
-         String[] availableButtons = getAvailBtn(responseString);
-
-         // set availability to true to cancel the timer
-         loginInfoAvailable = true;
-
-         // register username and password, if requested
-         settings = parentActivity.getPreferences(0);
-         if (rememberMe.isChecked()) {
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putBoolean("remembered", true)
-               .putString("username", usernameView.getText().toString())
-               .putString("password", passwordView.getText().toString())
-               .commit();
-         }
-
-         // wait WAITING_TICKS * REPETITION_TIME mseconds to receive
-         // 303
-
-      } else if (counter < WAITING_TICKS) {
-         counter++;
-
-         // if the response code is 200, the password is incorrect
-      } else {
-
-         // set availability to true to cancel the timer
-         loginInfoAvailable = true;
-
-         parentActivity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-               CommonHelper.exitMessage("Login",
-                     R.string.http_issue_dialog_title, parentActivity);
-            } // run
-         }); // Runnable
-      } // else
-
-   }
+//   private void checkCode(int code) {
+//      // if the response code is 200, and there is no message
+//      // that the password is incorrect
+//      if (code == 200
+//            && responseString.indexOf("User or password incorrect") == -1) {
+//
+//         // set availability to true to cancel the timer
+//         loginInfoAvailable = true;
+//
+//         // register username and password, if requested
+//         settings = parentActivity.getPreferences(0);
+//         if (rememberMe.isChecked()) {
+//            SharedPreferences.Editor editor = settings.edit();
+//            editor.putBoolean("remembered", true)
+//               .putString("username", usernameView.getText().toString())
+//               .putString("password", passwordView.getText().toString())
+//               .commit();
+//         }
+//
+//         // wait WAITING_TICKS * REPETITION_TIME mseconds to receive
+//         // 303
+//
+//      } else if (counter < WAITING_TICKS) {
+//         counter++;
+//
+//         // if the response code is 200, the password is incorrect
+//      } else {
+//
+//         // set availability to true to cancel the timer
+//         loginInfoAvailable = true;
+//
+//         parentActivity.runOnUiThread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//               CommonHelper.exitMessage("Login",
+//                     R.string.http_issue_dialog_title, parentActivity);
+//            } // run
+//         }); // Runnable
+//      } // else
+//
+//   }
 
    @Override
    public void resultAvailable(String[] result) {
@@ -227,33 +237,11 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
 
    private void sendLoginPost() {
 
-      HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+      helper = HttpConnectionHelper.getHelper();
       helper.openConnection(this, username, password);
 
    }
 
-   private String[] getAvailBtn(String response) {
-      String temp = response;
-      // TODO set the correct maximum index
-      String[] result = new String[10];
-      int index = 0, start, end;
-      boolean endOfString = false;
-
-      while (!endOfString) {
-         start = temp.indexOf("txt18");
-         temp = temp.substring(start + 1);
-
-         end = temp.indexOf("<");
-         result[index++] = temp.substring(6, end);
-
-         if (temp.indexOf("p>") < temp.indexOf("txt18")
-               || (temp.indexOf("txt18") == -1)) {
-            endOfString = true;
-         }
-      }
-
-      return result;
-   }
 
    private final static String CHARSET = "ISO-8859-1";
    private final static int REPETITION_TIME = 1000;
