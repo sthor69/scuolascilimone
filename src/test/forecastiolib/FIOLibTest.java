@@ -12,6 +12,7 @@ public class FIOLibTest {
 	private static final String apikey = "YOUR_API_KEY";
 	  	   
 	public static void main(String[] args) {
+	   
 	
 		//Some coordinates for testing
 		//Lisbon:   38.7252993 , -9.1500364

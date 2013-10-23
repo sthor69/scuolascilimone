@@ -19,12 +19,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements HttpResultCallable{
+public class MainActivity extends Activity implements HttpResultCallable {
 
    FragmentManager fm;
    boolean logged = false;
@@ -34,9 +33,6 @@ public class MainActivity extends Activity implements HttpResultCallable{
    private BroadcastReceiver networkChangeReceiver;
    String username, password;
 
-   // buttons
-   Button bookBtn, newsBtn, contactBtn;
-
    // get storage info
    SharedPreferences settings;
 
@@ -44,19 +40,24 @@ public class MainActivity extends Activity implements HttpResultCallable{
    double minSnow, maxSnow;
    String lastSnow;
    TextView minSnowText, maxSnowText, lastSnowText;
+   FrameLayout fl;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
       setContentView(R.layout.activity_main);
+
+      // define a new default uncaught Exception handler, in order to point to
+      // the one
+      // connected to GitHub
       
-      // define a new default uncaught Exception handler, in order to point to the one
-      //connected to GitHub
+      /*
       if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof DefaultExceptionHandler)) {
          Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(
                Thread.getDefaultUncaughtExceptionHandler()));
-      }
+      } 
+      */
 
       // define the cookie manager to perform http requests
       CookieManager cookieManager = new CookieManager();
@@ -67,10 +68,19 @@ public class MainActivity extends Activity implements HttpResultCallable{
       if (settings.getBoolean("remembered", false) == true) {
          username = settings.getString("username", "");
          password = settings.getString("password", "");
+
+         HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+         helper.openConnection(this, username, password);
       }
-      SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean("remembered", true).putString("username", "larapic")
-            .putString("password", "gualano").commit();
+      
+      fl = (FrameLayout)findViewById(R.id.login_place);
+      fl.addView(new ProgressBar(this));
+      
+      // TODO remove in production code
+
+      // SharedPreferences.Editor editor = settings.edit();
+      // editor.putBoolean("remembered", true).putString("username", "larapic")
+      // .putString("password", "gualano").commit();
 
       // initialize variables
       dataEnabled = false;
@@ -78,55 +88,19 @@ public class MainActivity extends Activity implements HttpResultCallable{
       minSnowText = (TextView) findViewById(R.id.min_snow_text);
       maxSnowText = (TextView) findViewById(R.id.max_snow_text);
       lastSnowText = (TextView) findViewById(R.id.last_snow_text);
-      bookBtn = (Button) findViewById(R.id.lesson_button);
-      newsBtn = (Button) findViewById(R.id.news_button);
-      contactBtn = (Button) findViewById(R.id.home_button);
-
-
-      // book button click
-      bookBtn.setOnClickListener(new View.OnClickListener() {
-
-         @Override
-         public void onClick(View arg0) {
-            // TODO Auto-generated method stub
-
-         }
-      });
-
-      // news button click
-      newsBtn.setOnClickListener(new View.OnClickListener() {
-
-         @Override
-         public void onClick(View arg0) {
-            // TODO Auto-generated method stub
-
-         }
-      });
-
-      // contact button click
-      contactBtn.setOnClickListener(new View.OnClickListener() {
-
-         @Override
-         public void onClick(View arg0) {
-            // TODO Auto-generated method stub
-
-         }
-      });
 
       // add the receiver for data availability
       addNetworkChangeReceiver();
-      
+
       // if this is the first creation, the user is not logged
       // otherwise get the saved state
-      if (savedInstanceState == null)
-         logged = false;
-      else
-         logged = savedInstanceState.getBoolean("logged");
-
+      // if (savedInstanceState == null)
+      // logged = false;
+      // else
+      // logged = savedInstanceState.getBoolean("logged");
 
       // if the user is logged in show the logout button,
       // else show the username/password and login password
-      switchLoginFragment();
 
       checkDataAvailable();
       if (dataAvailable) {
@@ -137,6 +111,14 @@ public class MainActivity extends Activity implements HttpResultCallable{
          getSnowReport();
       }
 
+   }
+
+   protected void setLogged(boolean _logged) {
+      logged = _logged;
+   }
+
+   protected boolean isLogged() {
+      return logged;
    }
 
    @Override
@@ -208,7 +190,6 @@ public class MainActivity extends Activity implements HttpResultCallable{
    public void setLoginStatus(boolean status) {
       logged = status;
    }
-
 
    /*
     * ------------ PRIVATE METHODS ------------
@@ -370,10 +351,26 @@ public class MainActivity extends Activity implements HttpResultCallable{
    private static final int REPETITION_TIME = 1000;
    private static final int WAITING_TICKS = 10;
 
-@Override
-public void resultAvailable(String[] result) {
-	// TODO Auto-generated method stub
-	
-}
+   //when the user is connected show the buttons
+   @Override
+   public void resultAvailable(String[] result) {
+      setLogged(true);
+      
+      // remove the progress bar
+      fm = getFragmentManager();
+      
+      runOnUiThread(new Runnable() {
+
+         @Override
+         public void run() {
+            fl.removeAllViews();
+            
+         }});
+      
+      // add the buttons
+      FragmentTransaction ft = fm.beginTransaction();
+      ft.replace(R.id.login_place, new MainButtonFragment()).commit();
+
+   }
 
 }

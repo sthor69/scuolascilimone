@@ -9,18 +9,51 @@
     <LinearLayout
         android:id="@+id/intro_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal" >
 
         <FrameLayout
             android:id="@+id/login_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1" 
+            android:layout_gravity="center_vertical"/>
 
-        <LinearLayout
-            android:id="@+id/snow_image"
+        <ImageView
+            android:id="@+id/intro_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/skier" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:background="@color/blue"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+    <LinearLayout
+        android:id="@+id/snow_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/snow_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:text="@string/snow_title" />
+
+        <LinearLayout
+            android:id="@+id/snow_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical" >
 
@@ -41,15 +74,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meteo_list_last_snow_label" />
-
-            <ImageView
-                android:id="@+id/intro_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@drawable/skier" />
         </LinearLayout>
     </LinearLayout>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:background="@color/blue"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+    <!--
     <LinearLayout
         android:id="@+id/tabs"
         style="?android:attr/buttonBarStyle"
@@ -88,7 +123,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/register" />
+    
     </LinearLayout>
+    
+    -->
 
     <FrameLayout
         android:id="@+id/meteo_list_placeholder"

@@ -51,5 +51,8 @@
     <string name="meteo_list_restriction">Le previsioni orarie sono disponibili solo per le prime 48h</string>
     <string name="warning">Attenzione!</string>
     <string name="title_activity_meteo">Previsioni orarie</string>
+    <string name="instructor">Maestri</string>
+    <string name="logout">Esci</string>
+    <string name="snow_title">Condizioni neve</string>
 
 </resources>
