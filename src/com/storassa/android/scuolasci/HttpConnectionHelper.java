@@ -43,6 +43,9 @@ public class HttpConnectionHelper {
          String username, String password) {
 
       result = new String[2];
+      // TODO add the maximum number
+      features = new Feature[10];
+
       String urlParameters = "task=signin&accion=signin&textBoxUsername=";
       urlParameters += username;
       urlParameters += "&textBoxPassword=";
@@ -119,11 +122,24 @@ public class HttpConnectionHelper {
                result[0] = Integer.toString(finalResponseCode);
                result[1] = builder.toString();
 
-               callable.resultAvailable(result);
+               int count = 0;
+               String[] featureString = getAvailBtn(result[1]);
+               for (String f : featureString) {
+                  if (f != null) {
+                     if (f.equals("Racing Team"))
+                        features[count++] = Feature.RACING_TEAM;
+                     else if (f.equals("Scuderia"))
+                        features[count++] = Feature.SCUDERIA;
+                     else if (f.equals("Instructor"))
+                        features[count++] = Feature.INSTRUCTOR;
+                  }
+               }
+
+               callable.resultAvailable(result, features);
                infoAvailable = true;
 
             } catch (IOException e) {
-               throw new RuntimeException(e);
+               callable.resultAvailable(null, features);;
             } finally {
                // connection.disconnect();
             }
@@ -142,17 +158,6 @@ public class HttpConnectionHelper {
          ResponseHandler<String> responseHandler = new BasicResponseHandler();
          String responseBody = httpClient.execute(httpget, responseHandler);
 
-         int count = 0;
-         String[] featureString = getAvailBtn(responseBody);
-         for (String f : featureString) {
-        	 if (f.equals("Racing Team"))
-        		 features[count++] = Feature.RACING_TEAM;
-        	 else if (f.equals("Scuderia"))
-        		 features[count++] = Feature.SCUDERIA;
-        	 else if (f.equals("Instructor"))
-        		 features[count++] = Feature.INSTRUCTOR;        		 
-         }
-         
          return responseBody;
 
       } finally {
@@ -166,10 +171,11 @@ public class HttpConnectionHelper {
    public HttpClient getGenericClient() {
       return httpClient;
    }
-   
+
    public Feature[] getFeature() {
-	   return features;
+      return features;
    }
+
    public boolean infoAvailable() {
       return infoAvailable;
    }

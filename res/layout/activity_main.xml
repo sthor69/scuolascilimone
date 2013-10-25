@@ -6,25 +6,69 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <HorizontalScrollView
-        android:id="@+id/button_scrollview"
+    <LinearLayout
+        android:id="@+id/button_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp" 
+        android:layout_weight="0.1">
 
-        <FrameLayout
-            android:id="@+id/login_place"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
-        
-    </HorizontalScrollView>
+        <Button
+            android:id="@+id/login_logout_btn"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="@string/login" 
+            android:layout_weight="1">
+        </Button>
+
+        <Button
+            android:id="@+id/booking"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="@string/booking" 
+            android:layout_weight="1">
+
+        </Button>
+
+        <Button
+            android:id="@+id/racing_team_btn"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="Racing Team" 
+            android:layout_weight="1">
+        </Button>
+
+        <Button
+            android:id="@+id/scuderia_btn"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="Scuderia"
+            android:layout_weight="1">
+        </Button>
+
+        <Button
+            android:id="@+id/instructor_btn"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="@string/instructor" 
+            android:layout_weight="1">
+        </Button>
+    </LinearLayout>
 
     <HorizontalScrollView
         android:id="@+id/ads_scrollview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-    </HorizontalScrollView>    
-    
+        android:layout_height="0dp" 
+        android:layout_weight="0.3">
+
+        <LinearLayout
+            android:id="@+id/ads_container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" 
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical">
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dip"
@@ -35,8 +79,9 @@
     <LinearLayout
         android:id="@+id/snow_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_height="0dp"
+        android:orientation="horizontal" 
+        android:layout_weight="0.15">
 
         <TextView
             android:id="@+id/snow_title"
@@ -119,15 +164,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/register" />
-    
+            android:text="@string/register" />
     -->
 
     <FrameLayout
         android:id="@+id/meteo_list_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.4" />
 
 </LinearLayout>

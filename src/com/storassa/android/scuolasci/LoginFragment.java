@@ -227,7 +227,7 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
 //   }
 
    @Override
-   public void resultAvailable(String[] result) {
+   public void resultAvailable(String[] result, Feature[] f) {
 
       responseCode = Integer.parseInt(result[0]);
       responseString = result[1];

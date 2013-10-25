@@ -22,8 +22,8 @@ public class LoggedFragment extends Fragment {
             
             @Override
             public void onClick(View v) {
-                ((MainActivity)parentActivity).switchLoginFragment();
-            }
+//
+               }
         });
         
         return result;

@@ -39,11 +39,11 @@ public class MainButtonFragment extends Fragment {
 		public void run() {
 		      for (Feature f : features) {
 		    	  if (f.equals(Feature.SCUDERIA)) {
-		    		  parentActivity.scuderia.setEnabled(true);
+		    		  parentActivity.scuderiaBtn.setEnabled(true);
 		    	  } else if (f.equals(Feature.RACING_TEAM)) {
-		    		  parentActivity.racing.setEnabled(true);
+		    		  parentActivity.racingBtn.setEnabled(true);
 		    	  } else if (f.equals(Feature.INSTRUCTOR)) {
-		    		  parentActivity.instructor.setEnabled(true);
+		    		  parentActivity.instructorBtn.setEnabled(true);
 		    	  }
 		    		  
 		      }
