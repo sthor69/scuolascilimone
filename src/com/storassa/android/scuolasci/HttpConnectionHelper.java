@@ -25,6 +25,7 @@ public class HttpConnectionHelper {
    CookieManager cookieManager;
    String[] result;
    boolean infoAvailable;
+   Feature[] features;
 
    private HttpConnectionHelper() {
       cookieManager = new CookieManager();
@@ -141,6 +142,17 @@ public class HttpConnectionHelper {
          ResponseHandler<String> responseHandler = new BasicResponseHandler();
          String responseBody = httpClient.execute(httpget, responseHandler);
 
+         int count = 0;
+         String[] featureString = getAvailBtn(responseBody);
+         for (String f : featureString) {
+        	 if (f.equals("Racing Team"))
+        		 features[count++] = Feature.RACING_TEAM;
+        	 else if (f.equals("Scuderia"))
+        		 features[count++] = Feature.SCUDERIA;
+        	 else if (f.equals("Instructor"))
+        		 features[count++] = Feature.INSTRUCTOR;        		 
+         }
+         
          return responseBody;
 
       } finally {
@@ -155,6 +167,9 @@ public class HttpConnectionHelper {
       return httpClient;
    }
    
+   public Feature[] getFeature() {
+	   return features;
+   }
    public boolean infoAvailable() {
       return infoAvailable;
    }

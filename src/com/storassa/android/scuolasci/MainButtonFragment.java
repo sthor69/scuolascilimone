@@ -30,6 +30,27 @@ public class MainButtonFragment extends Fragment {
       else
          loginBtn.setText(R.string.login);
       
+      HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+      final Feature[] features = helper.getFeature();
+      
+      parentActivity.runOnUiThread(new Runnable() {
+
+		@Override
+		public void run() {
+		      for (Feature f : features) {
+		    	  if (f.equals(Feature.SCUDERIA)) {
+		    		  parentActivity.scuderia.setEnabled(true);
+		    	  } else if (f.equals(Feature.RACING_TEAM)) {
+		    		  parentActivity.racing.setEnabled(true);
+		    	  } else if (f.equals(Feature.INSTRUCTOR)) {
+		    		  parentActivity.instructor.setEnabled(true);
+		    	  }
+		    		  
+		      }
+		}
+    	  
+      });
+      
       return result;
    }
 }

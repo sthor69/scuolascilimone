@@ -19,358 +19,381 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements HttpResultCallable {
 
-   FragmentManager fm;
-   boolean logged = false;
-   private int counter = 0;
-   boolean dataEnabled = false, dataAvailable = false;
-   String result = "";
-   private BroadcastReceiver networkChangeReceiver;
-   String username, password;
+	FragmentManager fm;
+	boolean logged = false;
+	private int counter = 0;
+	boolean dataEnabled = false, dataAvailable = false;
+	String result = "";
+	private BroadcastReceiver networkChangeReceiver;
+	String username, password;
 
-   // get storage info
-   SharedPreferences settings;
+	// get storage info
+	SharedPreferences settings;
 
-   // snow parameters and views
-   double minSnow, maxSnow;
-   String lastSnow;
-   TextView minSnowText, maxSnowText, lastSnowText;
-   FrameLayout fl;
+	// snow parameters and views
+	double minSnow, maxSnow;
+	String lastSnow;
+	TextView minSnowText, maxSnowText, lastSnowText;
+	FrameLayout fl;
+	Button racing, scuderia, instructor;
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
+	// the enabled buttons
+	Feature[] features;
 
-      setContentView(R.layout.activity_main);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-      // define a new default uncaught Exception handler, in order to point to
-      // the one
-      // connected to GitHub
-      
-      /*
-      if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof DefaultExceptionHandler)) {
-         Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(
-               Thread.getDefaultUncaughtExceptionHandler()));
-      } 
-      */
+		setContentView(R.layout.activity_main);
 
-      // define the cookie manager to perform http requests
-      CookieManager cookieManager = new CookieManager();
-      CookieHandler.setDefault(cookieManager);
+		// define a new default uncaught Exception handler, in order to point to
+		// the one
+		// connected to GitHub
 
-      // temporary debug: retrieve username and password
-      settings = getPreferences(0);
-      if (settings.getBoolean("remembered", false) == true) {
-         username = settings.getString("username", "");
-         password = settings.getString("password", "");
+		if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof DefaultExceptionHandler)) {
+			Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(
+					Thread.getDefaultUncaughtExceptionHandler()));
+		}
 
-         HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
-         helper.openConnection(this, username, password);
-      }
-      
-      fl = (FrameLayout)findViewById(R.id.login_place);
-      fl.addView(new ProgressBar(this));
-      
-      // TODO remove in production code
+		
+		// define the cookie manager to perform http requests
+		CookieManager cookieManager = new CookieManager();
+		CookieHandler.setDefault(cookieManager);
 
-      // SharedPreferences.Editor editor = settings.edit();
-      // editor.putBoolean("remembered", true).putString("username", "larapic")
-      // .putString("password", "gualano").commit();
+		// temporary debug: retrieve username and password
+		settings = getPreferences(0);
+		if (settings.getBoolean("remembered", false) == true) {
+			username = settings.getString("username", "");
+			password = settings.getString("password", "");
 
-      // initialize variables
-      dataEnabled = false;
-      dataAvailable = false;
-      minSnowText = (TextView) findViewById(R.id.min_snow_text);
-      maxSnowText = (TextView) findViewById(R.id.max_snow_text);
-      lastSnowText = (TextView) findViewById(R.id.last_snow_text);
+			HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+			helper.openConnection(this, username, password);
+			features = helper.getFeature();
+		}
 
-      // add the receiver for data availability
-      addNetworkChangeReceiver();
+		// put the progress bar before loading the buttons
+//		fl = (FrameLayout) findViewById(R.id.login_place);
+//		fl.addView(new ProgressBar(this));
 
-      // if this is the first creation, the user is not logged
-      // otherwise get the saved state
-      // if (savedInstanceState == null)
-      // logged = false;
-      // else
-      // logged = savedInstanceState.getBoolean("logged");
+		// TODO remove in production code
 
-      // if the user is logged in show the logout button,
-      // else show the username/password and login password
+		// SharedPreferences.Editor editor = settings.edit();
+		// editor.putBoolean("remembered", true).putString("username",
+		// "larapic")
+		// .putString("password", "gualano").commit();
 
-      checkDataAvailable();
-      if (dataAvailable) {
-         // get the meteo information, if data are available
-         getMeteoFragment();
+		// initialize variables (including views)
+		dataEnabled = false;
+		dataAvailable = false;		
+		setViewMember();
 
-         // if data are available get the snow report
-         getSnowReport();
-      }
+		// add the receiver for data availability
+		addNetworkChangeReceiver();
 
-   }
+		// if this is the first creation, the user is not logged
+		// otherwise get the saved state
+		// if (savedInstanceState == null)
+		// logged = false;
+		// else
+		// logged = savedInstanceState.getBoolean("logged");
 
-   protected void setLogged(boolean _logged) {
-      logged = _logged;
-   }
+		checkDataAvailable();
+		if (dataAvailable) {
+			// get the meteo information, if data are available
+			getMeteoFragment();
 
-   protected boolean isLogged() {
-      return logged;
-   }
+			// if data are available get the snow report
+			getSnowReport();
+		}
 
-   @Override
-   public void onSaveInstanceState(Bundle savedInstanceState) {
-      super.onSaveInstanceState(savedInstanceState);
+	}
 
-      savedInstanceState.putBoolean("logged", logged);
-   }
+	protected void setLogged(boolean _logged) {
+		logged = _logged;
+	}
 
-   @Override
-   public boolean onCreateOptionsMenu(Menu menu) {
-      // Inflate the menu; this adds items to the action bar if it is present.
-      getMenuInflater().inflate(R.menu.activity_main, menu);
-      return true;
-   }
+	protected boolean isLogged() {
+		return logged;
+	}
 
-   @Override
-   protected void onPause() {
-      super.onPause();
-      try {
-         // unregisterReceiver(networkChangeReceiver);
-      } catch (IllegalArgumentException e) {
-         e.printStackTrace();
-      }
-   }
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 
-   @Override
-   protected void onDestroy() {
-      super.onDestroy();
-      try {
-         unregisterReceiver(networkChangeReceiver);
-      } catch (IllegalArgumentException e) {
-         e.printStackTrace();
-      }
-   }
+		savedInstanceState.putBoolean("logged", logged);
+	}
 
-   @Override
-   protected void onResume() {
-      super.onResume();
-      try {
-         // registerReceiver(networkChangeReceiver, filter);
-      } catch (IllegalArgumentException e) {
-         e.printStackTrace();
-      }
-   }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
 
-   public void switchLoginFragment() {
-      fm = getFragmentManager();
-      FragmentTransaction ft = fm.beginTransaction();
-      ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-      if (logged) {
-         try {
-            HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
-            helper.openConnection(this, "larapic", "gualano");
-         } catch (Exception e) {
-            e.printStackTrace();
-         }
-         ft.replace(R.id.login_place, new LoggedFragment()).commit();
-      } else {
-         ft.replace(R.id.login_place, new MainButtonFragment()).commit();
-      }
-      logged = !logged;
-   }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		try {
+			// unregisterReceiver(networkChangeReceiver);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
 
-   public void setDataAvailable() {
-      dataAvailable = true;
-   }
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		try {
+			unregisterReceiver(networkChangeReceiver);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
 
-   public void setLoginStatus(boolean status) {
-      logged = status;
-   }
+	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			// registerReceiver(networkChangeReceiver, filter);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
 
-   /*
-    * ------------ PRIVATE METHODS ------------
-    */
+	public void switchLoginFragment() {
+		fm = getFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		if (logged) {
+			try {
+				HttpConnectionHelper helper = HttpConnectionHelper.getHelper();
+				helper.openConnection(this, "larapic", "gualano");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			ft.replace(R.id.login_place, new LoggedFragment()).commit();
+		} else {
+			ft.replace(R.id.login_place, new MainButtonFragment()).commit();
+		}
+		logged = !logged;
+	}
 
-   private void getMeteoFragment() {
+	public void setDataAvailable() {
+		dataAvailable = true;
+	}
 
-      // check that data is enabled on the device
-      // checkDataAvailable();
+	public void setLoginStatus(boolean status) {
+		logged = status;
+	}
 
-      // if device is connected to Internet update the meteo
-      if (dataAvailable) {
+	/*
+	 * ------------ PRIVATE METHODS ------------
+	 */
 
-         ExecutorService exec = Executors.newCachedThreadPool();
-         exec.execute(new Runnable() {
+	private void getMeteoFragment() {
 
-            @Override
-            public void run() {
-               try {
-                  fm = getFragmentManager();
-                  FragmentTransaction ft = fm.beginTransaction();
-                  ft.replace(R.id.meteo_list_placeholder, new MeteoFragment())
-                        .commitAllowingStateLoss();
-               } catch (Exception e) {
-                  e.printStackTrace();
-               }
-            }
-         });
-      }
-   }
+		// check that data is enabled on the device
+		// checkDataAvailable();
 
-   private void getSnowReport() {
+		// if device is connected to Internet update the meteo
+		if (dataAvailable) {
 
-      // reset the counter for the waiting period of http request
-      counter = 0;
+			ExecutorService exec = Executors.newCachedThreadPool();
+			exec.execute(new Runnable() {
 
-      // check that data is enabled on the device
-      // checkDataAvailable();
+				@Override
+				public void run() {
+					try {
+						fm = getFragmentManager();
+						FragmentTransaction ft = fm.beginTransaction();
+						ft.replace(R.id.meteo_list_placeholder,
+								new MeteoFragment()).commitAllowingStateLoss();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	}
 
-      // if device is connected to Internet update the meteo
-      if (dataAvailable) {
+	private void getSnowReport() {
 
-         // get the Weather2 web page
-         ExecutorService exec = Executors.newCachedThreadPool();
-         exec.execute(new Runnable() {
+		// reset the counter for the waiting period of http request
+		counter = 0;
 
-            @Override
-            public void run() {
-               try {
-                  HttpConnectionHelper helper = HttpConnectionHelper
-                        .getHelper();
-                  result = helper.openGenericConnection(WEATHER2_API);
-               } catch (Exception e) {
-                  e.printStackTrace();
-               }
-            }
-         });
+		// check that data is enabled on the device
+		// checkDataAvailable();
 
-         // wait for the http response or exit after WAITING_TICKS
-         Timer timer = new Timer();
-         timer.schedule(new TimerTask() {
+		// if device is connected to Internet update the meteo
+		if (dataAvailable) {
 
-            @Override
-            public void run() {
-               if (result != null) {
-                  // parse the result to get snow information
-                  ParseWeatherHelper whetherHelper = new ParseWeatherHelper(
-                        result);
-                  minSnow = whetherHelper.getMinSnow();
-                  maxSnow = whetherHelper.getMaxSnow();
-                  lastSnow = whetherHelper.getLastSnow();
+			// get the Weather2 web page
+			ExecutorService exec = Executors.newCachedThreadPool();
+			exec.execute(new Runnable() {
 
-                  // set the textviews for the snow info
-                  runOnUiThread(new Runnable() {
-                     public void run() {
-                        minSnowText.setText("Min snow: "
-                              + String.valueOf(minSnow));
-                        maxSnowText.setText("Max snow: "
-                              + String.valueOf(maxSnow));
-                        lastSnowText.setText("Last snow: " + lastSnow);
-                     }
-                  });
+				@Override
+				public void run() {
+					try {
+						HttpConnectionHelper helper = HttpConnectionHelper
+								.getHelper();
+						result = helper.openGenericConnection(WEATHER2_API);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 
-               } else if (counter < WAITING_TICKS)
-                  counter++;
-               else {
-                  CommonHelper.exitMessage(R.string.http_issue,
-                        R.string.http_issue_dialog_title, MainActivity.this);
-               }
+			// wait for the http response or exit after WAITING_TICKS
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
 
-            }
-         }, 0, REPETITION_TIME);
+				@Override
+				public void run() {
+					if (result != null) {
+						// parse the result to get snow information
+						ParseWeatherHelper whetherHelper = new ParseWeatherHelper(
+								result);
+						minSnow = whetherHelper.getMinSnow();
+						maxSnow = whetherHelper.getMaxSnow();
+						lastSnow = whetherHelper.getLastSnow();
 
-         if (counter >= WAITING_TICKS)
-            timer.cancel();
-      }
-   }
+						// set the textviews for the snow info
+						runOnUiThread(new Runnable() {
+							public void run() {
+								minSnowText.setText("Min snow: "
+										+ String.valueOf(minSnow));
+								maxSnowText.setText("Max snow: "
+										+ String.valueOf(maxSnow));
+								lastSnowText.setText("Last snow: " + lastSnow);
+							}
+						});
 
-   private void addNetworkChangeReceiver() {
-      IntentFilter filter = new IntentFilter();
-      filter.addAction("com.storassa.android.scuolasci.NETWORK_CHANGE");
+					} else if (counter < WAITING_TICKS)
+						counter++;
+					else {
+						CommonHelper.exitMessage(R.string.http_issue,
+								R.string.http_issue_dialog_title,
+								MainActivity.this);
+					}
 
-      networkChangeReceiver = new BroadcastReceiver() {
-         @Override
-         public void onReceive(Context context, Intent intent) {
+				}
+			}, 0, REPETITION_TIME);
 
-            // check data connection
-            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+			if (counter >= WAITING_TICKS)
+				timer.cancel();
+		}
+	}
 
-            // if data connection is now available, get info from Internet
-            if (netInfo != null)
-               if (netInfo.isConnected()) {
+	private void addNetworkChangeReceiver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.storassa.android.scuolasci.NETWORK_CHANGE");
 
-                  dataAvailable = true;
+		networkChangeReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
 
-                  // get the meteo information, if data are available
-                  getMeteoFragment();
+				// check data connection
+				ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo netInfo = cm.getActiveNetworkInfo();
 
-                  // if data are available get the snow report
-                  getSnowReport();
-               }
-         }
-      };
+				// if data connection is now available, get info from Internet
+				if (netInfo != null)
+					if (netInfo.isConnected()) {
 
-      registerReceiver(networkChangeReceiver, filter);
+						dataAvailable = true;
 
-   }
+						// get the meteo information, if data are available
+						getMeteoFragment();
 
-   private void checkDataAvailable() {
+						// if data are available get the snow report
+						getSnowReport();
+					}
+			}
+		};
 
-      // check whether data is enalbed and in case open DataDisabledDialog
-      ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-      NetworkInfo netInfo = cm.getActiveNetworkInfo();
-      if (netInfo == null || !netInfo.isConnectedOrConnecting()) {
-         getNoDataDialog();
-      }
-      // else, if data is enabled but connection is not available, open an
-      // alert dialog
-      else if (!netInfo.isConnected()) {
-         // warn the user that Internet is not available
-         CommonHelper.exitMessage(R.string.http_issue,
-               R.string.http_issue_dialog_title, this);
-      } else
-         setDataAvailable();
-   }
+		registerReceiver(networkChangeReceiver, filter);
 
-   private void getNoDataDialog() {
-      DataDisabledDialog dialog = DataDisabledDialog.newInstance(
-            "R.string.connection_unavailable", this);
+	}
 
-      dialog.show(getFragmentManager(), "");
+	private void checkDataAvailable() {
 
-   }
+		// check whether data is enalbed and in case open DataDisabledDialog
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo == null || !netInfo.isConnectedOrConnecting()) {
+			getNoDataDialog();
+		}
+		// else, if data is enabled but connection is not available, open an
+		// alert dialog
+		else if (!netInfo.isConnected()) {
+			// warn the user that Internet is not available
+			CommonHelper.exitMessage(R.string.http_issue,
+					R.string.http_issue_dialog_title, this);
+		} else
+			setDataAvailable();
+	}
 
-   // private static final String WEATHER2_API =
-   // "http://www.myweather2.com/Ski-Resorts/Italy/Limone-Piemonte/snow-report.aspx";
-   private static final String WEATHER2_API = "http://www.myweather2.com/developer/weather.ashx?uac=Tax7vNwxqd&uref=bc13f25a-d9dc-4f89-9405-aa03b447a3c9";
-   private static final int REPETITION_TIME = 1000;
-   private static final int WAITING_TICKS = 10;
+	private void getNoDataDialog() {
+		DataDisabledDialog dialog = DataDisabledDialog.newInstance(
+				"R.string.connection_unavailable", this);
 
-   //when the user is connected show the buttons
-   @Override
-   public void resultAvailable(String[] result) {
-      setLogged(true);
-      
-      // remove the progress bar
-      fm = getFragmentManager();
-      
-      runOnUiThread(new Runnable() {
+		dialog.show(getFragmentManager(), "");
 
-         @Override
-         public void run() {
-            fl.removeAllViews();
-            
-         }});
-      
-      // add the buttons
-      FragmentTransaction ft = fm.beginTransaction();
-      ft.replace(R.id.login_place, new MainButtonFragment()).commit();
+	}
+	
+	private void addButtons(Feature[] _feature) {
+		for (Feature f : _feature) {
+			if (f.equals(Feature.RACING_TEAM))
+				racing.setEnabled(true);
+			else if(f.equals(Feature.SCUDERIA))
+				scuderia.setEnabled(true);
+			else if (f.equals(Feature.INSTRUCTOR))
+				instructor.setEnabled(true);
+		}
+	}
 
-   }
+	// when the user is connected remove the progress bar and show the buttons
+	@Override
+	public void resultAvailable(String[] result) {
+		setLogged(true);
+
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// remove the progress bar
+				fm = getFragmentManager();
+				fl.removeAllViews();
+
+				// add the buttons
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.login_place, new MainButtonFragment()).commit();
+			}
+		});
+
+	}
+
+	private void setViewMember() {
+		minSnowText = (TextView) findViewById(R.id.min_snow_text);
+		maxSnowText = (TextView) findViewById(R.id.max_snow_text);
+		lastSnowText = (TextView) findViewById(R.id.last_snow_text);
+		scuderia = (Button)findViewById(R.id.scuderia_btn);
+		racing = (Button)findViewById(R.id.racing_team_btn);
+		instructor = (Button)findViewById(R.id.instructor_btn);
+	}
+	
+	// private static final String WEATHER2_API =
+	// "http://www.myweather2.com/Ski-Resorts/Italy/Limone-Piemonte/snow-report.aspx";
+	private static final String WEATHER2_API = "http://www.myweather2.com/developer/weather.ashx?uac=Tax7vNwxqd&uref=bc13f25a-d9dc-4f89-9405-aa03b447a3c9";
+	private static final int REPETITION_TIME = 1000;
+	private static final int WAITING_TICKS = 10;
+
 
 }

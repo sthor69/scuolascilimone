@@ -6,34 +6,31 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <LinearLayout
-        android:id="@+id/intro_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal" >
+    <HorizontalScrollView
+        android:id="@+id/button_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
         <FrameLayout
             android:id="@+id/login_place"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" 
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical" />
+        
+    </HorizontalScrollView>
 
-        <ImageView
-            android:id="@+id/intro_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/skier" />
-    </LinearLayout>
-
+    <HorizontalScrollView
+        android:id="@+id/ads_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </HorizontalScrollView>    
+    
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dip"
-        android:background="@color/blue"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:background="@color/blue" />
 
     <LinearLayout
         android:id="@+id/snow_layout"
@@ -46,8 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
             android:layout_marginLeft="20dp"
+            android:layout_weight="1"
             android:text="@string/snow_title" />
 
         <LinearLayout
@@ -80,9 +77,9 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="2dip"
-        android:background="@color/blue"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:background="@color/blue" />
 
     <!--
     <LinearLayout
@@ -123,8 +120,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/register" />
-    
-    </LinearLayout>
     
     -->
 
