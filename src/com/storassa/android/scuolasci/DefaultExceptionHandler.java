@@ -27,10 +27,10 @@ public class DefaultExceptionHandler implements UncaughtExceptionHandler {
          @Override
          public void run() {
             try {
-               GitHub hub = GitHub.connectUsingPassword("sthor69", "Gualano0,");
-               GHRepository repo = hub.getRepository("sthor69/scuolascilimone");
-               GHIssueBuilder builder = repo.createIssue("Application crasched");
-               builder.body(Convert.exceptionToString(e));
+//               GitHub hub = GitHub.connectUsingPassword("sthor69", "Gualano0,");
+//               GHRepository repo = hub.getRepository("sthor69/scuolascilimone");
+//               GHIssueBuilder builder = repo.createIssue("Application crasched");
+//               builder.body(Convert.exceptionToString(e));
 //               builder.create();
             } catch (Exception re) {
                re.printStackTrace();

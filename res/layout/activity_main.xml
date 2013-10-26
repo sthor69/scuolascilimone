@@ -9,65 +9,80 @@
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="wrap_content"
-        android:layout_height="0dp" 
-        android:layout_weight="0.1">
+        android:layout_height="0dp"
+        android:layout_weight="0.1" >
 
         <Button
             android:id="@+id/login_logout_btn"
             style="@style/ButtonText"
+            android:layout_weight="1"
             android:background="@drawable/btn_red"
-            android:text="@string/login" 
-            android:layout_weight="1">
+            android:text="@string/login" >
         </Button>
 
         <Button
             android:id="@+id/booking"
             style="@style/ButtonText"
+            android:layout_weight="1"
             android:background="@drawable/btn_red"
-            android:text="@string/booking" 
-            android:layout_weight="1">
-
+            android:text="@string/booking" >
         </Button>
 
         <Button
             android:id="@+id/racing_team_btn"
             style="@style/ButtonText"
+            android:layout_weight="1"
             android:background="@drawable/btn_red"
-            android:text="Racing Team" 
-            android:layout_weight="1">
+            android:text="Racing Team" >
         </Button>
 
         <Button
             android:id="@+id/scuderia_btn"
             style="@style/ButtonText"
+            android:layout_weight="1"
             android:background="@drawable/btn_red"
-            android:text="Scuderia"
-            android:layout_weight="1">
+            android:text="Scuderia" >
         </Button>
 
         <Button
             android:id="@+id/instructor_btn"
             style="@style/ButtonText"
+            android:layout_weight="1"
             android:background="@drawable/btn_red"
-            android:text="@string/instructor" 
-            android:layout_weight="1">
+            android:text="@string/instructor" >
         </Button>
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/ads_scrollview"
+    <LinearLayout
+        android:id="@+id/ads_layout"
         android:layout_width="wrap_content"
-        android:layout_height="0dp" 
-        android:layout_weight="0.3">
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:orientation="horizontal" >
 
-        <LinearLayout
+        <ImageView
             android:id="@+id/ads_container"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" 
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
-        </LinearLayout>
-    </HorizontalScrollView>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:src="@drawable/toppa_il_castagno">
+        </ImageView>
+
+        <HorizontalScrollView
+            android:id="@+id/sponsor_scrollview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:id="@+id/sponsor_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
@@ -80,8 +95,8 @@
         android:id="@+id/snow_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal" 
-        android:layout_weight="0.15">
+        android:layout_weight="0.15"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/snow_title"
@@ -125,47 +140,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@color/blue" />
-
-    <!--
-    <LinearLayout
-        android:id="@+id/tabs"
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" >
-
-        <Button
-            android:id="@+id/home_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/home" />
-
-        <Button
-            android:id="@+id/news_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/news" />
-
-        <Button
-            android:id="@+id/lesson_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/booking" />
-
-        <Button
-            android:id="@+id/meteo_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/register" />
-    -->
 
     <FrameLayout
         android:id="@+id/meteo_list_placeholder"

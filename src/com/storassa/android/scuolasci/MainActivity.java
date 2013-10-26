@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
    TextView minSnowText, maxSnowText, lastSnowText;
    FrameLayout fl;
    Button racingBtn, scuderiaBtn, instructorBtn, loginBtn;
-   LinearLayout adsView;
+   LinearLayout sponsorLayout;
 
    // the enabled buttons
    Feature[] features;
@@ -104,14 +104,14 @@ public class MainActivity extends Activity implements HttpResultCallable {
       dataAvailable = false;
 
       // add the ads
-      int[] res = {R.drawable.skier, R.drawable.ico_pioggia, R.drawable.icona_nuvola};
+      int[] res = {R.drawable.g, R.drawable.d, R.drawable.ds};
       ImageView[] imageView = new ImageView[3];
       for (int i = 0; i < 3; i++) {
          imageView[i] = new ImageView(this);
          imageView[i].setImageResource(res[i]);
          imageView[i].setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                LayoutParams.WRAP_CONTENT));
-         adsView.addView(imageView[i]);
+         sponsorLayout.addView(imageView[i]);
       }
 
       // add the receiver for data availability
@@ -456,7 +456,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
          }
       });
       
-      adsView = (LinearLayout) findViewById(R.id.ads_container);
+      sponsorLayout = (LinearLayout) findViewById(R.id.sponsor_layout);
    }
 
    // private static final String WEATHER2_API =
