@@ -94,7 +94,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
       helper = HttpConnectionHelper.getHelper();
       helper.openConnection(this, username, password);
 
-
       // put the progress bar before loading the buttons
       // fl = (FrameLayout) findViewById(R.id.login_place);
       // fl.addView(new ProgressBar(this));
@@ -407,6 +406,13 @@ public class MainActivity extends Activity implements HttpResultCallable {
          });
          
       setLogged(true);
+      runOnUiThread(new Runnable() {
+
+		@Override
+		public void run() {
+			loginBtn.setText(R.string.logout);			
+		}});
+      
       features = _features;
    }
 
