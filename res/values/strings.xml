@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="title_activity_meteo">MeteoActivity</string>
@@ -8,5 +9,8 @@
     <string name="limone_longitude">7.576090300000033</string>
     <string name="remember_me">Ricordami</string>
     <string name="view_password">Mostra password</string>
+    <string name="title_activity_web_render">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_booking">BookingActivity</string>
 
 </resources>

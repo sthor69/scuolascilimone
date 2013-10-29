@@ -183,51 +183,8 @@ public class LoginFragment extends Fragment implements HttpResultCallable {
       return result;
    }
 
-//   private void checkCode(int code) {
-//      // if the response code is 200, and there is no message
-//      // that the password is incorrect
-//      if (code == 200
-//            && responseString.indexOf("User or password incorrect") == -1) {
-//
-//         // set availability to true to cancel the timer
-//         loginInfoAvailable = true;
-//
-//         // register username and password, if requested
-//         settings = parentActivity.getPreferences(0);
-//         if (rememberMe.isChecked()) {
-//            SharedPreferences.Editor editor = settings.edit();
-//            editor.putBoolean("remembered", true)
-//               .putString("username", usernameView.getText().toString())
-//               .putString("password", passwordView.getText().toString())
-//               .commit();
-//         }
-//
-//         // wait WAITING_TICKS * REPETITION_TIME mseconds to receive
-//         // 303
-//
-//      } else if (counter < WAITING_TICKS) {
-//         counter++;
-//
-//         // if the response code is 200, the password is incorrect
-//      } else {
-//
-//         // set availability to true to cancel the timer
-//         loginInfoAvailable = true;
-//
-//         parentActivity.runOnUiThread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//               CommonHelper.exitMessage("Login",
-//                     R.string.http_issue_dialog_title, parentActivity);
-//            } // run
-//         }); // Runnable
-//      } // else
-//
-//   }
-
    @Override
-   public void resultAvailable(String[] result, Feature[] f) {
+   public void resultAvailable(Request request, String[] result, Feature[] f) {
 
       responseCode = Integer.parseInt(result[0]);
       responseString = result[1];

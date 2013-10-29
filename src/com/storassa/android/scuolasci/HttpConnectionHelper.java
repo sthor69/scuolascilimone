@@ -26,6 +26,7 @@ public class HttpConnectionHelper {
    String[] result;
    boolean infoAvailable;
    Feature[] features;
+   String cookie;
 
    private HttpConnectionHelper() {
       cookieManager = new CookieManager();
@@ -66,7 +67,7 @@ public class HttpConnectionHelper {
          @Override
          public void run() {
             try {
-               HttpURLConnection connection = (HttpURLConnection) url
+               connection = (HttpURLConnection) url
                      .openConnection();
                connection.setDoOutput(true);
                connection.setDoInput(true);
@@ -135,11 +136,11 @@ public class HttpConnectionHelper {
                   }
                }
 
-               callable.resultAvailable(result, features);
+               callable.resultAvailable(Request.LOGIN, result, features);
                infoAvailable = true;
 
             } catch (IOException e) {
-               callable.resultAvailable(null, features);;
+               callable.resultAvailable(Request.LOGIN, null, features);;
             } finally {
                // connection.disconnect();
             }
@@ -148,23 +149,44 @@ public class HttpConnectionHelper {
       });
    }
 
-   public String openGenericConnection(String localUrl)
+   public void openGenericConnection(Request request, final HttpResultCallable callable, URL localUrl)
          throws ClientProtocolException, IOException {
-      httpClient = new DefaultHttpClient();
       try {
-         HttpGet httpget = new HttpGet(localUrl);
+         HttpURLConnection genericConnection = (HttpURLConnection) localUrl
+               .openConnection();
 
          // Create a response handler
-         ResponseHandler<String> responseHandler = new BasicResponseHandler();
-         String responseBody = httpClient.execute(httpget, responseHandler);
+         genericConnection.setDoOutput(true);
+         genericConnection.setDoInput(true);
+         genericConnection.setRequestMethod("GET");
+         genericConnection.setRequestProperty("Content-Type",
+               "application/x-www-form-urlencoded");
+         genericConnection.setRequestProperty("charset", "utf-8");
+         genericConnection.setUseCaches(false);
+         genericConnection.connect();
 
-         return responseBody;
+         int finalResponseCode = genericConnection.getResponseCode();
+         
+         BufferedInputStream in = new BufferedInputStream(genericConnection
+               .getInputStream());
+         in = new BufferedInputStream(genericConnection.getInputStream());
+
+         java.util.Scanner s = new java.util.Scanner(in)
+               .useDelimiter("\\A");
+
+         StringBuilder builder = new StringBuilder();
+         while (s.hasNext())
+            builder.append(s.next());
+
+         result[0] = Integer.toString(finalResponseCode);
+         result[1] = builder.toString();
+         
+         callable.resultAvailable(request, result, null);
 
       } finally {
          // When HttpClient instance is no longer needed,
          // shut down the connection manager to ensure
-         // immediate deallocation of all system resources
-         httpClient.getConnectionManager().shutdown();
+         // immediate deallocation of all system resources;
       }
    }
 

@@ -2,8 +2,8 @@ package com.storassa.android.scuolasci;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements HttpResultCallable {
@@ -94,34 +93,23 @@ public class MainActivity extends Activity implements HttpResultCallable {
       helper = HttpConnectionHelper.getHelper();
       helper.openConnection(this, username, password);
 
-      // put the progress bar before loading the buttons
-      // fl = (FrameLayout) findViewById(R.id.login_place);
-      // fl.addView(new ProgressBar(this));
-
       // initialize variables (including views)
       dataEnabled = false;
       dataAvailable = false;
 
       // add the ads
-      int[] res = {R.drawable.g, R.drawable.d, R.drawable.ds};
+      int[] res = { R.drawable.g, R.drawable.d, R.drawable.ds };
       ImageView[] imageView = new ImageView[3];
       for (int i = 0; i < 3; i++) {
          imageView[i] = new ImageView(this);
          imageView[i].setImageResource(res[i]);
-         imageView[i].setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-               LayoutParams.WRAP_CONTENT));
+         imageView[i].setLayoutParams(new LayoutParams(
+               LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
          sponsorLayout.addView(imageView[i]);
       }
 
       // add the receiver for data availability
       addNetworkChangeReceiver();
-
-      // if this is the first creation, the user is not logged
-      // otherwise get the saved state
-      // if (savedInstanceState == null)
-      // logged = false;
-      // else
-      // logged = savedInstanceState.getBoolean("logged");
 
       checkDataAvailable();
       if (dataAvailable) {
@@ -186,29 +174,64 @@ public class MainActivity extends Activity implements HttpResultCallable {
       }
    }
 
-   // public void switchLoginFragment() {
-   // fm = getFragmentManager();
-   // FragmentTransaction ft = fm.beginTransaction();
-   // ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-   // if (logged) {
-   // try {
-   // helper.openConnection(this, "larapic", "gualano");
-   // } catch (Exception e) {
-   // e.printStackTrace();
-   // }
-   // ft.replace(R.id.login_place, new LoggedFragment()).commit();
-   // } else {
-   // ft.replace(R.id.login_place, new MainButtonFragment()).commit();
-   // }
-   // logged = !logged;
-   // }
-
    public void setDataAvailable() {
       dataAvailable = true;
    }
 
    public void setLoginStatus(boolean status) {
       logged = status;
+   }
+
+   @Override
+   public void resultAvailable(Request request, String[] result,
+         Feature[] _features) {
+
+      // if there are problems logging into the server, show the exit dialog
+      if (result == null)
+         runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+               CommonHelper.exitMessage(R.string.http_issue_dialog_title,
+                     R.string.http_issue, MainActivity.this);
+            }
+         });
+      switch (request) {
+      case LOGIN:
+         setLogged(true);
+         runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+               loginBtn.setText(R.string.logout);
+            }
+         });
+
+         features = _features;
+         break;
+      case SNOW:
+         // set the snow text
+         ParseWeatherHelper whetherHelper = new ParseWeatherHelper(result[1]);
+         minSnow = whetherHelper.getMinSnow();
+         maxSnow = whetherHelper.getMaxSnow();
+         lastSnow = whetherHelper.getLastSnow();
+
+         runOnUiThread(new Runnable() {
+            public void run() {
+               minSnowText.setText(getResources().getString(
+                     R.string.meteo_list_min_snow_label)
+                     + ": " + String.valueOf(minSnow));
+               maxSnowText.setText(getResources().getString(
+                     R.string.meteo_list_max_snow_label)
+                     + ": " + String.valueOf(maxSnow));
+               lastSnowText.setText(getResources().getString(
+                     R.string.meteo_list_last_snow_label)
+                     + ": " + lastSnow);
+            }
+         });
+         break;
+
+      }
    }
 
    /*
@@ -259,50 +282,13 @@ public class MainActivity extends Activity implements HttpResultCallable {
             @Override
             public void run() {
                try {
-                  result = helper.openGenericConnection(WEATHER2_API);
+                  helper.openGenericConnection(Request.SNOW, MainActivity.this,
+                        new URL(WEATHER2_API));
                } catch (Exception e) {
                   e.printStackTrace();
                }
             }
          });
-
-         // wait for the http response or exit after WAITING_TICKS
-         Timer timer = new Timer();
-         timer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-               if (result != null) {
-                  // parse the result to get snow information
-                  ParseWeatherHelper whetherHelper = new ParseWeatherHelper(
-                        result);
-                  minSnow = whetherHelper.getMinSnow();
-                  maxSnow = whetherHelper.getMaxSnow();
-                  lastSnow = whetherHelper.getLastSnow();
-
-                  // set the textviews for the snow info
-                  runOnUiThread(new Runnable() {
-                     public void run() {
-                        minSnowText.setText("Min snow: "
-                              + String.valueOf(minSnow));
-                        maxSnowText.setText("Max snow: "
-                              + String.valueOf(maxSnow));
-                        lastSnowText.setText("Last snow: " + lastSnow);
-                     }
-                  });
-
-               } else if (counter < WAITING_TICKS)
-                  counter++;
-               else {
-                  CommonHelper.exitMessage(R.string.http_issue,
-                        R.string.http_issue_dialog_title, MainActivity.this);
-               }
-
-            }
-         }, 0, REPETITION_TIME);
-
-         if (counter >= WAITING_TICKS)
-            timer.cancel();
       }
    }
 
@@ -390,78 +376,59 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
    }
 
-   // when the user is connected remove the progress bar and show the buttons
-   @Override
-   public void resultAvailable(String[] result, Feature[] _features) {
-
-      // if there are problems logging into the server, show the exit dialog
-      if (result == null)
-         runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-               CommonHelper.exitMessage(R.string.http_issue_dialog_title,
-                     R.string.http_issue, MainActivity.this);               
-            }
-         });
-         
-      setLogged(true);
-      runOnUiThread(new Runnable() {
-
-		@Override
-		public void run() {
-			loginBtn.setText(R.string.logout);			
-		}});
-      
-      features = _features;
-   }
-
    private void setViewMember() {
       minSnowText = (TextView) findViewById(R.id.min_snow_text);
       maxSnowText = (TextView) findViewById(R.id.max_snow_text);
       lastSnowText = (TextView) findViewById(R.id.last_snow_text);
-      
-      
+
       scuderiaBtn = (Button) findViewById(R.id.scuderia_btn);
       scuderiaBtn.setOnClickListener(new View.OnClickListener() {
-         
+
          @Override
          public void onClick(View v) {
-            // TODO Auto-generated method stub
-            
+            Intent newIntent = new Intent(MainActivity.this,
+                  WebRenderActivity.class);
+            newIntent.putExtra("request", Request.SCUDERIA);
+            startActivity(newIntent);
          }
       });
 
       racingBtn = (Button) findViewById(R.id.racing_team_btn);
       racingBtn.setOnClickListener(new View.OnClickListener() {
-         
+
          @Override
          public void onClick(View v) {
-            // TODO Auto-generated method stub
-            
+            Intent newIntent = new Intent(MainActivity.this,
+                  WebRenderActivity.class);
+            newIntent.putExtra("request", Request.RACINGTEAM);
+            startActivity(newIntent);
+
          }
       });
-      
+
       instructorBtn = (Button) findViewById(R.id.instructor_btn);
       instructorBtn.setOnClickListener(new View.OnClickListener() {
-         
+
          @Override
          public void onClick(View v) {
-            // TODO Auto-generated method stub
-            
+            Intent newIntent = new Intent(MainActivity.this,
+                  WebRenderActivity.class);
+            newIntent.putExtra("request", Request.INSTRUCTOR);
+            startActivity(newIntent);
+
          }
       });
-      
-      loginBtn = (Button)findViewById(R.id.login_logout_btn);
+
+      loginBtn = (Button) findViewById(R.id.login_logout_btn);
       loginBtn.setOnClickListener(new View.OnClickListener() {
-         
+
          @Override
          public void onClick(View v) {
             // TODO Auto-generated method stub
-            
+
          }
       });
-      
+
       sponsorLayout = (LinearLayout) findViewById(R.id.sponsor_layout);
    }
 
