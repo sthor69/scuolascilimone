@@ -54,5 +54,10 @@
     <string name="instructor">Maestri</string>
     <string name="logout">Esci</string>
     <string name="snow_title">Condizioni neve</string>
+    <string name="booking_title">Prenotazione ore di lezione</string>
+    <string name="individual_lessons">Lezioni individuali</string>
+    <string name="ski">Sci</string>
+    <string name="snowboard">Snowboard</string>
+    <string name="select_instructor">Scegli il maestro</string>
 
 </resources>

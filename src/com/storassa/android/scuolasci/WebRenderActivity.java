@@ -81,30 +81,39 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
       // TODO set the correct maximum index
       String result = "";
       int start, end;
+      
+      start = temp.indexOf("lastnews");
+      temp = temp.substring(start + 11);
 
-      switch(request) {
-      case SCUDERIA:
-         start = temp.indexOf("lastnews");
-         temp = temp.substring(start + 11);
+      end = temp.indexOf("hidden");
+      result = temp.substring(0, end - 13);
+      
+      if (result.indexOf("pdf") != -1)
+    	  result.replaceAll("/pdf/", "www.scuolascilimone.com/pdf/");
 
-         end = temp.indexOf("hidden");
-         result = temp.substring(0, end - 13);
-         break;
-      case RACINGTEAM:
-         start = temp.indexOf("lastnews");
-         temp = temp.substring(start + 11);
-
-         end = temp.indexOf("hidden");
-         result = temp.substring(0, end - 13);
-         break;
-      case INSTRUCTOR:
-         start = temp.indexOf("lastnews");
-         temp = temp.substring(start + 11);
-
-         end = temp.indexOf("hidden");
-         result = temp.substring(0, end - 13);
-         break;
-      }
+//      switch(request) {
+//      case SCUDERIA:
+//         start = temp.indexOf("lastnews");
+//         temp = temp.substring(start + 11);
+//
+//         end = temp.indexOf("hidden");
+//         result = temp.substring(0, end - 13);
+//         break;
+//      case RACINGTEAM:
+//         start = temp.indexOf("lastnews");
+//         temp = temp.substring(start + 11);
+//
+//         end = temp.indexOf("hidden");
+//         result = temp.substring(0, end - 13);
+//         break;
+//      case INSTRUCTOR:
+//         start = temp.indexOf("lastnews");
+//         temp = temp.substring(start + 11);
+//
+//         end = temp.indexOf("hidden");
+//         result = temp.substring(0, end - 13);
+//         break;
+//      }
 
       return result;
 

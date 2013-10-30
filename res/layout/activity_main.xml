@@ -26,7 +26,7 @@
             </Button>
 
             <Button
-                android:id="@+id/booking"
+                android:id="@+id/booking_btn"
                 style="@style/ButtonText"
                 android:layout_weight="1"
                 android:background="@drawable/btn_red"

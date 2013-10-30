@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Browser.BookmarkColumns;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -45,7 +46,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
    String lastSnow;
    TextView minSnowText, maxSnowText, lastSnowText;
    FrameLayout fl;
-   Button racingBtn, scuderiaBtn, instructorBtn, loginBtn;
+   Button racingBtn, scuderiaBtn, instructorBtn, loginBtn, bookingBtn;
    LinearLayout sponsorLayout;
 
    // the enabled buttons
@@ -428,6 +429,17 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
          }
       });
+      
+      bookingBtn = (Button)findViewById(R.id.booking_btn);
+      bookingBtn.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			Intent newIntent = new Intent(MainActivity.this,
+	                  BookingActivity.class);
+			startActivity(newIntent);
+		}
+	});
 
       sponsorLayout = (LinearLayout) findViewById(R.id.sponsor_layout);
    }
