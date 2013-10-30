@@ -22,8 +22,10 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_web_render);
-
+      
       setViewMember();
+      
+      container.setBackgroundColor(0);
       intent = getIntent();
       request = (Request)intent.getSerializableExtra("request");
       
@@ -68,7 +70,7 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
    public void resultAvailable(Request request, String[] result,
          Feature[] features) {
       if ((result != null) && (result[0] != null))
-         container.loadData(getAvailBtn(result[1]), "text/html", null);
+         container.loadDataWithBaseURL(null, getAvailBtn(result[1]), "text/html", "utf-8", null);
 
    }
 
@@ -88,9 +90,9 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
       end = temp.indexOf("hidden");
       result = temp.substring(0, end - 13);
       
-      if (result.indexOf("pdf") != -1)
-    	  result.replaceAll("/pdf/", "www.scuolascilimone.com/pdf/");
-
+      if (result.indexOf("\"/pdf") != -1)
+    	  result = result.replace("\"/pdf/", "\"http://www.scuolascilimone.com/pdf/");
+      
 //      switch(request) {
 //      case SCUDERIA:
 //         start = temp.indexOf("lastnews");
@@ -116,6 +118,7 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
 //      }
 
       return result;
+      
 
    }
 

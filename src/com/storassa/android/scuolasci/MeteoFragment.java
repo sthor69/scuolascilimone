@@ -145,11 +145,8 @@ public class MeteoFragment extends Fragment {
 
 				} else if (counter < WAITING_TICKS) {
 					counter++;
-					
-				} else {
-					CommonHelper.exitMessage(R.string.http_issue,
-							R.string.http_issue_dialog_title, parentActivity);
-				}
+					// TODO in case of problem in internet connection put a string text "not available"
+				} 
 
 			}
 		}, 0, REPETITION_TIME);
@@ -174,6 +171,6 @@ public class MeteoFragment extends Fragment {
 
 	private static final int MAX_FORECAST_DAYS = 7;
 	private static final int REPETITION_TIME = 1000;
-	private static final int WAITING_TICKS = 10;
+	private static final int WAITING_TICKS = 40;
 
 }

@@ -56,7 +56,15 @@
                 android:background="@drawable/btn_red"
                 android:text="@string/instructor" >
             </Button>
-        </LinearLayout>
+            
+            <Button
+                android:id="@+id/saranno_campioni_btn"
+                style="@style/ButtonText"
+                android:layout_weight="1"
+                android:background="@drawable/btn_red"
+                android:text="Campioni" >
+            </Button>
+            </LinearLayout>
     </HorizontalScrollView>
 
     <LinearLayout
@@ -66,13 +74,6 @@
         android:layout_weight="0.2"
         android:orientation="horizontal" >
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
             <ImageView
                 android:id="@+id/ads_container"
                 android:layout_width="wrap_content"
@@ -80,13 +81,11 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/toppa_il_castagno" >
             </ImageView>
-        </LinearLayout>
 
         <HorizontalScrollView
             android:id="@+id/sponsor_scrollview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/sponsor_layout"
@@ -109,7 +108,7 @@
         android:id="@+id/snow_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.15"
+        android:layout_weight="0.10"
         android:baselineAligned="false"
         android:orientation="horizontal" >
 
@@ -126,6 +125,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:textColor="@color/blue"
                 android:text="@string/snow_title" />
         </LinearLayout>
 
@@ -134,7 +135,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical" >
 
             <TextView
                 android:id="@+id/min_snow_text"

@@ -32,7 +32,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
    FragmentManager fm;
    boolean logged = false;
-   private int counter = 0;
    boolean dataEnabled = false, dataAvailable = false;
    String result = "";
    private BroadcastReceiver networkChangeReceiver;
@@ -266,13 +265,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
    }
 
    private void getSnowReport() {
-
-      // reset the counter for the waiting period of http request
-      counter = 0;
-
-      // check that data is enabled on the device
-      // checkDataAvailable();
-
       // if device is connected to Internet update the meteo
       if (dataAvailable) {
 
