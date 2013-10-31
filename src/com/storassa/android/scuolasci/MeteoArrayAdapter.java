@@ -52,10 +52,8 @@ public class MeteoArrayAdapter extends ArrayAdapter<MeteoItem> {
         int precipit = (int) (item.getPrecipit() * 100);
         
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(
-                "dd-MM-yyyy", Locale.getDefault());
-        
         Calendar c = Calendar.getInstance();
+
         try {
             c.setTime(date);
         } catch (Exception e) {

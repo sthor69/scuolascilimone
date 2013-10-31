@@ -58,8 +58,11 @@
     <string name="individual_lessons">Lezioni individuali</string>
     <string name="ski">Sci</string>
     <string name="snowboard">Snowboard</string>
-    <string name="select_instructor">Scegli il maestro</string>
+    <string name="select_instructor">&lt;Scegli il maestro&gt;</string>
     <string name="title_activity_web_render">Informazioni</string>
     <string name="title_activity_booking">Prenotazioni</string>
+    <string name="booking_day">Giorno</string>
+    <string name="booking_hour_from">Dalle</string>
+    <string name="booking_hour_to">alle</string>
 
 </resources>
