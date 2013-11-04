@@ -1,5 +1,8 @@
 package com.storassa.android.scuolasci;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,9 +18,35 @@ public class BookingActivity extends Activity {
 
 	TextView bookingDayTxt;
 	TextView bookingHourTxt;
+	TextView instructorTxt;
+	TextView locationTxt;
+	TextView sportTxt;
+
+	Instructor[] instructors;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
+		instructors = new Instructor[INSTRUCTOR_NR];
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader("instructors.txt"));
+
+			String line;
+			int i = 0;
+			while ((line = in.readLine()) != null) {
+				String name = line.split(",")[0];
+				String surname = line.split(",")[1];
+				String[] location = line.split(",")[2].split(" ");
+				String[] sport = line.split(",")[3].split(" ");
+				instructors[i++] = new Instructor(name, surname, location, sport);
+			}
+			
+			in.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} 
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_booking);
 
@@ -47,14 +76,20 @@ public class BookingActivity extends Activity {
 			public void run() {
 				bookingHourTxt.setText(getResources().getString(
 						R.string.booking_hour_from)
-						+ ": " + hour + ":" + 
-						new DecimalFormat("00").format(minute) + " "
+						+ ": "
+						+ hour
+						+ ":"
+						+ new DecimalFormat("00").format(minute)
+						+ " "
 						+ getResources().getString(R.string.booking_hour_to)
-						+ ": " + (hour + 1) + ":" + 
-						new DecimalFormat("00").format(minute));
+						+ ": "
+						+ (hour + 1)
+						+ ":"
+						+ new DecimalFormat("00").format(minute));
 			}
 		});
 	}
+
 	public void setBookingDay(Calendar c) {
 		final String day = getStringFromCalendar(c);
 
@@ -71,6 +106,29 @@ public class BookingActivity extends Activity {
 				+ ": " + day);
 	}
 
+	public void setInstructor(final Instructor i) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				instructorTxt.setText(i.getName() + i.getSurname());
+			}
+		});
+	}
+
+	public String getLocation() {
+		return locationTxt.getText().toString();
+	}
+
+	public String getSport() {
+		return sportTxt.getText().toString();
+	}
+
+	public String[] getInstructors() {
+		//TODO insert right code here
+		return null;
+	}
+
 	private void setViewMember() {
 		bookingDayTxt = (TextView) findViewById(R.id.booking_day_txt);
 		bookingDayTxt.setOnClickListener(new View.OnClickListener() {
@@ -80,14 +138,44 @@ public class BookingActivity extends Activity {
 				showDatePickerDialog();
 			}
 		});
-		
+
 		bookingHourTxt = (TextView) findViewById(R.id.booking_hour_txt);
 		bookingHourTxt.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				showTimePickerDialog();
-				
+
+			}
+		});
+
+		instructorTxt = (TextView) findViewById(R.id.instructor_txt);
+		instructorTxt.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				showInstructorChooser();
+
+			}
+		});
+
+		locationTxt = (TextView) findViewById(R.id.booking_location);
+		locationTxt.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		sportTxt = (TextView) findViewById(R.id.booking_sport);
+		sportTxt.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+
 			}
 		});
 	}
@@ -101,7 +189,12 @@ public class BookingActivity extends Activity {
 		DialogFragment newFragment = new TimePickerFragment();
 		newFragment.show(getFragmentManager(), "timePicker");
 	}
-	
+
+	private void showInstructorChooser() {
+		DialogFragment newFragment = new InstructorDialog();
+		newFragment.show(getFragmentManager(), "instructorChooser");
+	}
+
 	private String getCurrentDay() {
 		Date date = new Date();
 		Calendar c = Calendar.getInstance();
@@ -126,4 +219,8 @@ public class BookingActivity extends Activity {
 
 		return dayString;
 	}
+	
+	
+	//TODO set the real number
+	private final static int INSTRUCTOR_NR = 100;
 }

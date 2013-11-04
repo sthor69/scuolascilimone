@@ -64,5 +64,6 @@
     <string name="booking_day">Giorno</string>
     <string name="booking_hour_from">Dalle</string>
     <string name="booking_hour_to">alle</string>
+    <string name="instructor_dialog_title">Scegli il maestro</string>
 
 </resources>
