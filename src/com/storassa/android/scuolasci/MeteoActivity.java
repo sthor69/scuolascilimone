@@ -22,131 +22,133 @@ import dme.forecastiolib.ForecastIO;
 
 public class MeteoActivity extends Activity {
 
-	private FIODataPoint[] dataPoint;
-	private ArrayList<MeteoItem> meteoItems;
-	private ArrayAdapter<MeteoItem> adapter;
-	private int[] meteoIconResource = null;
-	FIOHourly hourly = null;
-	int counter = 0;
+   private FIODataPoint[] dataPoint;
+   private ArrayList<MeteoItem> meteoItems;
+   private ArrayAdapter<MeteoItem> adapter;
+   FIOHourly hourly = null;
+   int counter = 0;
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_meteo, menu);
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      // Inflate the menu; this adds items to the action bar if it is present.
+      getMenuInflater().inflate(R.menu.activity_meteo, menu);
 
-		return true;
+      return true;
 
-	}
+   }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_meteo);
-		
-		final ListView listView = (ListView)findViewById(R.id.hourly_meteo_list);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+   @Override
+   public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_meteo);
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+      final ListView listView = (ListView) findViewById(R.id.hourly_meteo_list);
+      listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-		if (savedInstanceState != null)
-			meteoItems = (ArrayList<MeteoItem>) Arrays
-					.asList((MeteoItem[]) savedInstanceState
-							.getParcelableArray("meteo_items"));
-		else
-			meteoItems = new ArrayList<MeteoItem>();
+         @Override
+         public void onItemClick(AdapterView<?> parent, View view,
+               int position, long id) {
+            // TODO Auto-generated method stub
 
-		final int day = getIntent().getExtras().getInt("Day");
+         }
 
-		dataPoint = new FIODataPoint[MAX_HOURS];
-		meteoIconResource = new int[MAX_HOURS];
+      });
 
-		// get the hourly meteo in a new thread
-		ExecutorService exec = Executors.newCachedThreadPool();
-		exec.execute(new Runnable() {
+      meteoItems = new ArrayList<MeteoItem>();
 
-			@Override
-			public void run() {
+      final int day = getIntent().getExtras().getInt("Day");
 
-				String forecastIoKey = getResources().getString(
-						R.string.forecastio_api_key);
-				String limoneLatitude = getResources().getString(
-						R.string.limone_latitude);
-				String limoneLongitude = getResources().getString(
-						R.string.limone_longitude);
+      dataPoint = new FIODataPoint[MAX_HOURS];
 
-				try {
-					ForecastIO fio = new ForecastIO(forecastIoKey);
-					fio.setUnits(ForecastIO.UNITS_SI);
-					fio.setExcludeURL("currently,minutely,daily");
-					fio.getForecast(limoneLatitude, limoneLongitude);
-					hourly = new FIOHourly(fio);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+      // get the hourly meteo in a new thread
+      ExecutorService exec = Executors.newCachedThreadPool();
+      exec.execute(new Runnable() {
 
-		// wait for the http response or exit after 5s
-		final Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
+         @Override
+         public void run() {
 
-			@Override
-			public void run() {
-				// if the data are retrieved
-				if (hourly != null) {
-					String[] meteoIconString = new String[MAX_HOURS];
+            String forecastIoKey = getResources().getString(
+                  R.string.forecastio_api_key);
+            String limoneLatitude = getResources().getString(
+                  R.string.limone_latitude);
+            String limoneLongitude = getResources().getString(
+                  R.string.limone_longitude);
 
-					// get the icons texts (sunny, cloud, etc...) for the hours starting
-					// from 0 for the first day and from 24 for the second day
-					for (int i = 0; i < MAX_HOURS; i++)
-						meteoIconString[i] = hourly.getHour(i + day * 24).icon()
-								.replace('\"', ' ').trim();
+            try {
+               ForecastIO fio = new ForecastIO(forecastIoKey);
+               fio.setUnits(ForecastIO.UNITS_SI);
+               fio.setExcludeURL("currently,minutely,daily");
+               fio.getForecast(limoneLatitude, limoneLongitude);
+               hourly = new FIOHourly(fio);
+            } catch (Exception e) {
+               e.printStackTrace();
+            }
+         }
+      });
 
-					// get the data points (temp. etc...)
-					for (int i = 0; i < MAX_HOURS; i++) {
-						dataPoint[i] = hourly.getHour(i + day * 24);
-						meteoItems.add(CommonHelper
-								.getMeteoItemFromDataPoint(dataPoint[i], false));
+      // wait for the http response or exit after 5s
+      final Timer timer = new Timer();
+      timer.schedule(new TimerTask() {
 
-					}
+         @Override
+         public void run() {
+            // if the data are retrieved
+            if (hourly != null) {
+               String[] meteoIconString = new String[MAX_HOURS];
 
-					// set the meteoItems as the adapter for the ListView
-					int resId = R.layout.meteo_list;
-					adapter = new MeteoArrayAdapter(MeteoActivity.this, resId,
-							meteoItems, false, day);
-					final ListView meteoListView = (ListView) findViewById(R.id.hourly_meteo_list);
+               // get the icons texts (sunny, cloud, etc...) for the hours
+               // starting
+               // from 0 for the first day and from 24 for the second day
+               for (int i = 0; i < MAX_HOURS; i++)
+                  meteoIconString[i] = hourly.getHour(i + day * 24).icon()
+                        .replace('\"', ' ').trim();
 
-					runOnUiThread(new Runnable() {
-						public void run() {
-							meteoListView.setAdapter(adapter);
-						}
-					});
-					timer.cancel();
+               // get the data points (temp. etc...)
+               for (int i = 0; i < MAX_HOURS; i++) {
+                  dataPoint[i] = hourly.getHour(i + day * 24);
+                  meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
+                        dataPoint[i], false));
 
-					// esle, if the deadline is not passed, increment the counter
-				} else if (counter < WAITING_TICKS) {
-					counter++;
-					
-					// if the deadline is passed there are issues with the Internet
-					// connection. Warn the user and exit
-				} else {
-					CommonHelper.exitMessage(R.string.http_issue,
-							R.string.http_issue_dialog_title,
-							MeteoActivity.this);
-				}
-			}
-		}, 0, REPETITION_TIME);
+               }
 
-	}
+               // set the meteoItems as the adapter for the ListView
+               int resId = R.layout.meteo_list;
+               adapter = new MeteoArrayAdapter(MeteoActivity.this, resId,
+                     meteoItems, false, day);
+               final ListView meteoListView = (ListView) findViewById(R.id.hourly_meteo_list);
 
-	private static final int REPETITION_TIME = 1000;
-	private final static int MAX_HOURS = 24;
-	private final static int WAITING_TICKS = 10;
+               runOnUiThread(new Runnable() {
+                  public void run() {
+                     meteoListView.setAdapter(adapter);
+                  }
+               });
+               timer.cancel();
+
+               // else, if the deadline is not passed, increment the counter
+            } else if (counter < WAITING_TICKS) {
+               counter++;
+
+               // if the deadline is passed there are issues with the Internet
+               // connection. Warn the user and exit
+            } else {
+               runOnUiThread(new Runnable() {
+
+                  @Override
+                  public void run() {
+                     CommonHelper
+                           .exitMessage(R.string.http_issue,
+                                 R.string.http_issue_dialog_title,
+                                 MeteoActivity.this);
+                  }
+               });
+               timer.cancel();
+            }
+         }
+      }, 0, REPETITION_TIME);
+
+   }
+
+   private static final int REPETITION_TIME = 1000;
+   private final static int MAX_HOURS = 24;
+   private final static int WAITING_TICKS = 10;
 }

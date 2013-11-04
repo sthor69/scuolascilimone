@@ -1,27 +1,29 @@
 package com.storassa.android.scuolasci;
 
+import java.util.ArrayList;
+
 public class Instructor {
 	private final String name;
 	private final String surname;
-	private final String[] discipline = new String[2];
-	private final String[] skiArea = new String[3];
+	private final ArrayList<String> discipline = new ArrayList<String>();
+	private final ArrayList<String> skiArea = new ArrayList<String>();
 	
-	public Instructor(String _name, String _surname, String[] _discipline, String[] _skiArea) {
+	public Instructor(String _name, String _surname, String[] _skiArea, String[] _discipline) {
 		name = _name;
 		surname = _surname;
 		
-		int count = 0;
 		for (String disc : _discipline)
-			discipline[count++] = disc;
+			discipline.add(disc);
+		
 		for (String area : _skiArea)
-			skiArea[count++] = area;
+			skiArea.add(area);
 	}
 	
-	public String[] getSkiArea() {
+	public ArrayList<String> getSkiArea() {
 		return skiArea;
 	}
 	
-	public String[] getDiscipline() {
+	public ArrayList<String> getDiscipline() {
 		return discipline;
 	}
 	

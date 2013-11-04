@@ -8,8 +8,8 @@
 
     <HorizontalScrollView
         android:layout_width="wrap_content"
-        android:layout_height="0dp" 
-        android:layout_weight="0.1">
+        android:layout_height="0dp"
+        android:layout_weight="0.1" >
 
         <LinearLayout
             android:id="@+id/button_layout"
@@ -23,14 +23,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/btn_red"
                 android:text="@string/login" >
-            </Button>
-
-            <Button
-                android:id="@+id/booking_btn"
-                style="@style/ButtonText"
-                android:layout_weight="1"
-                android:background="@drawable/btn_red"
-                android:text="@string/booking" >
             </Button>
 
             <Button
@@ -56,7 +48,7 @@
                 android:background="@drawable/btn_red"
                 android:text="@string/instructor" >
             </Button>
-            
+
             <Button
                 android:id="@+id/saranno_campioni_btn"
                 style="@style/ButtonText"
@@ -64,37 +56,38 @@
                 android:background="@drawable/btn_red"
                 android:text="Campioni" >
             </Button>
-            </LinearLayout>
+        </LinearLayout>
     </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/ads_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.19"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
         android:orientation="horizontal" >
 
-            <ImageView
-                android:id="@+id/ads_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/toppa_il_castagno" >
-            </ImageView>
+        <ImageView
+            android:id="@+id/ads_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:src="@drawable/toppa_il_castagno" >
+        </ImageView>
 
-        <HorizontalScrollView
-            android:id="@+id/sponsor_scrollview"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:id="@+id/sponsor_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal" >
-            </LinearLayout>
-        </HorizontalScrollView>
+        <Button
+            android:id="@+id/booking_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_red"
+            android:text="@string/booking" 
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_gravity="center">
+        </Button>
     </LinearLayout>
 
     <View
@@ -125,18 +118,18 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="20dp"
-                android:textStyle="bold"
+                android:text="@string/snow_title"
                 android:textColor="@color/blue"
-                android:text="@string/snow_title" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/snow_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_gravity="center_vertical" >
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/min_snow_text"

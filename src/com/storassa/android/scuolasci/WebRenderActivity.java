@@ -67,11 +67,17 @@ public class WebRenderActivity extends Activity implements HttpResultCallable {
    }
 
    @Override
-   public void resultAvailable(Request request, String[] result,
+   public void resultAvailable(Request request, final String[] result,
          Feature[] features) {
       if ((result != null) && (result[0] != null))
-         container.loadDataWithBaseURL(null, getAvailBtn(result[1]), "text/html", "utf-8", null);
+         runOnUiThread(new Runnable() {
 
+            @Override
+            public void run() {
+               container.loadDataWithBaseURL(null, getAvailBtn(result[1]), "text/html", "utf-8", null);
+               
+            }
+         });
    }
 
    //

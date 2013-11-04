@@ -46,7 +46,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
    TextView minSnowText, maxSnowText, lastSnowText;
    FrameLayout fl;
    Button racingBtn, scuderiaBtn, instructorBtn, loginBtn, bookingBtn;
-   LinearLayout sponsorLayout;
 
    // the enabled buttons
    Feature[] features;
@@ -105,7 +104,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
          imageView[i].setImageResource(res[i]);
          imageView[i].setLayoutParams(new LayoutParams(
                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-         sponsorLayout.addView(imageView[i]);
       }
 
       // add the receiver for data availability
@@ -352,14 +350,15 @@ public class MainActivity extends Activity implements HttpResultCallable {
             try {
                while (features == null)
                   ;
-               for (Feature f : features) {
-                  if (f.equals(Feature.RACING_TEAM))
-                     racingBtn.setEnabled(true);
-                  else if (f.equals(Feature.SCUDERIA))
-                     scuderiaBtn.setEnabled(true);
-                  else if (f.equals(Feature.INSTRUCTOR))
-                     instructorBtn.setEnabled(true);
-               }
+               if (features.length > 0)
+                  for (Feature f : features) {
+                     if (f.equals(Feature.RACING_TEAM))
+                        racingBtn.setEnabled(true);
+                     else if (f.equals(Feature.SCUDERIA))
+                        scuderiaBtn.setEnabled(true);
+                     else if (f.equals(Feature.INSTRUCTOR))
+                        instructorBtn.setEnabled(true);
+                  }
 
             } catch (Exception e) {
                e.printStackTrace();
@@ -421,19 +420,18 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
          }
       });
-      
-      bookingBtn = (Button)findViewById(R.id.booking_btn);
-      bookingBtn.setOnClickListener(new View.OnClickListener() {
-		
-		@Override
-		public void onClick(View arg0) {
-			Intent newIntent = new Intent(MainActivity.this,
-	                  BookingActivity.class);
-			startActivity(newIntent);
-		}
-	});
 
-      sponsorLayout = (LinearLayout) findViewById(R.id.sponsor_layout);
+      bookingBtn = (Button) findViewById(R.id.booking_btn);
+      bookingBtn.setOnClickListener(new View.OnClickListener() {
+
+         @Override
+         public void onClick(View arg0) {
+            Intent newIntent = new Intent(MainActivity.this,
+                  BookingActivity.class);
+            startActivity(newIntent);
+         }
+      });
+
    }
 
    // private static final String WEATHER2_API =
