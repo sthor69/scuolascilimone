@@ -57,7 +57,7 @@ public class MeteoFragment extends Fragment {
 						if (id < 2) {
 							Intent myIntent = new Intent(getActivity(),
 									MeteoActivity.class);
-							myIntent.putExtra("Day", (int)id);
+							myIntent.putExtra("Day", (int) id);
 							getActivity().startActivity(myIntent);
 						} else {
 							AlertDialog.Builder builder = new AlertDialog.Builder(
@@ -110,8 +110,15 @@ public class MeteoFragment extends Fragment {
 				} catch (Exception e) {
 					// if there are problems print the stack and warn the user
 					e.printStackTrace();
-					CommonHelper.exitMessage(R.string.http_issue,
-							R.string.http_issue_dialog_title, parentActivity);
+					parentActivity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							CommonHelper.exitMessage(R.string.http_issue,
+									R.string.http_issue_dialog_title,
+									parentActivity);
+						}
+					});
 				}
 			}
 		});
@@ -130,7 +137,8 @@ public class MeteoFragment extends Fragment {
 
 					for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
 						dataPoint[i] = daily.getDay(i);
-						meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(dataPoint[i], true));
+						meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
+								dataPoint[i], true));
 					}
 
 					int resId = R.layout.meteo_list;
@@ -145,8 +153,9 @@ public class MeteoFragment extends Fragment {
 
 				} else if (counter < WAITING_TICKS) {
 					counter++;
-					// TODO in case of problem in internet connection put a string text "not available"
-				} 
+					// TODO in case of problem in internet connection put a
+					// string text "not available"
+				}
 
 			}
 		}, 0, REPETITION_TIME);
