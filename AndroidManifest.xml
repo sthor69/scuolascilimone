@@ -42,11 +42,13 @@
 
         <activity
             android:name="com.storassa.android.scuolasci.WebRenderActivity"
-            android:label="@string/title_activity_web_render" >
+            android:label="@string/title_activity_web_render"
+            android:screenOrientation="portrait"  >
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.BookingActivity"
-            android:label="@string/title_activity_booking" >
+            android:label="@string/title_activity_booking"
+            android:screenOrientation="portrait"  >
         </activity>
     </application>
 
