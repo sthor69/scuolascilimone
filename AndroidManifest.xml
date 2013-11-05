@@ -43,7 +43,8 @@
         <activity
             android:name="com.storassa.android.scuolasci.WebRenderActivity"
             android:label="@string/title_activity_web_render"
-            android:screenOrientation="portrait"  >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent" >
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.BookingActivity"
