@@ -27,6 +27,7 @@ public class HttpConnectionHelper {
    boolean infoAvailable;
    Feature[] features;
    String cookie;
+   ExecutorService exec;
 
    private HttpConnectionHelper() {
       cookieManager = new CookieManager();
@@ -61,7 +62,7 @@ public class HttpConnectionHelper {
          throw new RuntimeException(e1);
       }
 
-      ExecutorService exec = Executors.newCachedThreadPool();
+      exec = Executors.newCachedThreadPool();
       exec.execute(new Runnable() {
 
          @Override
