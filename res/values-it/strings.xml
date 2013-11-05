@@ -65,5 +65,8 @@
     <string name="booking_hour_from">Dalle</string>
     <string name="booking_hour_to">alle</string>
     <string name="instructor_dialog_title">Scegli il maestro</string>
+    <string name="logging_in">logging in...</string>
+    <string name="insert_credentials">Inserisci le tue credenziali...</string>
+    <string name="show_password">Mostra password</string>
 
 </resources>

@@ -8,8 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,45 +52,47 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
    HttpConnectionHelper helper;
 
+   ProgressDialog progressDialog;
+   boolean rememberMe;
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
       setContentView(R.layout.activity_main);
+      username = "";
+      password = "";
 
       // get all the views
       setViewMember();
-
-      // define a new default uncaught Exception handler, in order to point to
-      // the one
-      // connected to GitHub
-
-      // if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof
-      // DefaultExceptionHandler)) {
-      // Thread.setDefaultUncaughtExceptionHandler(new
-      // DefaultExceptionHandler(
-      // Thread.getDefaultUncaughtExceptionHandler()));
-      // }
 
       // define the cookie manager to perform http requests
       CookieManager cookieManager = new CookieManager();
       CookieHandler.setDefault(cookieManager);
 
-      // temporary debug: retrieve username and password
+      // retrieve username and password
       settings = getPreferences(0);
 
       // TODO remove in production code
       SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean("remembered", true).putString("username", "larapic")
+      editor.putBoolean("remembered", true).putString("username", "")
             .putString("password", "gualano").commit();
 
+      // if the user is already known, retrieve username and password
       if (settings.getBoolean("remembered", false) == true) {
          username = settings.getString("username", "");
          password = settings.getString("password", "");
+      } else {
+         DialogFragment loginDialog = new LoginFragment();
+         loginDialog.show(getFragmentManager(), "loginDialog");
       }
 
-      helper = HttpConnectionHelper.getHelper();
-      helper.openConnection(this, username, password);
+      if (username != "")
+         loginUser(username, password, false);
+      else {
+         LoginFragment loginDialog = new LoginFragment();
+         loginDialog.show(getFragmentManager(), "loginDialog");
+      }
 
       // initialize variables (including views)
       dataEnabled = false;
@@ -186,6 +190,35 @@ public class MainActivity extends Activity implements HttpResultCallable {
       logged = status;
    }
 
+   public void loginUser(String _username, String _password, boolean _rememberMe) {
+      helper = HttpConnectionHelper.getHelper();
+      helper.openConnection(this, _username, _password);
+
+      if (_rememberMe) {
+         SharedPreferences.Editor editor = settings.edit();
+         editor.putBoolean("remembered", true).putString("username", _username)
+               .putString("password", _password).commit();
+      }
+
+      CharSequence progressDialogTitle = getResources().getString(
+            R.string.logging_in);
+      progressDialog = ProgressDialog.show(this, null, progressDialogTitle,
+            false);
+   }
+
+   /**
+    * This function is the callback of the HttpCallable interface. It provides
+    * with the result of the HTTP request
+    * 
+    * @param request
+    *           the type of request; it can be one of the Request enum
+    * @param result
+    *           the result of the HTTP request: it depends upon the request:
+    *           SNOW: result[0] = response code, result[1] = response body
+    *           LOGIN: it has no meaning and it is always null
+    * @param _features
+    *           the features available for the logged user
+    */
    @Override
    public void resultAvailable(Request request, String[] result,
          Feature[] _features) {
@@ -203,6 +236,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       switch (request) {
       case LOGIN:
          setLogged(true);
+         progressDialog.dismiss();
          runOnUiThread(new Runnable() {
 
             @Override
