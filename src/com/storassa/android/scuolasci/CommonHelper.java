@@ -9,8 +9,7 @@ public class CommonHelper {
    public static void exitMessage(int titleId, int messageId,
          final Activity activity) {
       AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-      builder.setMessage(R.string.http_issue).setTitle(
-            R.string.http_issue_dialog_title);
+      builder.setMessage(titleId).setTitle(messageId);
       builder.setPositiveButton(R.string.ok,
             new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
@@ -26,7 +25,7 @@ public class CommonHelper {
    public static void exitMessage(String title, int messageId,
          final Activity activity) {
       AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-      builder.setMessage(R.string.http_issue).setTitle(title);
+      builder.setMessage(messageId).setTitle(title);
       builder.setPositiveButton(R.string.ok,
             new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {

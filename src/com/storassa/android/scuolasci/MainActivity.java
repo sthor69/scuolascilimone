@@ -66,6 +66,8 @@ public class MainActivity extends Activity implements HttpResultCallable {
       // get all the views
       setViewMember();
 
+      checkDataAvailable();
+
       // define the cookie manager to perform http requests
       CookieManager cookieManager = new CookieManager();
       CookieHandler.setDefault(cookieManager);
@@ -77,22 +79,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
       SharedPreferences.Editor editor = settings.edit();
       editor.putBoolean("remembered", true).putString("username", "")
             .putString("password", "gualano").commit();
-
-      // if the user is already known, retrieve username and password
-      if (settings.getBoolean("remembered", false) == true) {
-         username = settings.getString("username", "");
-         password = settings.getString("password", "");
-      } else {
-         DialogFragment loginDialog = new LoginFragment();
-         loginDialog.show(getFragmentManager(), "loginDialog");
-      }
-
-      if (username != "")
-         loginUser(username, password, false);
-      else {
-         LoginFragment loginDialog = new LoginFragment();
-         loginDialog.show(getFragmentManager(), "loginDialog");
-      }
 
       // initialize variables (including views)
       dataEnabled = false;
@@ -110,8 +96,25 @@ public class MainActivity extends Activity implements HttpResultCallable {
       // add the receiver for data availability
       // addNetworkChangeReceiver();
 
-      checkDataAvailable();
       if (dataAvailable) {
+
+         // if the user is already known, retrieve username and password
+         if (settings.getBoolean("remembered", false) == true) {
+            username = settings.getString("username", "");
+            password = settings.getString("password", "");
+         } else {
+            DialogFragment loginDialog = new LoginFragment();
+            loginDialog.show(getFragmentManager(), "loginDialog");
+         }
+
+         // login
+         if (username != "")
+            loginUser(username, password, false);
+         else {
+            LoginFragment loginDialog = new LoginFragment();
+            loginDialog.show(getFragmentManager(), "loginDialog");
+         }
+
          // get the meteo information, if data are available
          getMeteoFragment();
 
@@ -366,8 +369,17 @@ public class MainActivity extends Activity implements HttpResultCallable {
       // // else, if data is enabled but connection is not available, open an
       // // alert dialog
       // else
-      if (!netInfo.isConnected()) {
+      if (netInfo == null) {
          // warn the user that Internet is not available
+         runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+               CommonHelper.exitMessage(R.string.connection_unavailable,
+                     R.string.connection_unavailable_title, MainActivity.this);
+            }
+         });
+      } else if (!netInfo.isConnected()) {
          runOnUiThread(new Runnable() {
 
             @Override

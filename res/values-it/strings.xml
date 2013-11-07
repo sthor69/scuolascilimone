@@ -4,12 +4,11 @@
     <string name="app_name">ScuolaSciLimone</string>
     <string name="menu_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="intro_text_wait">Sto recuperando i dati meteo...</string>
     <string name="meteo_list_avalanche_label">Valanghe: </string>
     <string name="meteo_note_text">Note: </string>
     <string name="username_text">Utente</string>
     <string name="password_text">Password</string>
-    <string name="connection_unavailable">La connessione dati è disabilitata. Vuoi abilitarla ora?</string>
+    <string name="connection_unavailable">L\'applicazione richiede una connessione dati</string>
     <string name="open_connection">Abilita</string>
     <string name="cancel">Esci</string>
     <string name="meteo_list_min_temp_label">Temp. min.:</string>
@@ -68,5 +67,6 @@
     <string name="logging_in">logging in...</string>
     <string name="insert_credentials">Inserisci le tue credenziali...</string>
     <string name="show_password">Mostra password</string>
+    <string name="connection_unavailable_title">Connessione dati disabilitata</string>
 
 </resources>
