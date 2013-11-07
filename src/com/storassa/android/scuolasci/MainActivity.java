@@ -80,12 +80,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
       // retrieve username and password
       settings = getPreferences(0);
 
-      // TODO remove in production code
-      SharedPreferences.Editor editor = settings.edit();
-      editor.putBoolean("remembered", true).putString("username", "")
-            .putString("password", "gualano").commit();
-
-
       // add the ads
       int[] res = { R.drawable.botteroski, R.drawable.bpn,
             R.drawable.chalet1400, R.drawable.delmonte, R.drawable.noberasco,
@@ -231,6 +225,8 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
             @Override
             public void run() {
+               if (progressDialog.isShowing())
+                  progressDialog.dismiss();
                CommonHelper.exitMessage(R.string.http_issue_dialog_title,
                      R.string.http_issue, MainActivity.this);
             }

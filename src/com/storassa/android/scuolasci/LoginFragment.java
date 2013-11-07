@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class LoginFragment extends DialogFragment {
@@ -29,7 +30,8 @@ public class LoginFragment extends DialogFragment {
                   public void onClick(DialogInterface dialog, int id) {
                      String usr = ((EditText)view.findViewById(R.id.username)).getText().toString();
                      String pwd = ((EditText)view.findViewById(R.id.password)).getText().toString();
-                     ((MainActivity)getActivity()).loginUser(usr, pwd, true);
+                     boolean rememberMe = ((CheckBox)view.findViewById(R.id.remember_me_btn)).isChecked();
+                     ((MainActivity)getActivity()).loginUser(usr, pwd, rememberMe);
                   }
               })
               .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
