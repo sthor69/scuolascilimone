@@ -64,9 +64,12 @@
     <string name="booking_hour_from">Dalle</string>
     <string name="booking_hour_to">alle</string>
     <string name="instructor_dialog_title">Scegli il maestro</string>
-    <string name="logging_in">logging in...</string>
+    <string name="logging_in">Mi sto loggando...</string>
+    <string name="logging_out">Mi sto sloggando...</string>
     <string name="insert_credentials">Inserisci le tue credenziali...</string>
     <string name="show_password">Mostra password</string>
     <string name="connection_unavailable_title">Connessione dati disabilitata</string>
+    <string name="incorrect_login_title">Login incorretta</string>
+    <string name="incorrect_login">La username o la password immessa non e\' corretta</string>
 
 </resources>

@@ -68,8 +68,7 @@ public class HttpConnectionHelper {
          @Override
          public void run() {
             try {
-               connection = (HttpURLConnection) url
-                     .openConnection();
+               connection = (HttpURLConnection) url.openConnection();
                connection.setDoOutput(true);
                connection.setDoInput(true);
                connection.setInstanceFollowRedirects(false);
@@ -91,28 +90,102 @@ public class HttpConnectionHelper {
                      .getInputStream());
                int responseCode = connection.getResponseCode();
 
-               while (responseCode == 303) {
+               // if the credentials are not correct, return code = 200
+               if (responseCode == 200) {
+                  result[0] = Integer.toString(responseCode);
+                  result[1] = null;
+                  callable.resultAvailable(Request.LOGIN, result, null);
+               } else {
 
-                  String urlString = connection.getHeaderField("Location");
-                  URL redirectedUrl = new URL(urlString);
-                  connection = (HttpURLConnection) redirectedUrl
-                        .openConnection();
-                  connection.setDoOutput(true);
-                  connection.setDoInput(true);
-                  connection.setInstanceFollowRedirects(false);
-                  connection.setRequestMethod("GET");
-                  connection.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
-                  connection.setRequestProperty("charset", "utf-8");
-                  connection.setUseCaches(false);
+                  // if the credentials are correct get the redirections
+                  while (responseCode == 303) {
 
-                  connection.connect();
-                  responseCode = connection.getResponseCode();
+                     String urlString = connection.getHeaderField("Location");
+                     URL redirectedUrl = new URL(urlString);
+                     connection = (HttpURLConnection) redirectedUrl
+                           .openConnection();
+                     connection.setDoOutput(true);
+                     connection.setDoInput(true);
+                     connection.setInstanceFollowRedirects(false);
+                     connection.setRequestMethod("GET");
+                     connection.setRequestProperty("Content-Type",
+                           "application/x-www-form-urlencoded");
+                     connection.setRequestProperty("charset", "utf-8");
+                     connection.setUseCaches(false);
+
+                     connection.connect();
+                     responseCode = connection.getResponseCode();
+                  }
+
+                  final int finalResponseCode = responseCode;
+
+                  in = new BufferedInputStream(connection.getInputStream());
+
+                  java.util.Scanner s = new java.util.Scanner(in)
+                        .useDelimiter("\\A");
+
+                  StringBuilder builder = new StringBuilder();
+                  while (s.hasNext())
+                     builder.append(s.next());
+
+                  result[0] = Integer.toString(finalResponseCode);
+                  result[1] = builder.toString();
+
+                  int count = 0;
+                  String[] featureString = getAvailBtn(result[1]);
+                  for (String f : featureString) {
+                     if (f != null) {
+                        if (f.equals("Racing Team"))
+                           features[count++] = Feature.RACING_TEAM;
+                        else if (f.equals("Scuderia"))
+                           features[count++] = Feature.SCUDERIA;
+                        else if (f.equals("Instructor"))
+                           features[count++] = Feature.INSTRUCTOR;
+                     }
+                  }
+
+                  callable.resultAvailable(Request.LOGIN, result, features);
+                  infoAvailable = true;
                }
 
-               final int finalResponseCode = responseCode;
+            } catch (IOException e) {
+               callable.resultAvailable(Request.LOGIN, null, features);
+               ;
+            } finally {
+               // connection.disconnect();
+            }
 
-               in = new BufferedInputStream(connection.getInputStream());
+         }
+      });
+   }
+
+   public void openGenericConnection(final Request request,
+         final HttpResultCallable callable, final URL localUrl) {
+
+      exec = Executors.newCachedThreadPool();
+      exec.execute(new Runnable() {
+
+         @Override
+         public void run() {
+            try {
+               HttpURLConnection genericConnection = (HttpURLConnection) localUrl
+                     .openConnection();
+
+               // Create a response handler
+               genericConnection.setDoOutput(true);
+               genericConnection.setDoInput(true);
+               genericConnection.setRequestMethod("GET");
+               genericConnection.setRequestProperty("Content-Type",
+                     "application/x-www-form-urlencoded");
+               genericConnection.setRequestProperty("charset", "utf-8");
+               genericConnection.setUseCaches(false);
+               genericConnection.connect();
+
+               int finalResponseCode = genericConnection.getResponseCode();
+
+               BufferedInputStream in = new BufferedInputStream(
+                     genericConnection.getInputStream());
+               in = new BufferedInputStream(genericConnection.getInputStream());
 
                java.util.Scanner s = new java.util.Scanner(in)
                      .useDelimiter("\\A");
@@ -124,71 +197,18 @@ public class HttpConnectionHelper {
                result[0] = Integer.toString(finalResponseCode);
                result[1] = builder.toString();
 
-               int count = 0;
-               String[] featureString = getAvailBtn(result[1]);
-               for (String f : featureString) {
-                  if (f != null) {
-                     if (f.equals("Racing Team"))
-                        features[count++] = Feature.RACING_TEAM;
-                     else if (f.equals("Scuderia"))
-                        features[count++] = Feature.SCUDERIA;
-                     else if (f.equals("Instructor"))
-                        features[count++] = Feature.INSTRUCTOR;
-                  }
-               }
-
-               callable.resultAvailable(Request.LOGIN, result, features);
-               infoAvailable = true;
+               callable.resultAvailable(request, result, null);
 
             } catch (IOException e) {
-               callable.resultAvailable(Request.LOGIN, null, features);;
+               callable.resultAvailable(Request.LOGIN, null, features);
+               ;
             } finally {
-               // connection.disconnect();
+               // When HttpClient instance is no longer needed,
+               // shut down the connection manager to ensure
+               // immediate deallocation of all system resources;
             }
-
          }
       });
-   }
-
-   public void openGenericConnection(Request request, final HttpResultCallable callable, URL localUrl)
-         throws ClientProtocolException, IOException {
-      try {
-         HttpURLConnection genericConnection = (HttpURLConnection) localUrl
-               .openConnection();
-
-         // Create a response handler
-         genericConnection.setDoOutput(true);
-         genericConnection.setDoInput(true);
-         genericConnection.setRequestMethod("GET");
-         genericConnection.setRequestProperty("Content-Type",
-               "application/x-www-form-urlencoded");
-         genericConnection.setRequestProperty("charset", "utf-8");
-         genericConnection.setUseCaches(false);
-         genericConnection.connect();
-
-         int finalResponseCode = genericConnection.getResponseCode();
-         
-         BufferedInputStream in = new BufferedInputStream(genericConnection
-               .getInputStream());
-         in = new BufferedInputStream(genericConnection.getInputStream());
-
-         java.util.Scanner s = new java.util.Scanner(in)
-               .useDelimiter("\\A");
-
-         StringBuilder builder = new StringBuilder();
-         while (s.hasNext())
-            builder.append(s.next());
-
-         result[0] = Integer.toString(finalResponseCode);
-         result[1] = builder.toString();
-         
-         callable.resultAvailable(request, result, null);
-
-      } finally {
-         // When HttpClient instance is no longer needed,
-         // shut down the connection manager to ensure
-         // immediate deallocation of all system resources;
-      }
    }
 
    public HttpClient getGenericClient() {

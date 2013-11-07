@@ -2,18 +2,20 @@ package com.storassa.android.scuolasci;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.app.DialogFragment;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -22,6 +24,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -65,11 +68,10 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
       // get all the views
       setViewMember();
-      
+
       // initialize variables
       dataEnabled = false;
       dataAvailable = false;
-
 
       checkDataAvailable();
 
@@ -104,8 +106,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
          if (username != "")
             loginUser(username, password, false);
          else {
-            LoginFragment loginDialog = new LoginFragment();
-            loginDialog.show(getFragmentManager(), "loginDialog");
+            loginUser();
          }
 
          // get the meteo information, if data are available
@@ -202,6 +203,12 @@ public class MainActivity extends Activity implements HttpResultCallable {
             false);
    }
 
+   public void loginUser() {
+      
+      LoginFragment loginDialog = new LoginFragment();
+      loginDialog.show(getFragmentManager(), "loginDialog");
+   }
+
    /**
     * This function is the callback of the HttpCallable interface. It provides
     * with the result of the HTTP request
@@ -232,19 +239,63 @@ public class MainActivity extends Activity implements HttpResultCallable {
             }
          });
       switch (request) {
-      case LOGIN:
-         setLogged(true);
-         progressDialog.dismiss();
+      case LOGOUT:
+         setLogged(false);
          runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-               loginBtn.setText(R.string.logout);
+               loginBtn.setText(R.string.login);
+               progressDialog.dismiss();
+               scuderiaBtn.setEnabled(false);
+               racingBtn.setEnabled(false);
+               instructorBtn.setEnabled(false);
+               bookingBtn.setEnabled(false);
             }
          });
 
-         features = _features;
-         addButtons(features);
+         SharedPreferences.Editor editor = settings.edit();
+         editor.remove("username").remove("password").remove("remembered")
+               .putBoolean("remembered", false).commit();
+         break;
+      case LOGIN:
+         if (result[0].equals(FAILED_LOGIN_RESPONSE_CODE)) {
+            runOnUiThread(new Runnable() {
+
+               @Override
+               public void run() {
+                  progressDialog.dismiss();
+                  AlertDialog.Builder builder = new AlertDialog.Builder(
+                        MainActivity.this);
+                  builder.setMessage(R.string.incorrect_login).setTitle(
+                        R.string.incorrect_login_title);
+                  builder.setPositiveButton(R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int id) {
+                              dialog.dismiss();
+                           }
+                        });
+
+                  AlertDialog dialog = builder.create();
+                  if (!isFinishing())
+                     dialog.show();
+               }
+            });
+
+         } else {
+            setLogged(true);
+            progressDialog.dismiss();
+            runOnUiThread(new Runnable() {
+
+               @Override
+               public void run() {
+                  loginBtn.setText(R.string.logout);
+               }
+            });
+
+            features = _features;
+            addButtons(features);
+         }
          break;
       case SNOW:
          // set the snow text
@@ -468,7 +519,10 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
          @Override
          public void onClick(View v) {
-            // TODO Auto-generated method stub
+            if (isLogged())
+               logout();
+            else
+               loginUser();
 
          }
       });
@@ -486,10 +540,29 @@ public class MainActivity extends Activity implements HttpResultCallable {
       adsContainer = (ImageView) findViewById(R.id.ads_container);
    }
 
+   private void logout() {
+
+      try {
+         URL url = new URL(LOGOUT_URI);
+         helper = HttpConnectionHelper.getHelper();
+         helper.openGenericConnection(Request.LOGOUT, this, url);
+
+         CharSequence progressDialogTitle = getResources().getString(
+               R.string.logging_out);
+         progressDialog = ProgressDialog.show(this, null, progressDialogTitle,
+               false);
+
+      } catch (MalformedURLException e) {
+
+      }
+   }
+
    // private static final String WEATHER2_API =
    // "http://www.myweather2.com/Ski-Resorts/Italy/Limone-Piemonte/snow-report.aspx";
    private static final String WEATHER2_API = "http://www.myweather2.com/developer/weather.ashx?uac=Tax7vNwxqd&uref=bc13f25a-d9dc-4f89-9405-aa03b447a3c9";
    private static final int REPETITION_TIME = 1000;
    private static final int WAITING_TICKS = 10;
+   private static final String LOGOUT_URI = "http://www.scuolascilimone.com/it/area-riservata/access/signout";
+   private static final String FAILED_LOGIN_RESPONSE_CODE = "200";
 
 }
