@@ -65,6 +65,11 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
       // get all the views
       setViewMember();
+      
+      // initialize variables
+      dataEnabled = false;
+      dataAvailable = false;
+
 
       checkDataAvailable();
 
@@ -80,9 +85,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
       editor.putBoolean("remembered", true).putString("username", "")
             .putString("password", "gualano").commit();
 
-      // initialize variables (including views)
-      dataEnabled = false;
-      dataAvailable = false;
 
       // add the ads
       int[] res = { R.drawable.botteroski, R.drawable.bpn,
@@ -102,9 +104,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
          if (settings.getBoolean("remembered", false) == true) {
             username = settings.getString("username", "");
             password = settings.getString("password", "");
-         } else {
-            DialogFragment loginDialog = new LoginFragment();
-            loginDialog.show(getFragmentManager(), "loginDialog");
          }
 
          // login
@@ -167,12 +166,12 @@ public class MainActivity extends Activity implements HttpResultCallable {
    @Override
    protected void onDestroy() {
       super.onDestroy();
-      try {
-         // unregisterReceiver(networkChangeReceiver);
-         helper.connection.disconnect();
-      } catch (IllegalArgumentException e) {
-         e.printStackTrace();
-      }
+      // try {
+      // // unregisterReceiver(networkChangeReceiver);
+      // helper.connection.disconnect();
+      // } catch (IllegalArgumentException e) {
+      // e.printStackTrace();
+      // }
    }
 
    @Override
