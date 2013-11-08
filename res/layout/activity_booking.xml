@@ -6,7 +6,6 @@
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     android:layout_marginTop="20dp"
-    android:background="@drawable/dialog_style_drawable"
     android:orientation="vertical"
     tools:context=".BookingActivity" >
 

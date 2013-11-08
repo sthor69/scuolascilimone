@@ -92,7 +92,7 @@ public class HttpConnectionHelper {
 
                // if the credentials are not correct, return code = 200
                if (responseCode == 200) {
-                  result[0] = Integer.toString(responseCode);
+                  result[0] = "Incorrect";
                   result[1] = null;
                   callable.resultAvailable(Request.LOGIN, result, null);
                } else {
