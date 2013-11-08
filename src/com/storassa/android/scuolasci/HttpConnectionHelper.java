@@ -23,7 +23,7 @@ public class HttpConnectionHelper {
    HttpURLConnection connection;
    HttpClient httpClient;
    CookieManager cookieManager;
-   String[] result;
+   String[] result  = new String[2];
    boolean infoAvailable;
    Feature[] features;
    String cookie;
@@ -44,7 +44,6 @@ public class HttpConnectionHelper {
    public void openConnection(final HttpResultCallable callable,
          String username, String password) {
 
-      result = new String[2];
       // TODO add the maximum number
       features = new Feature[10];
 

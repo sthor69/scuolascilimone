@@ -206,6 +206,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 		loginDialog.show(getFragmentManager(), "loginDialog");
 	}
 
+	
 	/**
 	 * This function is the callback of the HttpCallable interface. It provides
 	 * with the result of the HTTP request
