@@ -11,12 +11,7 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpConnectionHelper {
    static HttpConnectionHelper helper;
@@ -44,8 +39,8 @@ public class HttpConnectionHelper {
    public void openConnection(final HttpResultCallable callable,
          String username, String password) {
 
-      // TODO add the maximum number
-      features = new Feature[10];
+      
+      features = new Feature[MAX_FEATURES];
 
       String urlParameters = "task=signin&accion=signin&textBoxUsername=";
       urlParameters += username;
@@ -224,9 +219,9 @@ public class HttpConnectionHelper {
 
    private String[] getAvailBtn(String response) {
       String temp = response;
-      // TODO set the correct maximum index
-      String[] result = new String[10];
-      int index = 0, start, end;
+      
+      String[] result = new String[MAX_FEATURES];
+      int index = 1, start, end;
       boolean endOfString = false;
 
       while (!endOfString) {
@@ -241,8 +236,16 @@ public class HttpConnectionHelper {
             endOfString = true;
          }
       }
+      
+      start = temp.indexOf("nome:");
+      temp = temp.substring(start + 1);
+      start = temp.indexOf("strong>");
+      temp = temp.substring(start);
+      end = temp.indexOf("<");
+      result[0] = temp.substring(8, end);
 
       return result;
    }
 
+   private final static int MAX_FEATURES = 10;
 }

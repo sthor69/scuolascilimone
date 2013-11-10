@@ -50,7 +50,7 @@
             </Button>
 
             <Button
-                android:id="@+id/saranno_campioni_btn"
+                android:id="@+id/campioni_btn"
                 style="@style/ButtonText"
                 android:layout_weight="1"
                 android:background="@drawable/btn_red"

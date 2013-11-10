@@ -6,5 +6,6 @@ public enum Request {
    INSTRUCTOR,
    SCUDERIA,
    RACINGTEAM,
+   CAMPIONI,
    SNOW
 }

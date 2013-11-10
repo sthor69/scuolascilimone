@@ -10,25 +10,7 @@
     tools:context=".BookingActivity" >
 
     <TextView
-        android:id="@+id/booking_title_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="@string/booking_title"
-        android:textColor="@color/blue"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/blue" />
-
-    <TextView
+        android:id="@+id/lesson_type_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
@@ -123,5 +105,42 @@
         android:layout_marginTop="15dp"
         android:text=""
         android:textSize="15sp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/blue" />
+
+    <TextView
+        android:id="@+id/customer_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:text=""
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/booking_ok_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/booking_ok_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ok" />
+
+        <Button
+            android:id="@+id/booking_cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+    </LinearLayout>
 
 </LinearLayout>

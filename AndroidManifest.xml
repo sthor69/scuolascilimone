@@ -41,18 +41,22 @@
         </receiver>
 
         <activity
-            android:theme="@android:style/Theme.Dialog"
             android:name="com.storassa.android.scuolasci.WebRenderActivity"
+            android:excludeFromRecents="true"
             android:label="@string/title_activity_web_render"
             android:screenOrientation="portrait"
-            android:excludeFromRecents="true">
+            android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.BookingActivity"
+            android:excludeFromRecents="true"
             android:label="@string/title_activity_booking"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Dialog" 
-            android:excludeFromRecents="true">
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity
+            android:name="com.storassa.android.scuolasci.CustomerActivity"
+            android:label="@string/title_activity_customer" >
         </activity>
     </application>
 

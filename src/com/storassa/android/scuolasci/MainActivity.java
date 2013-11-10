@@ -13,18 +13,15 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,8 +33,8 @@ public class MainActivity extends Activity implements HttpResultCallable {
 	boolean logged = false;
 	boolean dataEnabled = false, dataAvailable = false;
 	String result = "";
-	private BroadcastReceiver networkChangeReceiver;
 	String username, password;
+	String customerName;
 
 	// get storage info
 	SharedPreferences settings;
@@ -47,7 +44,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 	String lastSnow;
 	TextView minSnowText, maxSnowText, lastSnowText;
 	FrameLayout fl;
-	Button racingBtn, scuderiaBtn, instructorBtn, loginBtn, bookingBtn;
+	Button racingBtn, scuderiaBtn, instructorBtn, loginBtn, bookingBtn, campioniBtn;
 	ImageView adsContainer;
 
 	// the enabled buttons
@@ -258,7 +255,18 @@ public class MainActivity extends Activity implements HttpResultCallable {
 					.putBoolean("remembered", false).commit();
 			break;
 		case LOGIN:
-			if (result[0].equals(FAILED_LOGIN_RESPONSE)) {
+			if (result == null)
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						CommonHelper
+								.exitMessage(R.string.http_issue,
+										R.string.http_issue_dialog_title,
+										MainActivity.this);
+					}
+				});
+				else if (result[0].equals(FAILED_LOGIN_RESPONSE)) {
 				runOnUiThread(new Runnable() {
 
 					@Override
@@ -283,6 +291,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 				});
 
 			} else {
+				customerName = result[0];
 				setLogged(true);
 				progressDialog.dismiss();
 				runOnUiThread(new Runnable() {
@@ -321,7 +330,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
 		}
 	}
-
+	
 	/*
 	 * ------------ PRIVATE METHODS ------------
 	 */
@@ -448,14 +457,23 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
 		racingBtn = (Button) findViewById(R.id.racing_team_btn);
 		racingBtn.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				Intent newIntent = new Intent(MainActivity.this,
 						WebRenderActivity.class);
 				newIntent.putExtra("request", Request.RACINGTEAM);
 				startActivity(newIntent);
+			}
+		});
 
+		campioniBtn = (Button) findViewById(R.id.campioni_btn);
+		campioniBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent newIntent = new Intent(MainActivity.this,
+						WebRenderActivity.class);
+				newIntent.putExtra("request", Request.CAMPIONI);
+				startActivity(newIntent);
 			}
 		});
 
@@ -492,6 +510,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 			public void onClick(View arg0) {
 				Intent newIntent = new Intent(MainActivity.this,
 						BookingActivity.class);
+				newIntent.putExtra("customer", customerName);
 				startActivity(newIntent);
 			}
 		});

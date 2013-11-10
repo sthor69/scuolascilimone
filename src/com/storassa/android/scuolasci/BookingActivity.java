@@ -1,6 +1,5 @@
 package com.storassa.android.scuolasci;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -10,6 +9,7 @@ import java.util.Scanner;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,227 +18,315 @@ import android.widget.TextView;
 
 public class BookingActivity extends Activity {
 
-   TextView bookingDayTxt;
-   TextView bookingHourTxt;
-   TextView instructorTxt;
-   TextView locationTxt;
-   TextView sportTxt;
+	TextView bookingDayTxt;
+	TextView bookingHourTxt;
+	TextView instructorTxt;
+	TextView locationTxt;
+	TextView sportTxt;
+	TextView lessonTypeTxt;
+	TextView customerNameTxt;
 
-   Instructor[] instructors;
-   String[] instructorNames;
-   String skiArea;
-   String sport;
+	Instructor[] instructors;
+	String[] instructorNames;
+	String instructor;
+	String[] skiAreas = { "sole", "maneggio", "limone1400" };
+	String skiArea;
+	String[] sports = { "sci", "snowboard" };
+	String sport;
+	String[] lessonTypes = { "lezioni individuali", "lezioni weekend" };
+	String lessonType;
+	String[] customerNames;
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 
-      try {
-         Resources res = getResources();
-         InputStream in_s = res.openRawResource(R.raw.instructors);
+		// get the instructors from instructors.txt in res/raw/
+		getInstructors();
 
-         byte[] b = new byte[in_s.available()];
-         in_s.read(b);
-         String text = new String(b);
 
-         Scanner scanner = new Scanner(text);
-         
-         int instructorNr = Integer.parseInt(scanner.nextLine());
-         instructors = new Instructor[instructorNr];
-         instructorNames = new String[instructorNr];
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_booking);
 
-         String line;
-         int i = 0;
-         while (scanner.hasNext()) {
-            line = scanner.nextLine();
-            String name = line.split(",")[0];
-            String surname = line.split(",")[1];
-            instructorNames[i] = name + " " + surname;
-            String[] location = line.split(",")[2].split(" ");
-            String[] sport = line.split(",")[3].split(" ");
-            instructors[i++] = new Instructor(name, surname, location, sport);
-         }
+		// initialize the views
+		setViewMember();
 
-         scanner.close();
-      } catch (IOException e) {
-         throw new RuntimeException(e);
-      }
+		String currentDayString = getCurrentDay();
+		bookingDayTxt.setText(getResources().getString(R.string.booking_day)
+				+ ": " + currentDayString);
+		bookingHourTxt.setText(getResources().getString(
+				R.string.booking_hour_from)
+				+ ": -   "
+				+ getResources().getString(R.string.booking_hour_to)
+				+ ": -");
 
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_booking);
+	}
 
-      setViewMember();
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.booking, menu);
+		return true;
+	}
 
-      String currentDayString = getCurrentDay();
-      bookingDayTxt.setText(getResources().getString(R.string.booking_day)
-            + ": " + currentDayString);
-      bookingHourTxt.setText(getResources().getString(
-            R.string.booking_hour_from)
-            + ": -   "
-            + getResources().getString(R.string.booking_hour_to)
-            + ": -");
-   }
+	public void setBookingHour(final int hour, final int minute) {
+		runOnUiThread(new Runnable() {
 
-   @Override
-   public boolean onCreateOptionsMenu(Menu menu) {
-      // Inflate the menu; this adds items to the action bar if it is present.
-      getMenuInflater().inflate(R.menu.booking, menu);
-      return true;
-   }
+			@Override
+			public void run() {
+				bookingHourTxt.setText(getResources().getString(
+						R.string.booking_hour_from)
+						+ ": "
+						+ hour
+						+ ":"
+						+ new DecimalFormat("00").format(minute)
+						+ " "
+						+ getResources().getString(R.string.booking_hour_to)
+						+ ": "
+						+ (hour + 1)
+						+ ":"
+						+ new DecimalFormat("00").format(minute));
+			}
+		});
+	}
 
-   public void setBookingHour(final int hour, final int minute) {
-      runOnUiThread(new Runnable() {
+	public void setBookingDay(Calendar c) {
+		final String day = getStringFromCalendar(c);
 
-         @Override
-         public void run() {
-            bookingHourTxt.setText(getResources().getString(
-                  R.string.booking_hour_from)
-                  + ": "
-                  + hour
-                  + ":"
-                  + new DecimalFormat("00").format(minute)
-                  + " "
-                  + getResources().getString(R.string.booking_hour_to)
-                  + ": "
-                  + (hour + 1)
-                  + ":"
-                  + new DecimalFormat("00").format(minute));
-         }
-      });
-   }
+		runOnUiThread(new Runnable() {
 
-   public void setBookingDay(Calendar c) {
-      final String day = getStringFromCalendar(c);
+			@Override
+			public void run() {
+				bookingDayTxt.setText(getResources().getString(
+						R.string.booking_day)
+						+ ": " + day);
+			}
+		});
+		bookingDayTxt.setText(getResources().getString(R.string.booking_day)
+				+ ": " + day);
+	}
 
-      runOnUiThread(new Runnable() {
+	public void setInstructor(final String i) {
+		instructor = i;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				instructorTxt.setText(i);
+			}
+		});
+	}
 
-         @Override
-         public void run() {
-            bookingDayTxt.setText(getResources()
-                  .getString(R.string.booking_day)
-                  + ": " + day);
-         }
-      });
-      bookingDayTxt.setText(getResources().getString(R.string.booking_day)
-            + ": " + day);
-   }
+	public void setLocation(final String _skiArea) {
+		skiArea = _skiArea;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				locationTxt.setText(_skiArea);
+			}
+		});
+	}
 
-   public void setInstructor(final String i) {
-      runOnUiThread(new Runnable() {
+	public void setSport(final String _sport) {
+		sport = _sport;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				sportTxt.setText(_sport);
+			}
+		});
+	}
 
-         @Override
-         public void run() {
-            instructorTxt.setText(i);
-         }
-      });
-   }
+	public void setType(final String _lessonType) {
+		lessonType = _lessonType;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				lessonTypeTxt.setText(_lessonType);
+			}
+		});
+	}
 
-   public String getLocation() {
-      return locationTxt.getText().toString();
-   }
+	public String getLocation() {
+		return locationTxt.getText().toString();
+	}
 
-   public String getSport() {
-      return sportTxt.getText().toString();
-   }
+	public String getSport() {
+		return sportTxt.getText().toString();
+	}
 
-   public String[] getInstructors() {
-      // TODO insert right code here
-      return null;
-   }
+	public String getInstructor() {
+		return instructorTxt.getText().toString();
+	}
 
-   private void setViewMember() {
-      bookingDayTxt = (TextView) findViewById(R.id.booking_day_txt);
-      bookingDayTxt.setOnClickListener(new View.OnClickListener() {
+	private void setViewMember() {
+		bookingDayTxt = (TextView) findViewById(R.id.booking_day_txt);
+		bookingDayTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showDatePickerDialog();
+			}
+		});
 
-         @Override
-         public void onClick(View arg0) {
-            showDatePickerDialog();
-         }
-      });
+		bookingHourTxt = (TextView) findViewById(R.id.booking_hour_txt);
+		bookingHourTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showTimePickerDialog();
+			}
+		});
 
-      bookingHourTxt = (TextView) findViewById(R.id.booking_hour_txt);
-      bookingHourTxt.setOnClickListener(new View.OnClickListener() {
+		instructorTxt = (TextView) findViewById(R.id.instructor_txt);
+		instructorTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showInstructorChooser();
+			}
+		});
 
-         @Override
-         public void onClick(View arg0) {
-            showTimePickerDialog();
+		locationTxt = (TextView) findViewById(R.id.booking_location);
+		skiArea = locationTxt.getText().toString();
+		locationTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showLocationChooser();
+			}
+		});
 
-         }
-      });
+		sportTxt = (TextView) findViewById(R.id.booking_sport);
+		sport = sportTxt.getText().toString();
+		sportTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showSportChooser();
+			}
+		});
 
-      instructorTxt = (TextView) findViewById(R.id.instructor_txt);
-      instructorTxt.setOnClickListener(new View.OnClickListener() {
+		lessonTypeTxt = (TextView) findViewById(R.id.lesson_type_txt);
+		lessonType = lessonTypeTxt.getText().toString();
+		lessonTypeTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showTypeChooser();
+			}
+		});
 
-         @Override
-         public void onClick(View arg0) {
-            showInstructorChooser();
+		customerNameTxt = (TextView)findViewById(R.id.customer_txt);
+		customerNames = new String[MAX_CUSTOMER];
+		customerNames[0] = getIntent().getStringExtra("customer");
+		customerNameTxt.setText(customerNames[0]);
+		customerNameTxt.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showCustomers();
+			}
+		});
+	}
 
-         }
-      });
+	private void showDatePickerDialog() {
+		DialogFragment newFragment = new DatePickerFragment();
+		newFragment.show(getFragmentManager(), "datePicker");
+	}
 
-      locationTxt = (TextView) findViewById(R.id.booking_location);
-      skiArea = locationTxt.getText().toString();
-      locationTxt.setOnClickListener(new View.OnClickListener() {
+	private void showTimePickerDialog() {
+		DialogFragment newFragment = new TimePickerFragment();
+		newFragment.show(getFragmentManager(), "timePicker");
+	}
 
-         @Override
-         public void onClick(View arg0) {
-            // TODO Auto-generated method stub
+	private void showInstructorChooser() {
+		// get the instructor list
+		DialogFragment newFragment = GenericDialog.newInstance(
+				DialogType.INSTRUCTORS, instructors, skiArea, sport);
+		newFragment.show(getFragmentManager(), "instructorChooser");
+	}
 
-         }
-      });
+	private void showLocationChooser() {
+		DialogFragment newFragment = GenericDialog.newInstance(
+				DialogType.SKIAREA, skiAreas);
+		newFragment.show(getFragmentManager(), "skiAreaChooser");
+	}
 
-      sportTxt = (TextView) findViewById(R.id.booking_sport);
-      sport = sportTxt.getText().toString();
-      sportTxt.setOnClickListener(new View.OnClickListener() {
+	private void showSportChooser() {
+		DialogFragment newFragment = GenericDialog.newInstance(
+				DialogType.SPORTS, sports);
+		newFragment.show(getFragmentManager(), "sportChooser");
+	}
 
-         @Override
-         public void onClick(View arg0) {
-            // TODO Auto-generated method stub
+	private void showTypeChooser() {
+		DialogFragment newFragment = GenericDialog.newInstance(
+				DialogType.TYPES, lessonTypes);
+		newFragment.show(getFragmentManager(), "lessonTypeChooser");
+	}
+	
+	private void showCustomers() {
+		Intent newIntent = new Intent(this, CustomerActivity.class);
+		newIntent.putExtra("customers", customerNames);
+		startActivity(newIntent);
+	}
 
-         }
-      });
-   }
+	private String getCurrentDay() {
+		Date date = new Date();
+		Calendar c = Calendar.getInstance();
 
-   private void showDatePickerDialog() {
-      DialogFragment newFragment = new DatePickerFragment();
-      newFragment.show(getFragmentManager(), "datePicker");
-   }
+		try {
+			c.setTime(date);
+		} catch (Exception e) {
+			throw new RuntimeException(e.toString());
+		}
 
-   private void showTimePickerDialog() {
-      DialogFragment newFragment = new TimePickerFragment();
-      newFragment.show(getFragmentManager(), "timePicker");
-   }
+		return getStringFromCalendar(c);
+	}
 
-   private void showInstructorChooser() {
-      DialogFragment newFragment = InstructorDialog
-            .newInstance(instructors, skiArea, sport);
-      newFragment.show(getFragmentManager(), "instructorChooser");
-   }
+	private String getStringFromCalendar(Calendar c) {
+		Month month = Month.values()[c.get(Calendar.MONTH)];
+		String monthString = month.getLabel(getBaseContext());
+		int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+		int year = c.get(Calendar.YEAR);
 
-   private String getCurrentDay() {
-      Date date = new Date();
-      Calendar c = Calendar.getInstance();
+		String dayString = String.valueOf(dayOfMonth);
+		dayString += " " + monthString + " " + String.valueOf(year);
 
-      try {
-         c.setTime(date);
-      } catch (Exception e) {
-         throw new RuntimeException(e.toString());
-      }
+		return dayString;
+	}
+	private void getInstructors() {
+		try {
+			Resources res = getResources();
+			InputStream in_s = res.openRawResource(R.raw.instructors);
 
-      return getStringFromCalendar(c);
-   }
+			byte[] b = new byte[in_s.available()];
+			in_s.read(b);
+			String text = new String(b);
 
-   private String getStringFromCalendar(Calendar c) {
-      Month month = Month.values()[c.get(Calendar.MONTH)];
-      String monthString = month.getLabel(getBaseContext());
-      int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-      int year = c.get(Calendar.YEAR);
+			Scanner scanner = new Scanner(text);
 
-      String dayString = String.valueOf(dayOfMonth);
-      dayString += " " + monthString + " " + String.valueOf(year);
+			int instructorNr = Integer.parseInt(scanner.nextLine());
+			instructors = new Instructor[instructorNr];
+			instructorNames = new String[instructorNr];
 
-      return dayString;
-   }
+			String line;
+			int i = 0;
+			String[] data = null;
+			while (scanner.hasNext()) {
+				try {
+					line = scanner.nextLine();
+					data = line.split(",");
+					String name = data[0];
+					String surname = data[1];
+					instructorNames[i] = name + " " + surname;
+					String[] location = data[2].split(" ");
+					String[] sport = data[3].split(" ");
+					instructors[i++] = new Instructor(name, surname, location,
+							sport);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println(data[0] + " " + data[1]);
+				}
+			}
 
-   // TODO set the real number
-   private final static int INSTRUCTOR_NR = 100;
+			scanner.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+	
+	private final static int MAX_CUSTOMER = 26;
 }

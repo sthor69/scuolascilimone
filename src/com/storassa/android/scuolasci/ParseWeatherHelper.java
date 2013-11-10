@@ -6,8 +6,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -73,14 +71,5 @@ public class ParseWeatherHelper {
       ParseWeatherHelper helper = new ParseWeatherHelper(args[0]);
       System.out.println("Max: " + helper.getMaxSnow());
       System.out.println("Min: " + helper.getMinSnow());
-   }
-
-   private boolean reachedSnowReport(Node node) {
-      int type = node.getNodeType();
-      if (type == Node.ELEMENT_NODE) {
-         String value = ((Element) node).getTagName();
-         return value.equalsIgnoreCase("snow_report");
-      } else
-         return false;
    }
 }

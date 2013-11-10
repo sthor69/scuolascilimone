@@ -1,3 +1,58 @@
-2
+56
 Lara,Piccardo,sole maneggio,sci
-Vivica,Marro,limone1400,sci snowboard
+Pamela,Aimar,maneggio sole,sci
+Matteo,Aimeri,maneggio sole,sci
+Antonino,Arnaud,limone1400,sci
+Marino,Arzilli,sole maneggio,sci
+Giacomo,Astegiano,limone1400,sci
+Pier Paolo,Ballarè,sole maneggio,sci
+Nicolò,Barla,sole maneggio,sci
+Luca,Becchis,sole maneggio,sci
+Giovanni,Bellone,sole maneggio,sci
+Roberto,Beraudo,sole maneggio,sci
+Francesco,Bisoglio,sole maneggio,sci
+Piermario,Blangero,limone1400,sci
+Luigi,Bonati,sole maneggio,sci
+Aurelio,Borgna,sole maneggio,sci
+Davide,Bottero,sole maneggio,sci
+Giuseppe,Bottero,sole maneggio,sci
+Tonino,Bottero,limone1400,sci
+Vivica,Bottero,limone1400,sci
+Mario,Bottini,sole maneggio,sci
+Gian Franco,Brignolo,sole maneggio,sci
+Sergio,Brizzi,sole maneggio,sci
+Elisa,Bruno,limone1400,sci
+Glauco,Campani,limone1400,sci
+Roberto,Canova,sole maneggio,sci
+Luigi,Carletto,limone1400,sci
+Daniele,Castellaro,sole maneggio,sci
+Dario,Castelli,sole maneggio,sci
+Stefano,Chiarlone,sole maneggio,sci
+Giovanni,Collodet,sole maneggio,sci
+Gino,Cometto,limone1400,sci
+Andrea,Dalmasso,sole maneggio,sci
+Arianna,Dalmasso,limone1400,sci
+Bruno,Dalmasso,sole maneggio,sci
+Domenico,Dalmasso,sole maneggio,sci
+Fabio,Dalmasso,sole maneggio,sci
+Giacomo,Dalmasso,sole maneggio,sci
+Giorgio,Dalmasso,sole maneggio,sci
+Lucia,Dalmasso,sole maneggio,sci
+Martino,Dalmasso,limone1400,sci
+Luigi,De Pasqual,sole maneggio,sci
+Massimo,Delfino,sole maneggio,sci
+Riccardo, De Maria,sole maneggio,sci
+Nicolas,Denis,limone1400,sci
+Gianluca,Di Gifico,limone1400,sci
+Franco,Di Prato,sole maneggio,sci
+Valentina,Ferrero,sole maneggio,sci
+Cristiano,Fiandrino,sole maneggio,sci
+Giuseppe,Galfrè,sole maneggio,sci
+Givanni,Garesio,sole maneggio,sci
+Giuseppe,Gastone,sole maneggio,sci
+Bruno,Gerbaudo,limone1400,sci
+Francesca,Gerbaudo,sole maneggio,sci
+Carlo,Gerbino,limone1400,sci
+Paola,Giacosa,sole maneggio,sci
+Alessandro,Giordano,limone1400,sci
+
