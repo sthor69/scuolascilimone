@@ -18,7 +18,7 @@ public class HttpConnectionHelper {
    HttpURLConnection connection;
    HttpClient httpClient;
    CookieManager cookieManager;
-   String[] result  = new String[2];
+   String[] result  = new String[3];
    boolean infoAvailable;
    Feature[] features;
    String cookie;
@@ -125,19 +125,21 @@ public class HttpConnectionHelper {
                   result[0] = Integer.toString(finalResponseCode);
                   result[1] = builder.toString();
 
-                  int count = 0;
+                  int count = 1;
                   String[] featureString = getAvailBtn(result[1]);
+                  result[2] = featureString[0];
+                  
                   for (String f : featureString) {
                      if (f != null) {
                         if (f.equals("Racing Team"))
                            features[count++] = Feature.RACING_TEAM;
                         else if (f.equals("Scuderia"))
                            features[count++] = Feature.SCUDERIA;
-                        else if (f.equals("Instructor"))
+                        else if (f.equals("Maestri"))
                            features[count++] = Feature.INSTRUCTOR;
                      }
                   }
-
+                  
                   callable.resultAvailable(Request.LOGIN, result, features);
                   infoAvailable = true;
                }
@@ -237,12 +239,12 @@ public class HttpConnectionHelper {
          }
       }
       
-      start = temp.indexOf("nome:");
+      start = temp.indexOf("Nome:");
       temp = temp.substring(start + 1);
       start = temp.indexOf("strong>");
       temp = temp.substring(start);
       end = temp.indexOf("<");
-      result[0] = temp.substring(8, end);
+      result[0] = temp.substring(7, end);
 
       return result;
    }

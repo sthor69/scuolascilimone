@@ -1,10 +1,8 @@
 package com.storassa.android.scuolasci;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -40,7 +38,7 @@ public class MeteoArrayAdapter extends ArrayAdapter<MeteoItem> {
             li = (LayoutInflater) getContext().getSystemService(inflater);
             li.inflate(resource, newView, true);
         } else {
-            // Otherwise we�ll update the existing View
+            // Otherwise we'll update the existing View
             newView = (LinearLayout) convertView;
         }
         MeteoItem item = getItem(position);

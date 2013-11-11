@@ -80,12 +80,7 @@ public class MeteoFragment extends Fragment {
 				});
 
 		// retrieve the saved meteo items, if available
-		if (savedInstanceState != null)
-			meteoItems = (ArrayList<MeteoItem>) Arrays
-					.asList((MeteoItem[]) savedInstanceState
-							.getParcelableArray("meteo_items"));
-		else
-			meteoItems = new ArrayList<MeteoItem>();
+		meteoItems = new ArrayList<MeteoItem>();
 
 		// get the meteo information in a different thread
 		dataPoint = new FIODataPoint[MAX_FORECAST_DAYS];
@@ -130,17 +125,22 @@ public class MeteoFragment extends Fragment {
 			@Override
 			public void run() {
 				if (daily != null) {
+				   // initialize the summary string
 					String[] meteoIconString = new String[MAX_FORECAST_DAYS];
+					
+					// get the meteo icon for each day
 					for (int i = 0; i < MAX_FORECAST_DAYS; i++)
 						meteoIconString[i] = daily.getDay(i).icon()
 								.replace('\"', ' ').trim();
 
+					// get the meteo data for each day
 					for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
 						dataPoint[i] = daily.getDay(i);
 						meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
 								dataPoint[i], true));
 					}
 
+					// get the meteo array adapter and set it to the listview
 					int resId = R.layout.meteo_list;
 					adapter = new MeteoArrayAdapter(parentActivity, resId,
 							meteoItems, true, 0);
@@ -149,6 +149,8 @@ public class MeteoFragment extends Fragment {
 							meteoListView.setAdapter(adapter);
 						}
 					});
+					
+					// cancel the waiting thread
 					this.cancel();
 
 				} else if (counter < WAITING_TICKS) {

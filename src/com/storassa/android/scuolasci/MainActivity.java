@@ -291,7 +291,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 				});
 
 			} else {
-				customerName = result[0];
+				customerName = result[2];
 				setLogged(true);
 				progressDialog.dismiss();
 				runOnUiThread(new Runnable() {

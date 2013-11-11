@@ -3,6 +3,7 @@ package com.storassa.android.scuolasci;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
@@ -35,7 +36,7 @@ public class BookingActivity extends Activity {
 	String sport;
 	String[] lessonTypes = { "lezioni individuali", "lezioni weekend" };
 	String lessonType;
-	String[] customerNames;
+	ArrayList<String> customerNames;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -210,9 +211,9 @@ public class BookingActivity extends Activity {
 		});
 
 		customerNameTxt = (TextView)findViewById(R.id.customer_txt);
-		customerNames = new String[MAX_CUSTOMER];
-		customerNames[0] = getIntent().getStringExtra("customer");
-		customerNameTxt.setText(customerNames[0]);
+		customerNames = new ArrayList<String>();
+		customerNames.add(getIntent().getStringExtra("customer"));
+		customerNameTxt.setText(customerNames.get(0));
 		customerNameTxt.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
