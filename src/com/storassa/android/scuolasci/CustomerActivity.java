@@ -3,6 +3,7 @@ package com.storassa.android.scuolasci;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -14,6 +15,7 @@ public class CustomerActivity extends Activity {
 
    ListView customerListView;
    Button addBtn, okBtn;
+   ArrayList<String> customerData;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class CustomerActivity extends Activity {
 
    private void setMemberView() {
       customerListView = (ListView) findViewById(R.id.customer_listview);
-      ArrayList<String> customerData = getIntent().getStringArrayListExtra(
+      customerData = getIntent().getStringArrayListExtra(
             "customers");
       CustomerArrayAdapter adapter = new CustomerArrayAdapter (this,
             R.layout.customer_list, customerData);
@@ -49,8 +51,23 @@ public class CustomerActivity extends Activity {
             });
 
       addBtn = (Button) findViewById(R.id.add_customer_btn);
+      addBtn.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+		}
+	});
 
       okBtn = (Button) findViewById(R.id.ok_customer_btn);
+      okBtn.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Intent newIntent = new Intent();
+			newIntent.putExtra("customers", customerData);
+			
+			CustomerActivity.this.finish();
+		}
+	});
    }
 
 }

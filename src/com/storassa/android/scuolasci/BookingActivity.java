@@ -157,6 +157,16 @@ public class BookingActivity extends Activity {
 	public String getInstructor() {
 		return instructorTxt.getText().toString();
 	}
+	
+	protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+		if (CUSTOMER_REQUEST == requestCode) {
+			if (resultCode == RESULT_OK) {
+				
+			}
+		}
+	}
+
 
 	private void setViewMember() {
 		bookingDayTxt = (TextView) findViewById(R.id.booking_day_txt);
@@ -260,7 +270,7 @@ public class BookingActivity extends Activity {
 	private void showCustomers() {
 		Intent newIntent = new Intent(this, CustomerActivity.class);
 		newIntent.putExtra("customers", customerNames);
-		startActivity(newIntent);
+		startActivityForResult(newIntent, CUSTOMER_REQUEST);
 	}
 
 	private String getCurrentDay() {
@@ -329,5 +339,5 @@ public class BookingActivity extends Activity {
 
 	}
 	
-	private final static int MAX_CUSTOMER = 26;
+	private final static int CUSTOMER_REQUEST = 100;
 }
