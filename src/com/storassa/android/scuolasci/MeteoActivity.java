@@ -1,15 +1,13 @@
 package com.storassa.android.scuolasci;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -27,6 +25,7 @@ public class MeteoActivity extends Activity {
    private ArrayAdapter<MeteoItem> adapter;
    FIOHourly hourly = null;
    int counter = 0;
+   String customerName;
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,6 +40,8 @@ public class MeteoActivity extends Activity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_meteo);
+      
+      customerName = getIntent().getStringExtra("customer");
 
       final ListView listView = (ListView) findViewById(R.id.hourly_meteo_list);
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,8 +49,10 @@ public class MeteoActivity extends Activity {
          @Override
          public void onItemClick(AdapterView<?> parent, View view,
                int position, long id) {
-            // TODO Auto-generated method stub
-
+            Intent intent = new Intent(MeteoActivity.this, BookingActivity.class);
+            intent.putExtra("hour", position);
+            intent.putExtra("customer", customerName);
+            startActivity(intent);
          }
 
       });
