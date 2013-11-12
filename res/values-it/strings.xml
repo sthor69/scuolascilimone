@@ -75,5 +75,6 @@
     <string name="incorrect_login_title">Login incorretta</string>
     <string name="incorrect_login">La username o la password immessa non e\' corretta</string>
     <string name="add">Aggiungi</string>
+    <string name="name_surname">Nome Cognome</string>
 
 </resources>
