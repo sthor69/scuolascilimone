@@ -41,7 +41,8 @@ public class AddCustomerDialog extends DialogFragment {
                         
                         String usr = userTxt.getText().toString();
                         CustomerActivity parent = (CustomerActivity)getActivity();
-                        parent.addCustomer(usr);
+                        if (!usr.equals(""))
+                        	parent.addCustomer(usr);
                      }
                   }).setNegativeButton(R.string.cancel,
                   new DialogInterface.OnClickListener() {
