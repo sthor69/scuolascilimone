@@ -137,6 +137,8 @@ public class HttpConnectionHelper {
                            features[count++] = Feature.SCUDERIA;
                         else if (f.equals("Maestri"))
                            features[count++] = Feature.INSTRUCTOR;
+                        else if (f.equals("Saranno Campioni"))
+                           features[count++] = Feature.CAMPIONI;
                      }
                   }
                   

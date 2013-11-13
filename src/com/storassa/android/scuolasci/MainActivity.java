@@ -249,6 +249,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
                racingBtn.setEnabled(false);
                instructorBtn.setEnabled(false);
                bookingBtn.setEnabled(false);
+               campioniBtn.setEnabled(false);
             }
          });
 
@@ -416,6 +417,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
 
          @Override
          public void run() {
+            bookingBtn.setEnabled(true);
             try {
                for (Feature f : features)
                   if (f != null) {
@@ -425,6 +427,8 @@ public class MainActivity extends Activity implements HttpResultCallable {
                         scuderiaBtn.setEnabled(true);
                      else if (f.equals(Feature.INSTRUCTOR))
                         instructorBtn.setEnabled(true);
+                     else if (f.equals(Feature.CAMPIONI))
+                        campioniBtn.setEnabled(true);
                   }
             } catch (Exception e) {
                e.printStackTrace();
@@ -548,9 +552,9 @@ public class MainActivity extends Activity implements HttpResultCallable {
          R.drawable.bpn, R.drawable.chalet1400, R.drawable.delmonte,
          R.drawable.noberasco, R.drawable.nobilwood, R.drawable.salice,
          R.drawable.toppa_il_castagno, R.drawable.vergnano, R.drawable.peugeo };
-   private static final String[] ADS_URIS = { "www.botteroski.com",
-         "www.bpn.it", "chalet1400.baitelimone.it", "www.delmonte.com",
-         "www.noberasco.it", "www.nobilwood.it", "www.saliceocchiali.it",
-         "www.mobiliilcastagno.com", "www.caffefergnano.com", "www.cuneotre.peugeot.it" };
+   private static final String[] ADS_URIS = { "http://www.botteroski.com",
+         "http://www.bpn.it", "http://chalet1400.baitelimone.it", "http://www.delmonte.com",
+         "http://www.noberasco.it", "http://www.nobilwood.it", "http://www.saliceocchiali.it",
+         "http://www.mobiliilcastagno.com", "http://www.caffefergnano.com", "http://www.cuneotre.peugeot.it" };
 
 }
