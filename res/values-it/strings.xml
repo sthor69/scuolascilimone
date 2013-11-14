@@ -76,5 +76,7 @@
     <string name="incorrect_login">La username o la password immessa non e\' corretta</string>
     <string name="add">Aggiungi</string>
     <string name="name_surname">Nome Cognome</string>
+    <string name="delete_last_customer_title">Attenzione!</string>
+    <string name="delete_last_customer">La lista dei clienti non puo\' essere vuota</string>
 
 </resources>

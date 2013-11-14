@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -28,18 +29,19 @@ public class BookingActivity extends Activity {
 	TextView lessonTypeTxt;
 	TextView customerNameTxt;
 
-	Button cancelBtn;
+	Button cancelBtn, okBtn;
 
 	Instructor[] instructors;
 	String[] instructorNames;
 	String instructor;
 	String[] skiAreas = { "sole", "maneggio", "limone1400" };
-	String skiArea;
+	String location;
 	String[] sports = { "sci", "snowboard" };
 	String sport;
 	String[] lessonTypes = { "lezioni individuali", "lezioni weekend" };
 	String lessonType;
 	ArrayList<String> customerNames;
+	String mainCustomerName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class BookingActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_booking);
+		
+		mainCustomerName = getIntent().getStringExtra("customer");
 
 		// initialize the views
 		setViewMember();
@@ -136,7 +140,7 @@ public class BookingActivity extends Activity {
 	}
 
 	public void setLocation(final String _skiArea) {
-		skiArea = _skiArea;
+		location = _skiArea;
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -221,7 +225,7 @@ public class BookingActivity extends Activity {
 		});
 
 		locationTxt = (TextView) findViewById(R.id.booking_location);
-		skiArea = locationTxt.getText().toString();
+		location = locationTxt.getText().toString();
 		locationTxt.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -249,7 +253,7 @@ public class BookingActivity extends Activity {
 
 		customerNameTxt = (TextView) findViewById(R.id.customer_txt);
 		customerNames = new ArrayList<String>();
-		customerNames.add(getIntent().getStringExtra("customer"));
+		customerNames.add(mainCustomerName);
 		customerNameTxt.setText(customerNames.get(0));
 		customerNameTxt.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -265,6 +269,24 @@ public class BookingActivity extends Activity {
 				finish();
 			}
 		});
+		
+		okBtn = (Button)findViewById(R.id.booking_ok_btn);
+		okBtn.setOnClickListener(new View.OnClickListener() {
+         
+         @Override
+         public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not ACTION_SEND
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Prenotazione ore di lezione");
+            //TODO put the correct string in the booking email
+            String body = getEmailBody();
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            intent.setData(Uri.parse("mailto:sergio.torassa@selesoft.it")); // or just "mailto:" for blank
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+            startActivity(intent);
+            finish();
+         }
+      });
 	}
 
 	private void showDatePickerDialog() {
@@ -280,7 +302,7 @@ public class BookingActivity extends Activity {
 	private void showInstructorChooser() {
 		// get the instructor list
 		DialogFragment newFragment = GenericDialog.newInstance(
-				DialogType.INSTRUCTORS, instructors, skiArea, sport);
+				DialogType.INSTRUCTORS, instructors, location, sport);
 		newFragment.show(getFragmentManager(), "instructorChooser");
 	}
 
@@ -306,6 +328,23 @@ public class BookingActivity extends Activity {
 		Intent newIntent = new Intent(this, CustomerActivity.class);
 		newIntent.putExtra("customers", customerNames);
 		startActivityForResult(newIntent, CUSTOMER_REQUEST);
+	}
+	
+	private String getEmailBody() {
+	   String result;
+	   result = "Prenotazione da parte di: " + mainCustomerName + "\n\n\n";
+	   result += "Elenco degli allievi:\n";
+	   
+	   for (int i = 0; i < customerNames.size(); i++)
+	      result += customerNames.get(i) + "\n";
+	   
+	   result += "\nLuogo della lezione: " + location;
+	   result += "\nOra di lezione: " + bookingHourTxt.getText().toString();
+	   result += "\nGiorno della lezione: " + bookingDayTxt.getText().toString().substring(7);
+	   result += "\nTipo di lezione: " + lessonType;
+	   result += "\nSport: " + sport;
+	   
+	   return result;
 	}
 
 	private String getCurrentDay() {
