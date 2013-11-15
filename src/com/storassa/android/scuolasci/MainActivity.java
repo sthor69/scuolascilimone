@@ -28,6 +28,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 public class MainActivity extends Activity implements HttpResultCallable {
 
    FragmentManager fm;
@@ -143,6 +145,12 @@ public class MainActivity extends Activity implements HttpResultCallable {
    }
 
    @Override
+   public void onStart() {
+     super.onStart();
+     EasyTracker.getInstance(this).activityStart(this); // Add this method.
+   }
+
+   @Override
    protected void onPause() {
       super.onPause();
       try {
@@ -155,9 +163,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
    @Override
    protected void onStop() {
       super.onStop();
-      // if (isLogged())
-      // helper.exec.shutdown();
-      // finish();
+      EasyTracker.getInstance(this).activityStop(this); // Add this method.
    }
 
    @Override
@@ -443,6 +449,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       lastSnowText = (TextView) findViewById(R.id.last_snow_text);
 
       scuderiaBtn = (Button) findViewById(R.id.scuderia_btn);
+      scuderiaBtn.setEnabled(false);
       scuderiaBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -455,6 +462,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       });
 
       racingBtn = (Button) findViewById(R.id.racing_team_btn);
+      racingBtn.setEnabled(false);
       racingBtn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
@@ -466,6 +474,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       });
 
       campioniBtn = (Button) findViewById(R.id.campioni_btn);
+      campioniBtn.setEnabled(false);
       campioniBtn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
@@ -477,6 +486,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       });
 
       instructorBtn = (Button) findViewById(R.id.instructor_btn);
+      instructorBtn.setEnabled(false);
       instructorBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -503,6 +513,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
       });
 
       bookingBtn = (Button) findViewById(R.id.booking_btn);
+      bookingBtn.setEnabled(false);
       bookingBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override

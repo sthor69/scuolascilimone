@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 public class BookingActivity extends Activity {
 
 	TextView bookingDayTxt;
@@ -51,7 +54,7 @@ public class BookingActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_booking);
-		
+
 		mainCustomerName = getIntent().getStringExtra("customer");
 
 		// initialize the views
@@ -269,24 +272,51 @@ public class BookingActivity extends Activity {
 				finish();
 			}
 		});
-		
-		okBtn = (Button)findViewById(R.id.booking_ok_btn);
+
+		okBtn = (Button) findViewById(R.id.booking_ok_btn);
 		okBtn.setOnClickListener(new View.OnClickListener() {
-         
-         @Override
-         public void onClick(View v) {
-            Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not ACTION_SEND
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Prenotazione ore di lezione");
-            //TODO put the correct string in the booking email
-            String body = getEmailBody();
-            intent.putExtra(Intent.EXTRA_TEXT, body);
-            intent.setData(Uri.parse("mailto:sergio.torassa@selesoft.it")); // or just "mailto:" for blank
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
-            startActivity(intent);
-            finish();
-         }
-      });
+
+			@Override
+			public void onClick(View v) {
+				EasyTracker easyTracker = EasyTracker
+						.getInstance(BookingActivity.this);
+
+				// MapBuilder.createEvent().build() returns a Map of event
+				// fields and values
+				// that are set and sent with the hit.
+				easyTracker.send(MapBuilder.createEvent("ui_action", // category (req)
+						"button_press", // action (required)
+						"play_button", // label
+						null) // value
+						.build());
+
+				Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not
+																	// ACTION_SEND
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_SUBJECT,
+						"Prenotazione ore di lezione");
+				// TODO put the correct string in the booking email
+				String body = getEmailBody();
+				intent.putExtra(Intent.EXTRA_TEXT, body);
+				intent.setData(Uri.parse("mailto:sergio.torassa@selesoft.it")); // or
+																				// just
+																				// "mailto:"
+																				// for
+																				// blank
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will
+																// make such
+																// that when
+																// user returns
+																// to your app,
+																// your app is
+																// displayed,
+																// instead of
+																// the email
+																// app.
+				startActivity(intent);
+				finish();
+			}
+		});
 	}
 
 	private void showDatePickerDialog() {
@@ -329,22 +359,23 @@ public class BookingActivity extends Activity {
 		newIntent.putExtra("customers", customerNames);
 		startActivityForResult(newIntent, CUSTOMER_REQUEST);
 	}
-	
+
 	private String getEmailBody() {
-	   String result;
-	   result = "Prenotazione da parte di: " + mainCustomerName + "\n\n\n";
-	   result += "Elenco degli allievi:\n";
-	   
-	   for (int i = 0; i < customerNames.size(); i++)
-	      result += customerNames.get(i) + "\n";
-	   
-	   result += "\nLuogo della lezione: " + location;
-	   result += "\nOra di lezione: " + bookingHourTxt.getText().toString();
-	   result += "\nGiorno della lezione: " + bookingDayTxt.getText().toString().substring(7);
-	   result += "\nTipo di lezione: " + lessonType;
-	   result += "\nSport: " + sport;
-	   
-	   return result;
+		String result;
+		result = "Prenotazione da parte di: " + mainCustomerName + "\n\n\n";
+		result += "Elenco degli allievi:\n";
+
+		for (int i = 0; i < customerNames.size(); i++)
+			result += customerNames.get(i) + "\n";
+
+		result += "\nLuogo della lezione: " + location;
+		result += "\nOra di lezione: " + bookingHourTxt.getText().toString();
+		result += "\nGiorno della lezione: "
+				+ bookingDayTxt.getText().toString().substring(7);
+		result += "\nTipo di lezione: " + lessonType;
+		result += "\nSport: " + sport;
+
+		return result;
 	}
 
 	private String getCurrentDay() {
