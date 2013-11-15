@@ -1,9 +1,6 @@
 package dme.forecastiolib;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Scanner;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
