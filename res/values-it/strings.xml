@@ -78,5 +78,7 @@
     <string name="name_surname">Nome Cognome</string>
     <string name="delete_last_customer_title">Attenzione!</string>
     <string name="delete_last_customer">La lista dei clienti non puo\' essere vuota</string>
-
+    <string name="contacts">Contatti</string>
+    <string name="feedback">Feedback</string>
+    <string name="help">Help</string>
 </resources>

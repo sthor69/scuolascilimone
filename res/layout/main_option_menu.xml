@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/contacts_main_option_menu"
+          android:icon="@drawable/cloud_icon"
+          android:title="@string/add"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/feedback_main_option_menu"
+          android:icon="@drawable/sun_icon"
+          android:title="@string/april" />
+    <item android:id="@+id/help_main_option_menu"
+          android:icon="@drawable/sun_cloud_mix_icon"
+          android:title="@string/booking" />
+</menu>

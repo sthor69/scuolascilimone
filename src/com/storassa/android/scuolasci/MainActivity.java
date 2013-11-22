@@ -532,7 +532,6 @@ public class MainActivity extends Activity implements HttpResultCallable {
             Intent myWebLink = new Intent(android.content.Intent.ACTION_VIEW);
             myWebLink.setData(Uri.parse(ADS_URIS[ad]));
             startActivity(myWebLink);
-
          }
       });
    }

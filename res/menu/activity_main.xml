@@ -1,9 +1,13 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <item
-        android:id="@+id/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_settings"/>
-
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/contacts_main_option_menu"
+          android:icon="@drawable/contact"
+          android:title="@string/contacts"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/feedback_main_option_menu"
+          android:icon="@drawable/feedback"
+          android:title="@string/feedback" />
+    <item android:id="@+id/help_main_option_menu"
+          android:icon="@drawable/help"
+          android:title="@string/help" />
 </menu>
