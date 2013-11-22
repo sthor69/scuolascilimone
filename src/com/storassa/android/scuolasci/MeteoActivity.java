@@ -42,6 +42,7 @@ public class MeteoActivity extends Activity {
       setContentView(R.layout.activity_meteo);
       
       customerName = getIntent().getStringExtra("customer");
+      final int day = getIntent().getExtras().getInt("Day");
 
       final ListView listView = (ListView) findViewById(R.id.hourly_meteo_list);
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,6 +53,7 @@ public class MeteoActivity extends Activity {
             Intent intent = new Intent(MeteoActivity.this, BookingActivity.class);
             intent.putExtra("hour", position);
             intent.putExtra("customer", customerName);
+            intent.putExtra("day", day);
             startActivity(intent);
          }
 
@@ -59,7 +61,7 @@ public class MeteoActivity extends Activity {
 
       meteoItems = new ArrayList<MeteoItem>();
 
-      final int day = getIntent().getExtras().getInt("Day");
+      
 
       dataPoint = new FIODataPoint[MAX_HOURS];
 

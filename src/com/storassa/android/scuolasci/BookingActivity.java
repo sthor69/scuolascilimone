@@ -82,7 +82,7 @@ public class BookingActivity extends Activity {
 					+ ": -");
 		}
 
-		String currentDayString = getCurrentDay();
+		String currentDayString = getDay();
 		bookingDayTxt.setText(getResources().getString(R.string.booking_day)
 				+ ": " + currentDayString);
 
@@ -378,12 +378,14 @@ public class BookingActivity extends Activity {
 		return result;
 	}
 
-	private String getCurrentDay() {
+	private String getDay() {
+	   int day = getIntent().getIntExtra("day", 0);
 		Date date = new Date();
 		Calendar c = Calendar.getInstance();
 
 		try {
 			c.setTime(date);
+			c.add(Calendar.DATE, day);
 		} catch (Exception e) {
 			throw new RuntimeException(e.toString());
 		}
