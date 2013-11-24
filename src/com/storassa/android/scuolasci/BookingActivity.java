@@ -286,7 +286,7 @@ public class BookingActivity extends Activity {
 				// that are set and sent with the hit.
 				easyTracker.send(MapBuilder.createEvent("ui_action", // category (req)
 						"button_press", // action (required)
-						"play_button", // label
+						"booking_button", // label
 						null) // value
 						.build());
 

@@ -22,6 +22,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -141,7 +142,40 @@ public class MainActivity extends Activity implements HttpResultCallable {
    public boolean onCreateOptionsMenu(Menu menu) {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.activity_main, menu);
+      
       return true;
+   }
+   
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+       // Handle item selection
+       switch (item.getItemId()) {
+           case R.id.help_main_option_menu:
+               showHelp();
+               return true;
+           case R.id.contacts_main_option_menu:
+               showContacts();
+               return true;
+           case R.id.feedback_main_option_menu:
+        	   showFeedback();
+        	   return true;
+           default:
+               return super.onOptionsItemSelected(item);
+       }
+   }
+   
+   private void showHelp() {
+
+   }
+   
+   private void showContacts() {
+	   Intent intent = new Intent(this, ContactActivity.class);
+	   startActivity(intent);   
+   }
+   
+   private void showFeedback() {
+	   Intent intent = new Intent(this, FeedbackActivity.class);
+	   startActivity(intent);
    }
 
    @Override

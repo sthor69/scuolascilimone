@@ -79,5 +79,15 @@
     <string name="contacts">Contacts</string>
     <string name="feedback">Feedback</string>
     <string name="help">Help</string>
+    <string name="email_title">Email</string>
+    <string name="phone_title">Phone</string>
+    <string name="web_title">Website</string>
+    <string name="address_title">Addresses and phone numbers</string>
+    <string name="downtown">Downtown</string>
+    <string name="feedback_note">When the OK button will be pressed, an email editor 
+        will be presented with a pre-compiled email. In order to send the feedback
+        the email must be sent. The data contained in the email will be managed
+        in an absolute privacy and will be strictly used only to upgrade
+        the application and to make it more useful.</string>
 
 </resources>

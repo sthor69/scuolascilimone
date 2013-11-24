@@ -81,4 +81,18 @@
     <string name="contacts">Contatti</string>
     <string name="feedback">Feedback</string>
     <string name="help">Help</string>
+    <string name="email_title">Email</string>
+    <string name="email_text">info@scuolascilimone.it</string>
+    <string name="phone_title">Telefono</string>
+    <string name="phone_text">0171xxyyzz</string>
+    <string name="web_title">Sito web</string>
+    <string name="web_text">www.scuolascilimone.it</string>
+    <string name="address_title">Indirizzi e numeri di telefono</string>
+    <string name="downtown">Centro</string>
+        <string name="feedback_note">Quando verrà premuto il tasto OK, si aprirà un editor 
+        con una email pre-compilata. Per poter inviare il feedback la email dovrà essere
+        inviata. I dati presenti nella email verranno trattati nella privacy più assoluta
+        e verranno utilizzati esclusivamente per aggiornare l\'applicazione e renderla più
+        utile agli utenti.</string>
+    
 </resources>
