@@ -175,6 +175,7 @@ public class MainActivity extends Activity implements HttpResultCallable {
    
    private void showFeedback() {
 	   Intent intent = new Intent(this, FeedbackActivity.class);
+	   intent.putExtra("customer", customerName);
 	   startActivity(intent);
    }
 

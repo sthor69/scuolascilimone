@@ -20,6 +20,7 @@
             android:id="@+id/feedback_ok_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:text="@string/ok" />
 
@@ -27,32 +28,34 @@
             android:id="@+id/feedback_cancel_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:text="@string/cancel" />
     </LinearLayout>
-    
-    <TextView 
-        android:id="@+id/feedback_txt"
+
+    <TextView
+        android:id="@+id/feedback_note_txt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@id/ok_cancel_feedback"
+        android:layout_marginBottom="15dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp"
-        android:layout_above="@id/ok_cancel_feedback"
-        android:textSize="10sp"
+        android:text="@string/feedback_note"
         android:textColor="#ffffff"
-        android:text="@string/feedback_note"/>
+        android:textSize="12sp" />
 
     <EditText
+        android:id="@+id/feedback_txt"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_marginTop="30dp"
+        android:layout_above="@id/feedback_note_txt"
+        android:layout_marginBottom="15dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp"
-        android:textAlignment="textStart"
-        android:layout_above="@id/feedback_txt"
+        android:layout_marginTop="30dp"
         android:background="#ffffff"
-        android:text="@string/hello_world" />
+        android:gravity="top|left"
+        android:hint="@string/insert_text_here" />
 
 </RelativeLayout>

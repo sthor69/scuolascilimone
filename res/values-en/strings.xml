@@ -89,5 +89,6 @@
         the email must be sent. The data contained in the email will be managed
         in an absolute privacy and will be strictly used only to upgrade
         the application and to make it more useful.</string>
+    <string name="insert_text_here">Insert your comment here</string>
 
 </resources>
