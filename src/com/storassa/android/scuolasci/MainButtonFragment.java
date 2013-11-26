@@ -11,7 +11,7 @@ public class MainButtonFragment extends Fragment {
    
    View result;
    
-   MainActivity parentActivity;
+   StartingActivity parentActivity;
    Button loginBtn;
    
 
@@ -22,7 +22,7 @@ public class MainButtonFragment extends Fragment {
    // Inflate the layout for this fragment
       result = inflater.inflate(R.layout.main_button_layout, container, false);
       
-      parentActivity = (MainActivity)getActivity();
+      parentActivity = (StartingActivity)getActivity();
       loginBtn = (Button) result.findViewById(R.id.login_logout_btn);
       
       if (parentActivity.isLogged())

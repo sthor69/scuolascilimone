@@ -24,5 +24,6 @@
     <string name="web_text">www.scuolascilimone.it</string>
     <string name="email_text">info@scuolascilimone.it</string>
     <string name="title_activity_feedback">Feedback</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

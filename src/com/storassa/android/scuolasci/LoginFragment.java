@@ -70,7 +70,7 @@ public class LoginFragment extends DialogFragment {
                         String pwd = pwdTxt.getText().toString();
                         boolean rememberMe = ((CheckBox) view
                               .findViewById(R.id.remember_me_btn)).isChecked();
-                        ((MainActivity) getActivity()).loginUser(usr, pwd,
+                        ((StartingActivity) getActivity()).loginUser(usr, pwd,
                               rememberMe);
                      }
                   }).setNegativeButton(R.string.cancel,

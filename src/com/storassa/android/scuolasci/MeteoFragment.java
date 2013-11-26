@@ -27,14 +27,14 @@ public class MeteoFragment extends Fragment {
 	private FIODataPoint[] dataPoint;
 	private ArrayList<MeteoItem> meteoItems;
 	private ArrayAdapter<MeteoItem> adapter;
-	private MainActivity parentActivity;
+	private StartingActivity parentActivity;
 	FIODaily daily;
 	private int counter = 0;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		parentActivity = (MainActivity)activity;
+		parentActivity = (StartingActivity)activity;
 	}
 
 	@Override
