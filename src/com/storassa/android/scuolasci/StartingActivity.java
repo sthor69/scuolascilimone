@@ -142,47 +142,47 @@ public class StartingActivity extends Activity implements HttpResultCallable {
    public boolean onCreateOptionsMenu(Menu menu) {
       // Inflate the menu; this adds items to the action bar if it is present.
       getMenuInflater().inflate(R.menu.activity_main, menu);
-      
+
       return true;
    }
-   
+
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-       // Handle item selection
-       switch (item.getItemId()) {
-           case R.id.help_main_option_menu:
-               showHelp();
-               return true;
-           case R.id.contacts_main_option_menu:
-               showContacts();
-               return true;
-           case R.id.feedback_main_option_menu:
-        	   showFeedback();
-        	   return true;
-           default:
-               return super.onOptionsItemSelected(item);
-       }
+      // Handle item selection
+      switch (item.getItemId()) {
+      case R.id.help_main_option_menu:
+         showHelp();
+         return true;
+      case R.id.contacts_main_option_menu:
+         showContacts();
+         return true;
+      case R.id.feedback_main_option_menu:
+         showFeedback();
+         return true;
+      default:
+         return super.onOptionsItemSelected(item);
+      }
    }
-   
+
    private void showHelp() {
 
    }
-   
+
    private void showContacts() {
-	   Intent intent = new Intent(this, ContactActivity.class);
-	   startActivity(intent);   
+      Intent intent = new Intent(this, ContactActivity.class);
+      startActivity(intent);
    }
-   
+
    private void showFeedback() {
-	   Intent intent = new Intent(this, FeedbackActivity.class);
-	   intent.putExtra("customer", customerName);
-	   startActivity(intent);
+      Intent intent = new Intent(this, FeedbackActivity.class);
+      intent.putExtra("customer", customerName);
+      startActivity(intent);
    }
 
    @Override
    public void onStart() {
-     super.onStart();
-     EasyTracker.getInstance(this).activityStart(this); // Add this method.
+      super.onStart();
+      EasyTracker.getInstance(this).activityStart(this); // Add this method.
    }
 
    @Override
@@ -286,11 +286,7 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             public void run() {
                loginBtn.setText(R.string.login);
                progressDialog.dismiss();
-               scuderiaBtn.setEnabled(false);
-               racingBtn.setEnabled(false);
-               instructorBtn.setEnabled(false);
-               bookingBtn.setEnabled(false);
-               campioniBtn.setEnabled(false);
+               features = null;
             }
          });
 
@@ -304,8 +300,10 @@ public class StartingActivity extends Activity implements HttpResultCallable {
 
                @Override
                public void run() {
-                  CommonHelper.exitMessage(R.string.http_issue,
-                        R.string.http_issue_dialog_title, StartingActivity.this);
+                  CommonHelper
+                        .exitMessage(R.string.http_issue,
+                              R.string.http_issue_dialog_title,
+                              StartingActivity.this);
                }
             });
          else if (result[0].equals(FAILED_LOGIN_RESPONSE)) {
@@ -344,7 +342,6 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             });
 
             features = _features;
-            addButtons(features);
          }
          break;
       case SNOW:
@@ -414,8 +411,8 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             public void run() {
                try {
                   helper = HttpConnectionHelper.getHelper();
-                  helper.openGenericConnection(Request.SNOW, StartingActivity.this,
-                        new URL(WEATHER2_API));
+                  helper.openGenericConnection(Request.SNOW,
+                        StartingActivity.this, new URL(WEATHER2_API));
                } catch (Exception e) {
                   e.printStackTrace();
                }
@@ -437,7 +434,8 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             @Override
             public void run() {
                CommonHelper.exitMessage(R.string.connection_unavailable,
-                     R.string.connection_unavailable_title, StartingActivity.this);
+                     R.string.connection_unavailable_title,
+                     StartingActivity.this);
             }
          });
       } else if (!netInfo.isConnected()) {
@@ -452,85 +450,70 @@ public class StartingActivity extends Activity implements HttpResultCallable {
          setDataAvailable();
    }
 
-   private void addButtons(final Feature[] features) {
-
-      runOnUiThread(new Runnable() {
-
-         @Override
-         public void run() {
-            bookingBtn.setEnabled(true);
-            try {
-               for (Feature f : features)
-                  if (f != null) {
-                     if (f.equals(Feature.RACING_TEAM))
-                        racingBtn.setEnabled(true);
-                     else if (f.equals(Feature.SCUDERIA))
-                        scuderiaBtn.setEnabled(true);
-                     else if (f.equals(Feature.INSTRUCTOR))
-                        instructorBtn.setEnabled(true);
-                     else if (f.equals(Feature.CAMPIONI))
-                        campioniBtn.setEnabled(true);
-                  }
-            } catch (Exception e) {
-               e.printStackTrace();
-            }
-         }
-      });
-   }
-
    private void setViewMember() {
       minSnowText = (TextView) findViewById(R.id.min_snow_text);
       maxSnowText = (TextView) findViewById(R.id.max_snow_text);
       lastSnowText = (TextView) findViewById(R.id.last_snow_text);
 
       scuderiaBtn = (Button) findViewById(R.id.scuderia_btn);
-      scuderiaBtn.setEnabled(false);
       scuderiaBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
          public void onClick(View v) {
-            Intent newIntent = new Intent(StartingActivity.this,
-                  WebRenderActivity.class);
-            newIntent.putExtra("request", Request.SCUDERIA);
-            startActivity(newIntent);
+            if (included(Feature.SCUDERIA, features)) {
+               Intent newIntent = new Intent(StartingActivity.this,
+                     WebRenderActivity.class);
+               newIntent.putExtra("request", Request.SCUDERIA);
+               startActivity(newIntent);
+            } else {
+               showIllegalOperation();
+            }
          }
       });
 
       racingBtn = (Button) findViewById(R.id.racing_team_btn);
-      racingBtn.setEnabled(false);
       racingBtn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-            Intent newIntent = new Intent(StartingActivity.this,
-                  WebRenderActivity.class);
-            newIntent.putExtra("request", Request.RACINGTEAM);
-            startActivity(newIntent);
+            if (included(Feature.RACING_TEAM, features)) {
+               Intent newIntent = new Intent(StartingActivity.this,
+                     WebRenderActivity.class);
+               newIntent.putExtra("request", Request.RACINGTEAM);
+               startActivity(newIntent);
+            } else {
+               showIllegalOperation();
+            }
          }
       });
 
       campioniBtn = (Button) findViewById(R.id.campioni_btn);
-      campioniBtn.setEnabled(false);
       campioniBtn.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-            Intent newIntent = new Intent(StartingActivity.this,
-                  WebRenderActivity.class);
-            newIntent.putExtra("request", Request.CAMPIONI);
-            startActivity(newIntent);
+            if (included(Feature.CAMPIONI, features)) {
+               Intent newIntent = new Intent(StartingActivity.this,
+                     WebRenderActivity.class);
+               newIntent.putExtra("request", Request.CAMPIONI);
+               startActivity(newIntent);
+            } else {
+               showIllegalOperation();
+            }
          }
       });
 
       instructorBtn = (Button) findViewById(R.id.instructor_btn);
-      instructorBtn.setEnabled(false);
       instructorBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
          public void onClick(View v) {
-            Intent newIntent = new Intent(StartingActivity.this,
-                  WebRenderActivity.class);
-            newIntent.putExtra("request", Request.INSTRUCTOR);
-            startActivity(newIntent);
-
+            if (included(Feature.INSTRUCTOR, features)) {
+               Intent newIntent = new Intent(StartingActivity.this,
+                     WebRenderActivity.class);
+               newIntent.putExtra("request", Request.INSTRUCTOR);
+               startActivity(newIntent);
+            } else {
+               showIllegalOperation();
+            }
          }
       });
 
@@ -548,7 +531,6 @@ public class StartingActivity extends Activity implements HttpResultCallable {
       });
 
       bookingBtn = (Button) findViewById(R.id.booking_btn);
-      bookingBtn.setEnabled(false);
       bookingBtn.setOnClickListener(new View.OnClickListener() {
 
          @Override
@@ -559,6 +541,7 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             startActivity(newIntent);
          }
       });
+
       adsContainer = (ImageView) findViewById(R.id.ads_container);
       adsContainer.setOnClickListener(new View.OnClickListener() {
 
@@ -569,6 +552,30 @@ public class StartingActivity extends Activity implements HttpResultCallable {
             startActivity(myWebLink);
          }
       });
+   }
+
+   private boolean included(Feature feat, Feature[] feats) {
+      boolean result = false;
+      if (feats != null)
+         for (Feature f : feats)
+            if (f != null && f.equals(feat))
+               result = true;
+
+      return result;
+   }
+
+   private void showIllegalOperation() {
+      AlertDialog.Builder builder = new AlertDialog.Builder(
+            StartingActivity.this);
+      builder.setTitle(R.string.illegal_operation).setMessage(
+            R.string.you_are_not_allowed).setPositiveButton(R.string.ok,
+            new DialogInterface.OnClickListener() {
+               @Override
+               public void onClick(DialogInterface dialog, int which) {
+                  ;
+               }
+            });
+      builder.create().show();
    }
 
    private void logout() {
@@ -598,8 +605,10 @@ public class StartingActivity extends Activity implements HttpResultCallable {
          R.drawable.noberasco, R.drawable.nobilwood, R.drawable.salice,
          R.drawable.toppa_il_castagno, R.drawable.vergnano, R.drawable.peugeo };
    private static final String[] ADS_URIS = { "http://www.botteroski.com",
-         "http://www.bpn.it", "http://chalet1400.baitelimone.it", "http://www.delmonte.com",
-         "http://www.noberasco.it", "http://www.nobilwood.it", "http://www.saliceocchiali.it",
-         "http://www.mobiliilcastagno.com", "http://www.caffefergnano.com", "http://www.cuneotre.peugeot.it" };
+         "http://www.bpn.it", "http://chalet1400.baitelimone.it",
+         "http://www.delmonte.com", "http://www.noberasco.it",
+         "http://www.nobilwood.it", "http://www.saliceocchiali.it",
+         "http://www.mobiliilcastagno.com", "http://www.caffefergnano.com",
+         "http://www.cuneotre.peugeot.it" };
 
 }

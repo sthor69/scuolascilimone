@@ -19,7 +19,7 @@
 
             <TextView
                 android:id="@+id/lesson_type_txt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="20dp"
@@ -37,7 +37,7 @@
 
             <TextView
                 android:id="@+id/booking_sport"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="20dp"
@@ -55,7 +55,7 @@
 
             <TextView
                 android:id="@+id/booking_location"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="20dp"
@@ -73,7 +73,7 @@
 
             <TextView
                 android:id="@+id/instructor_txt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
@@ -90,7 +90,7 @@
 
             <TextView
                 android:id="@+id/booking_day_txt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
@@ -107,7 +107,7 @@
 
             <TextView
                 android:id="@+id/booking_hour_txt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
@@ -124,7 +124,7 @@
 
             <TextView
                 android:id="@+id/customer_txt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"

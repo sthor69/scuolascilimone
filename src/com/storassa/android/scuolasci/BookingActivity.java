@@ -56,6 +56,8 @@ public class BookingActivity extends Activity {
 		setContentView(R.layout.activity_booking);
 
 		mainCustomerName = getIntent().getStringExtra("customer");
+		if (mainCustomerName == null)
+		   mainCustomerName = "";
 
 		// initialize the views
 		setViewMember();
