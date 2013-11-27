@@ -50,6 +50,7 @@
     <string name="meteo_list_restriction">Le previsioni orarie sono disponibili solo per le prime 48h</string>
     <string name="warning">Attenzione!</string>
     <string name="title_activity_meteo">Previsioni orarie</string>
+    <string name="title_activity_main">Scuola Sci Limone</string>
     <string name="instructor">Maestri</string>
     <string name="logout">Esci</string>
     <string name="snow_title">Condizioni neve</string>
@@ -60,6 +61,9 @@
     <string name="select_instructor">&lt;Scegli il maestro&gt;</string>
     <string name="title_activity_web_render">Informazioni</string>
     <string name="title_activity_booking">Prenotazioni ore di lezione</string>
+    <string name="title_activity_contact">Contatti</string>
+    <string name="title_activity_feedback">Feedback</string>
+    <string name="title_activity_customer">Inserimento clienti</string>
     <string name="booking_day">Giorno</string>
     <string name="booking_hour_from">Dalle</string>
     <string name="booking_hour_to">alle</string>
@@ -95,5 +99,8 @@
         e verranno utilizzati esclusivamente per aggiornare l\'applicazione e renderla più
         utile agli utenti.</string>
     <string name="insert_text_here">Inserisci qui il tuo commento</string>
+    <string name="main_text_11">Benvenuto nella Scuola Sci</string>
+    <string name="main_text_12">di Limone Piemonte</string>
+    <string name="main_text_2">Tocca lo schermo per continuare...</string>
 
 </resources>

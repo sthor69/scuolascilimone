@@ -57,19 +57,23 @@
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.CustomerActivity"
-            android:label="@string/title_activity_customer" >
+            android:label="@string/title_activity_customer" 
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.ContactActivity"
-            android:label="@string/title_activity_contact" >
+            android:label="@string/title_activity_contact" 
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.storassa.android.scuolasci.FeedbackActivity"
-            android:label="@string/title_activity_feedback" >
+            android:label="@string/title_activity_feedback" 
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".StartingActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main" 
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

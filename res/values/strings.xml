@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_activity_meteo">MeteoActivity</string>
-    <string name="menu_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="forecastio_api_key">66d2edf03dbf0185e0cb48f1a23a29ed</string>
     <string name="limone_latitude">44.2013202</string>
     <string name="limone_longitude">7.576090300000033</string>
     <string name="remember_me">Ricordami</string>
     <string name="view_password">Mostra password</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_customer">CustomerActivity</string>
-    <string name="title_activity_contact">Contacts</string>
     <string name="address_downtown">p.zza del Municipio</string>
     <string name="address_maneggio">via S. Giovanni 24a</string>
     <string name="address_1400">fraz. Panice Soprana</string>
@@ -23,7 +18,5 @@
     <string name="fax_downtown_text">Fax 0171.927635</string>
     <string name="web_text">www.scuolascilimone.it</string>
     <string name="email_text">info@scuolascilimone.it</string>
-    <string name="title_activity_feedback">Feedback</string>
-    <string name="title_activity_main">MainActivity</string>
 
 </resources>

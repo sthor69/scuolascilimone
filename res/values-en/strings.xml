@@ -48,6 +48,9 @@
     <string name="meteo_list_restriction">Hourly forecast are available only for the first 48 hours</string>
     <string name="warning">Attention!</string>
     <string name="title_activity_meteo">Hourly forecast</string>
+    <string name="title_activity_contact">Contacts</string>
+    <string name="title_activity_feedback">Feedback</string>
+    <string name="title_activity_customer">Insert customers</string>
     <string name="instructor">Instructor</string>
     <string name="logout">Logout</string>
     <string name="snow_title">Snow conditions</string>
@@ -90,5 +93,8 @@
         in an absolute privacy and will be strictly used only to upgrade
         the application and to make it more useful.</string>
     <string name="insert_text_here">Insert your comment here</string>
+    <string name="main_text_11">Welcome in the Ski School</string>
+    <string name="main_text_12">of Limone Piemonte</string>
+    <string name="main_text_2">Touch the screen to continue...</string>
 
 </resources>
