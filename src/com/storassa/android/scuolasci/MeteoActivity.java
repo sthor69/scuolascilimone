@@ -40,9 +40,11 @@ public class MeteoActivity extends Activity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_meteo);
-      
-      customerName = getIntent().getStringExtra("customer");
-      final int day = getIntent().getExtras().getInt("Day");
+
+      Intent intent = getIntent();
+      customerName = intent.getStringExtra("customer");
+      final int day = intent.getExtras().getInt("day");
+      final int currentHour = intent.getExtras().getInt("current_hour");
 
       final ListView listView = (ListView) findViewById(R.id.hourly_meteo_list);
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -50,7 +52,8 @@ public class MeteoActivity extends Activity {
          @Override
          public void onItemClick(AdapterView<?> parent, View view,
                int position, long id) {
-            Intent intent = new Intent(MeteoActivity.this, BookingActivity.class);
+            Intent intent = new Intent(MeteoActivity.this,
+                  BookingActivity.class);
             intent.putExtra("hour", position);
             intent.putExtra("customer", customerName);
             intent.putExtra("day", day);
@@ -60,8 +63,6 @@ public class MeteoActivity extends Activity {
       });
 
       meteoItems = new ArrayList<MeteoItem>();
-
-      
 
       dataPoint = new FIODataPoint[MAX_HOURS];
 
@@ -101,25 +102,39 @@ public class MeteoActivity extends Activity {
             if (hourly != null) {
                String[] meteoIconString = new String[MAX_HOURS];
 
+               // get the number of hours to be retrieved; in case of today,
+               // shows only the remaining hours to midnight
+               int startHours, endHours;
+               if (day == 0) {
+                  startHours = 0;
+                  endHours = 24 - currentHour;
+               }
+               else if (day == 1) {
+                  startHours = 24 - currentHour + 1;
+                  endHours = 48 - currentHour + 1;
+               }
+               else {
+                  startHours = 48 - currentHour;
+                  endHours = 48;
+               }
+
                // get the icons texts (sunny, cloud, etc...) for the hours
-               // starting
-               // from 0 for the first day and from 24 for the second day
-               for (int i = 0; i < MAX_HOURS; i++)
-                  meteoIconString[i] = hourly.getHour(i + day * 24).icon()
+               for (int i = startHours; i < endHours; i++)
+                  meteoIconString[i - startHours] = hourly.getHour(i).icon()
                         .replace('\"', ' ').trim();
 
                // get the data points (temp. etc...)
-               for (int i = 0; i < MAX_HOURS; i++) {
-                  dataPoint[i] = hourly.getHour(i + day * 24);
+               for (int i = startHours; i < endHours; i++) {
+                  dataPoint[i - startHours] = hourly.getHour(i);
                   meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
-                        dataPoint[i], false));
+                        dataPoint[i - startHours], false));
 
                }
 
                // set the meteoItems as the adapter for the ListView
                int resId = R.layout.meteo_list;
                adapter = new MeteoArrayAdapter(MeteoActivity.this, resId,
-                     meteoItems, false, day);
+                     meteoItems, false, day, currentHour);
                final ListView meteoListView = (ListView) findViewById(R.id.hourly_meteo_list);
 
                runOnUiThread(new Runnable() {

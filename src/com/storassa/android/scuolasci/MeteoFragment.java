@@ -1,6 +1,7 @@
 package com.storassa.android.scuolasci;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +31,6 @@ public class MeteoFragment extends Fragment {
    private ArrayAdapter<MeteoItem> adapter;
    private StartingActivity parentActivity;
    FIODaily daily;
-   FIOCurrently currently;
    private int counter = 0;
 
    @Override
@@ -54,10 +54,12 @@ public class MeteoFragment extends Fragment {
                      int position, long id) {
                   // only the first two days can be expanded in hourly
                   // forecast
-                  if (id < 2) {
+                  if (id < 3) {
                      Intent myIntent = new Intent(getActivity(),
                            MeteoActivity.class);
-                     myIntent.putExtra("Day", (int) id);
+                     Calendar c = Calendar.getInstance();
+                     myIntent.putExtra("current_hour", c.get(Calendar.HOUR_OF_DAY));
+                     myIntent.putExtra("day", (int) id);
                      myIntent.putExtra("customer", parentActivity.customerName);
                      getActivity().startActivity(myIntent);
                   } else {
@@ -105,7 +107,6 @@ public class MeteoFragment extends Fragment {
                fio.setExcludeURL("hourly,minutely");
                fio.getForecast(limoneLatitude, limoneLongitude);
                daily = new FIODaily(fio);
-               currently = new FIOCurrently(fio);
 
             } catch (Exception e) {
                // if there are problems print the stack and warn the user
@@ -130,31 +131,24 @@ public class MeteoFragment extends Fragment {
          public void run() {
             if (daily != null) {
                // initialize the summary string (plus one for today)
-               String[] meteoIconString = new String[MAX_FORECAST_DAYS + 1];
+               String[] meteoIconString = new String[MAX_FORECAST_DAYS];
 
                // get the meteo icon for each day
-               meteoIconString[0] = currently.get().icon().replace('\"', ' ')
-                     .trim();
                for (int i = 0; i < MAX_FORECAST_DAYS; i++)
-                  meteoIconString[i + 1] = daily.getDay(i).icon()
+                  meteoIconString[i] = daily.getDay(i).icon()
                         .replace('\"', ' ').trim();
 
-               // get the meteo data for today
-               dataPoint[0] = currently.get();
-               meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
-                     dataPoint[0], true));
-               
                // get the meteo data for next days
                for (int i = 0; i < MAX_FORECAST_DAYS; i++) {
-                  dataPoint[i + 1] = daily.getDay(i);
+                  dataPoint[i] = daily.getDay(i);
                   meteoItems.add(CommonHelper.getMeteoItemFromDataPoint(
-                        dataPoint[i + 1], true));
+                        dataPoint[i], true));
                }
 
                // get the meteo array adapter and set it to the listview
                int resId = R.layout.meteo_list;
                adapter = new MeteoArrayAdapter(parentActivity, resId,
-                     meteoItems, true, 0);
+                     meteoItems, true, 0, 0);
                parentActivity.runOnUiThread(new Runnable() {
                   public void run() {
                      meteoListView.setAdapter(adapter);
