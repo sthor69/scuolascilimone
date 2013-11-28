@@ -39,7 +39,7 @@
     <string name="meteo_image_description">Graphical description</string>
     <string name="register">Register</string>
     <string name="news">News</string>
-    <string name="booking">Book</string>
+    <string name="booking">Lessons</string>
     <string name="home">Home</string>
     <string name="login">Login</string>
     <string name="http_issue">There are problems with the Internet connection</string>
@@ -96,5 +96,6 @@
     <string name="main_text_11">Welcome in the Ski School</string>
     <string name="main_text_12">of Limone Piemonte</string>
     <string name="main_text_2">Touch the screen to continue...</string>
-
+   <string name="note_meteo_text">Meteo forecast are available only for the next 48 hours.</string>
+   <string name="not_show_anymore">Do not show anymore</string>
 </resources>

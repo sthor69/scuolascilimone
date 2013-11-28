@@ -89,7 +89,7 @@ public class StartingActivity extends Activity implements HttpResultCallable {
       CookieHandler.setDefault(cookieManager);
 
       // retrieve username and password
-      settings = getPreferences(0);
+      settings = getSharedPreferences("scuolasci", 0);
 
       // add the ads
       Random rand = new Random();

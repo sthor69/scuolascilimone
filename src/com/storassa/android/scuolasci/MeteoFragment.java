@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,14 +55,31 @@ public class MeteoFragment extends Fragment {
                      int position, long id) {
                   // only the first two days can be expanded in hourly
                   // forecast
-                  if (id < 3) {
+                  if (id < 2) {
                      Intent myIntent = new Intent(getActivity(),
                            MeteoActivity.class);
                      Calendar c = Calendar.getInstance();
-                     myIntent.putExtra("current_hour", c.get(Calendar.HOUR_OF_DAY));
+                     myIntent.putExtra("current_hour", c
+                           .get(Calendar.HOUR_OF_DAY));
                      myIntent.putExtra("day", (int) id);
                      myIntent.putExtra("customer", parentActivity.customerName);
                      getActivity().startActivity(myIntent);
+                  } else if (id == 2) {
+                     SharedPreferences settings = getActivity().getSharedPreferences("scuolasci", 0);
+                     if (!settings.getBoolean("meteonotebox",
+                           false)) {
+                        MeteoNoteDialog dialog = new MeteoNoteDialog();
+                        dialog.show(getFragmentManager(), "meteo_note");
+                     }
+                     Intent myIntent = new Intent(getActivity(),
+                           MeteoActivity.class);
+                     Calendar c = Calendar.getInstance();
+                     myIntent.putExtra("current_hour", c
+                           .get(Calendar.HOUR_OF_DAY));
+                     myIntent.putExtra("day", (int) id);
+                     myIntent.putExtra("customer", parentActivity.customerName);
+                     getActivity().startActivity(myIntent);
+
                   } else {
                      AlertDialog.Builder builder = new AlertDialog.Builder(
                            getActivity());
