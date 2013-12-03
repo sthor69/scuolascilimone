@@ -76,12 +76,6 @@ public class MeteoFragment extends Fragment {
                      // Google Analytics tracking
                      trackAction();
 
-                     SharedPreferences settings = getActivity()
-                           .getSharedPreferences("scuolasci", 0);
-                     if (!settings.getBoolean("meteonotebox", false)) {
-                        MeteoNoteDialog dialog = new MeteoNoteDialog();
-                        dialog.show(getFragmentManager(), "meteo_note");
-                     }
                      Intent myIntent = new Intent(getActivity(),
                            MeteoActivity.class);
                      Calendar c = Calendar.getInstance();

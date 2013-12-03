@@ -98,4 +98,5 @@
     <string name="main_text_2">Touch the screen to continue...</string>
    <string name="note_meteo_text">Meteo forecast are available only for the next 48 hours.</string>
    <string name="not_show_anymore">Do not show anymore</string>
+   <string name="attention">Attention!</string>
 </resources>

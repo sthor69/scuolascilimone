@@ -9,6 +9,7 @@
        android:layout_height="wrap_content"
        android:textSize="20sp"
        android:textColor="#ffffff"
+       android:layout_marginLeft="20dp"
        android:text="@string/note_meteo_text"/>
    
    <CheckBox 
@@ -17,6 +18,7 @@
        android:layout_height="wrap_content"
        android:textSize="16sp"
        android:textColor="#ffffff"
+       android:layout_marginTop="10dp"
        android:text="@string/not_show_anymore"/>
    
 </LinearLayout>

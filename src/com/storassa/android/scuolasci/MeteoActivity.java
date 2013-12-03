@@ -11,6 +11,7 @@ import com.google.analytics.tracking.android.MapBuilder;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -49,6 +50,14 @@ public class MeteoActivity extends Activity {
       final int day = intent.getExtras().getInt("day");
       final int currentHour = intent.getExtras().getInt("current_hour");
 
+      if (day == 2) {
+         SharedPreferences settings = getSharedPreferences("scuolasci", 0);
+         if (!settings.getBoolean("meteonotebox", false)) {
+            MeteoNoteDialog dialog = new MeteoNoteDialog();
+            dialog.show(getFragmentManager(), "meteo_note");
+         }
+      }
+
       final ListView listView = (ListView) findViewById(R.id.hourly_meteo_list);
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -60,10 +69,10 @@ public class MeteoActivity extends Activity {
 
             // MapBuilder.createEvent().build() returns a Map of event
             // fields and values that are set and sent with the hit.
-            
+
             easyTracker.send(MapBuilder.createEvent("ui_action", // category
                   "item_selected", // action
-                  "meteo_hourly",  // label
+                  "meteo_hourly", // label
                   null) // value
                   .build());
             Intent intent = new Intent(MeteoActivity.this,

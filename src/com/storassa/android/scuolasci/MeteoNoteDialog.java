@@ -48,7 +48,7 @@ public class MeteoNoteDialog extends DialogFragment {
 
       // Inflate and set the layout for the dialog
       // Pass null as the parent view because its going in the dialog layout
-      builder.setView(view)
+      builder.setView(view).setTitle(R.string.attention)
       // Add action buttons
             .setPositiveButton(R.string.ok,
                   new DialogInterface.OnClickListener() {

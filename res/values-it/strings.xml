@@ -106,5 +106,6 @@
     <string name="you_are_not_allowed">Non sei abilitato per questa operazione</string>
     <string name="note_meteo_text">Le previsioni meteo sono disponibili solo per le prossime 48 ore.</string>
     <string name="not_show_anymore">Non mostrare piu\'</string>
+     <string name="attention">Attenzione!</string>
 
 </resources>
