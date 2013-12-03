@@ -138,6 +138,8 @@ public class MeteoFragment extends Fragment {
 
                   @Override
                   public void run() {
+                     if(parentActivity.progressDialog.isShowing())
+                        parentActivity.progressDialog.dismiss();
                      CommonHelper.exitMessage(R.string.http_issue,
                            R.string.http_issue_dialog_title, parentActivity);
                   }
