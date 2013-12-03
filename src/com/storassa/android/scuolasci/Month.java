@@ -16,7 +16,7 @@ public enum Month {
     september,
     october,
     november,
-    devember;
+    december;
     
     public String getLabel(Context context) {
         Resources res = context.getResources();

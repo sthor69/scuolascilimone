@@ -6,6 +6,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,6 +55,17 @@ public class MeteoActivity extends Activity {
          @Override
          public void onItemClick(AdapterView<?> parent, View view,
                int position, long id) {
+            EasyTracker easyTracker = EasyTracker
+                  .getInstance(MeteoActivity.this);
+
+            // MapBuilder.createEvent().build() returns a Map of event
+            // fields and values that are set and sent with the hit.
+            easyTracker.send(MapBuilder.createEvent("ui_action", // category
+                                                                 // (req)
+                  "item_selected", // action (required)
+                  "meteo_hourly", // label
+                  null) // value
+                  .build());
             Intent intent = new Intent(MeteoActivity.this,
                   BookingActivity.class);
             intent.putExtra("hour", position);
@@ -108,12 +122,10 @@ public class MeteoActivity extends Activity {
                if (day == 0) {
                   startHours = 0;
                   endHours = 24 - currentHour;
-               }
-               else if (day == 1) {
+               } else if (day == 1) {
                   startHours = 24 - currentHour + 1;
                   endHours = 48 - currentHour + 1;
-               }
-               else {
+               } else {
                   startHours = 48 - currentHour;
                   endHours = 48;
                }

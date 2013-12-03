@@ -7,6 +7,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -56,6 +59,10 @@ public class MeteoFragment extends Fragment {
                   // only the first two days can be expanded in hourly
                   // forecast
                   if (id < 2) {
+
+                     // Google Analytics tracking
+                     trackAction();
+
                      Intent myIntent = new Intent(getActivity(),
                            MeteoActivity.class);
                      Calendar c = Calendar.getInstance();
@@ -65,9 +72,13 @@ public class MeteoFragment extends Fragment {
                      myIntent.putExtra("customer", parentActivity.customerName);
                      getActivity().startActivity(myIntent);
                   } else if (id == 2) {
-                     SharedPreferences settings = getActivity().getSharedPreferences("scuolasci", 0);
-                     if (!settings.getBoolean("meteonotebox",
-                           false)) {
+
+                     // Google Analytics tracking
+                     trackAction();
+
+                     SharedPreferences settings = getActivity()
+                           .getSharedPreferences("scuolasci", 0);
+                     if (!settings.getBoolean("meteonotebox", false)) {
                         MeteoNoteDialog dialog = new MeteoNoteDialog();
                         dialog.show(getFragmentManager(), "meteo_note");
                      }
@@ -178,8 +189,10 @@ public class MeteoFragment extends Fragment {
 
             } else if (counter < WAITING_TICKS) {
                counter++;
-               // TODO in case of problem in internet connection put a
-               // string text "not available"
+
+            } else {
+               CommonHelper.exitMessage(R.string.http_issue_dialog_title,
+                     R.string.http_issue, getActivity());
             }
 
          }
@@ -192,9 +205,6 @@ public class MeteoFragment extends Fragment {
    public void onSaveInstanceState(Bundle savedInstanceState) {
       super.onSaveInstanceState(savedInstanceState);
 
-      // savedInstanceState.putIntArray("meteo_icon", meteoIconResource);
-      // savedInstanceState.putParcelableArray("meteo_items",
-      // (Parcelable[]) (meteoItems.toArray()));
    }
 
    // private static final String LIMONE_LATITUDE = "44.2013202";
@@ -202,6 +212,18 @@ public class MeteoFragment extends Fragment {
    // private static final String METEO_API_FIO_KEY =
    // "66d2edf03dbf0185e0cb48f1a23a29ed";
    // TODO put the website for snow reports
+
+   private void trackAction() {
+      EasyTracker easyTracker = EasyTracker.getInstance(getActivity());
+
+      // MapBuilder.createEvent().build() returns a Map of event
+      // fields and values that are set and sent with the hit.
+      easyTracker.send(MapBuilder.createEvent("ui_action", // category (req)
+            "item_selected", // action (required)
+            "daily_meteo", // label
+            null) // value
+            .build());
+   }
 
    private static final int MAX_FORECAST_DAYS = 7;
    private static final int REPETITION_TIME = 1000;

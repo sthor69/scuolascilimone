@@ -284,37 +284,29 @@ public class BookingActivity extends Activity {
 						.getInstance(BookingActivity.this);
 
 				// MapBuilder.createEvent().build() returns a Map of event
-				// fields and values
-				// that are set and sent with the hit.
+				// fields and values that are set and sent with the hit.
 				easyTracker.send(MapBuilder.createEvent("ui_action", // category (req)
 						"button_press", // action (required)
 						"booking_button", // label
 						null) // value
 						.build());
 
-				Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not
-																	// ACTION_SEND
+				// it's not ACTION_SEND
+				Intent intent = new Intent(Intent.ACTION_SENDTO); 
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_SUBJECT,
 						"Prenotazione ore di lezione");
+				
 				// TODO put the correct string in the booking email
 				String body = getEmailBody();
 				intent.putExtra(Intent.EXTRA_TEXT, body);
-				intent.setData(Uri.parse("mailto:sergio.torassa@selesoft.it")); // or
-																				// just
-																				// "mailto:"
-																				// for
-																				// blank
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will
-																// make such
-																// that when
-																// user returns
-																// to your app,
-																// your app is
-																// displayed,
-																// instead of
-																// the email
-																// app.
+				
+				// or just "mailto:" for blank
+				intent.setData(Uri.parse("mailto:sergio.torassa@selesoft.it")); 
+				
+				// this will make such that when user returns to your app,
+                // your app is displayed, instead of the email app.
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
 				startActivity(intent);
 				finish();
 			}
