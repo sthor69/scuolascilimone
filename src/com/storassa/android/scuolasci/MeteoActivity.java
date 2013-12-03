@@ -60,20 +60,22 @@ public class MeteoActivity extends Activity {
 
             // MapBuilder.createEvent().build() returns a Map of event
             // fields and values that are set and sent with the hit.
+            
             easyTracker.send(MapBuilder.createEvent("ui_action", // category
-                                                                 // (req)
-                  "item_selected", // action (required)
-                  "meteo_hourly", // label
+                  "item_selected", // action
+                  "meteo_hourly",  // label
                   null) // value
                   .build());
             Intent intent = new Intent(MeteoActivity.this,
                   BookingActivity.class);
-            intent.putExtra("hour", position);
+            if (day == 0)
+               intent.putExtra("hour", currentHour + position);
+            else
+               intent.putExtra("hour", position);
             intent.putExtra("customer", customerName);
             intent.putExtra("day", day);
             startActivity(intent);
          }
-
       });
 
       meteoItems = new ArrayList<MeteoItem>();

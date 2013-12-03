@@ -6,8 +6,10 @@
           android:showAsAction="ifRoom"/>
     <item android:id="@+id/feedback_main_option_menu"
           android:icon="@drawable/feedback"
-          android:title="@string/feedback" />
+          android:title="@string/feedback"
+          android:showAsAction="ifRoom" />
     <item android:id="@+id/help_main_option_menu"
           android:icon="@drawable/help"
-          android:title="@string/help" />
+          android:title="@string/help"
+          android:showAsAction="ifRoom" />
 </menu>
