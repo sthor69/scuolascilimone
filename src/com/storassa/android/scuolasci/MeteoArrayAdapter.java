@@ -103,10 +103,27 @@ public class MeteoArrayAdapter extends ArrayAdapter<MeteoItem> {
       meteoDayOfWeek.setText(dayOfWeekString);
       meteoDay.setText(dayString);
       if (!daily)
-         if (day != 0)
+         if (day != 0) {
             meteoHour.setText(position + ":00");
+            if (position < 7 || position > 17)
+               replaceSunWithMoon(iconResource, meteoImageView);
+         }
          else
+         {
             meteoHour.setText(position + currentHour + ":00");
+            if (position + currentHour < 7 || position + currentHour > 17)
+               replaceSunWithMoon(iconResource, meteoImageView);
+         }
       return newView;
+   }
+   
+   private void replaceSunWithMoon(int res, ImageView view) {
+      switch (res) {
+      case R.drawable.sun_icon:
+         view.setImageResource(R.drawable.moon_icon);
+         break;
+      case R.drawable.sun_cloud_mix_icon:
+         view.setImageResource(R.drawable.moon_cloud_mix_icon);
+      }
    }
 }
