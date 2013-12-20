@@ -6,19 +6,20 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 	
-	LinearLayout ll;
+	RelativeLayout rl;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		ll = (LinearLayout)findViewById(R.id.main_screen);
+		rl = (RelativeLayout)findViewById(R.id.main_screen);
 		
-		ll.setOnClickListener(new View.OnClickListener() {
+		rl.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
